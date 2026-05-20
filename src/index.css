@@ -1,0 +1,343 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-page: #0a0a0f;
+  --bg-panel: #0d1117;
+  --border: #1a1f2e;
+  --cyan: #00f0ff;
+  --red: #ff003c;
+  --violet: #b400ff;
+  --orange: #ffaa00;
+  --green: #00ff88;
+  --text: #c8d6e5;
+}
+
+html, body, #root {
+  font-size: 16px;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 500;
+}
+
+/* CRT vignette — static, no animation, GPU composited */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.65) 100%);
+  pointer-events: none;
+  z-index: 9998;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Scanlines — static pattern, no animation */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.04) 0px,
+    rgba(0,0,0,0.04) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Animated grid — uses transform: translateY() only, no background-position */
+.grid-bg {
+  position: fixed;
+  inset: -40px 0 0 0;
+  background-image:
+    linear-gradient(rgba(0,240,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,240,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridMove 40s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+@keyframes gridMove {
+  0%   { transform: translateY(0) translateZ(0); }
+  100% { transform: translateY(40px) translateZ(0); }
+}
+
+/* Diagonal clip panels */
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+  padding: 1.25rem 1.5rem;
+}
+
+.panel-alt {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  clip-path: polygon(0% 0%, calc(100% - 12px) 0%, 100% 100%, 12px 100%);
+  padding: 1.25rem 1.5rem;
+}
+
+/* Glitch title — plays 3 times then stops */
+.glitch {
+  position: relative;
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: 2.25rem;
+  color: var(--cyan);
+  letter-spacing: 0.1em;
+  will-change: transform;
+  transform: translateZ(0);
+  animation: glitch 4s ease-in-out 3 forwards;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform, opacity;
+}
+
+.glitch::before {
+  color: var(--red);
+  animation: glitch-before 4s ease-in-out 3 forwards;
+  clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+}
+
+.glitch::after {
+  color: var(--cyan);
+  animation: glitch-after 4s ease-in-out 3 forwards;
+  clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+}
+
+@keyframes glitch {
+  0%, 90%, 100% { transform: translateX(0) translateZ(0); }
+  91%            { transform: translateX(-2px) translateZ(0); }
+  93%            { transform: translateX(2px) translateZ(0); }
+  95%            { transform: translateX(-1px) translateZ(0); }
+}
+
+@keyframes glitch-before {
+  0%, 90%, 100% { transform: translateX(0) translateZ(0); opacity: 0; }
+  91%            { transform: translateX(3px) translateZ(0);  opacity: 0.8; }
+  93%            { transform: translateX(-3px) translateZ(0); opacity: 0.8; }
+  95%            { transform: translateX(0) translateZ(0);    opacity: 0; }
+}
+
+@keyframes glitch-after {
+  0%, 90%, 100% { transform: translateX(0) translateZ(0); opacity: 0; }
+  92%            { transform: translateX(-2px) translateZ(0); opacity: 0.7; }
+  94%            { transform: translateX(2px) translateZ(0);  opacity: 0.7; }
+  96%            { transform: translateX(0) translateZ(0);    opacity: 0; }
+}
+
+/* Segmented loading bar */
+.seg-bar {
+  display: flex;
+  gap: 3px;
+}
+
+.seg {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 1px;
+}
+
+.seg.active {
+  background: var(--cyan);
+  box-shadow: 0 0 6px var(--cyan);
+  will-change: opacity;
+  animation: segPulse 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes segPulse {
+  from { opacity: 0.5; }
+  to   { opacity: 1; }
+}
+
+/* Confidence segments */
+.conf-seg {
+  flex: 1;
+  height: 22px;
+  background: #111827;
+  border-radius: 2px;
+}
+
+.conf-seg.lit-red    { background: var(--red);    box-shadow: 0 0 8px var(--red); }
+.conf-seg.lit-orange { background: var(--orange);  box-shadow: 0 0 8px var(--orange); }
+.conf-seg.lit-cyan   { background: var(--cyan);    box-shadow: 0 0 8px var(--cyan); }
+.conf-seg.lit-green  { background: var(--green);   box-shadow: 0 0 8px var(--green); }
+
+/* Pill tags */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.875rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+
+.pill-red {
+  background: rgba(255,0,60,0.12);
+  border: 1px solid var(--red);
+  color: #ff6b8a;
+}
+
+.pill-cyan {
+  background: rgba(0,240,255,0.1);
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+}
+
+/* News card hover */
+.news-card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.news-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--cyan);
+  transform: scaleY(0) translateZ(0);
+  transform-origin: bottom;
+  transition: transform 0.2s ease;
+  box-shadow: 0 0 12px var(--cyan);
+  will-change: transform;
+}
+
+.news-card:hover::before { transform: scaleY(1) translateZ(0); }
+.news-card:hover { border-color: var(--cyan) !important; }
+
+/* Labels */
+.label {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--cyan);
+  text-transform: uppercase;
+  display: block;
+}
+
+/* Digital readout */
+.mono {
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* Input */
+.cyber-input {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  outline: none;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+
+.cyber-input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 1px var(--cyan), inset 0 0 20px rgba(0,240,255,0.04);
+}
+
+.cyber-input::placeholder { color: #3a4a5a; }
+
+/* Button */
+.cyber-btn {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  padding: 0.75rem 2rem;
+  background: transparent;
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  cursor: pointer;
+  width: 100%;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.cyber-btn:hover:not(:disabled) {
+  background: rgba(0,240,255,0.12);
+  box-shadow: 0 0 20px rgba(0,240,255,0.3);
+}
+
+.cyber-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Toggle button */
+.toggle-btn {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  padding: 0.5rem 1.25rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.toggle-btn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+/* Responsive layout */
+.main-grid {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-page); }
+::-webkit-scrollbar-thumb { background: var(--border); }
