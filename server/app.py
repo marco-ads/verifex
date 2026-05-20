@@ -8,7 +8,7 @@ import os
 load_dotenv()
 
 app = Flask(__name__, static_folder="../dist", static_url_path="")
-CORS(app, origins=["http://localhost:5173"])
+CORS(app, origins="*")
 
 
 @app.route("/analyze", methods=["POST"])
@@ -60,6 +60,6 @@ def serve_frontend(path):
 
 
 if __name__ == "__main__":
-    port = int(os.getenv("FLASK_PORT", 5001))
-    print(f"🔥 VERIFEX backend corriendo en http://localhost:{port}")
-    app.run(port=port, debug=True)
+    port = int(os.getenv("PORT", os.getenv("FLASK_PORT", 5001)))
+    print(f"🔥 VERIFEX backend corriendo en http://0.0.0.0:{port}")
+    app.run(host="0.0.0.0", port=port, debug=False)
