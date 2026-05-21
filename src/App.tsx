@@ -17,8 +17,6 @@ interface Analysis {
   reasoning: string[]
   red_flags: string[]
   positive_signals: string[]
-  article_type?: string
-  is_scam?: boolean
 }
 
 interface NewsItem {
@@ -51,13 +49,6 @@ const TRANSLATIONS = {
     timeoutError: 'El análisis tardó demasiado. Intenta de nuevo.',
     credibleBadge: 'Fuente Verificada',
     articlePreview: 'Texto Extraído del Artículo',
-    articleType: 'Tipo de Artículo',
-    scamAlert: '¡ALERTA DE ESTAFA!',
-    type_informativa: 'Informativa',
-    type_opinion: 'Opinión',
-    type_promocional: 'Promocional',
-    type_clickbait: 'Clickbait',
-    type_denuncia: 'Denuncia',
   },
   en: {
     subtitle: 'Credibility Analyzer',
@@ -71,13 +62,6 @@ const TRANSLATIONS = {
     timeoutError: 'Analysis timed out. Please try again.',
     credibleBadge: 'Verified Source',
     articlePreview: 'Extracted Article Text',
-    articleType: 'Article Type',
-    scamAlert: 'SCAM ALERT!',
-    type_informativa: 'Informative',
-    type_opinion: 'Opinion',
-    type_promocional: 'Promotional',
-    type_clickbait: 'Clickbait',
-    type_denuncia: 'Exposé',
   },
 }
 
@@ -114,22 +98,6 @@ const RESULTS_COL_STYLE = {
   display: 'flex',
   flexDirection: 'column' as const,
   gap: '1rem',
-}
-
-const TYPE_STYLES: Record<string, { color: string; border: string; bg: string }> = {
-  informativa: { color: '#00ff88', border: '#00ff88', bg: 'rgba(0,255,136,0.08)' },
-  opinion: { color: '#ffaa00', border: '#ffaa00', bg: 'rgba(255,170,0,0.08)' },
-  promocional: { color: '#ff6600', border: '#ff6600', bg: 'rgba(255,102,0,0.08)' },
-  clickbait: { color: '#ff003c', border: '#ff003c', bg: 'rgba(255,0,60,0.08)' },
-  denuncia: { color: '#ff44ff', border: '#ff44ff', bg: 'rgba(255,68,255,0.08)' },
-}
-
-const BADGE_STYLE: React.CSSProperties = {
-  fontFamily: 'Share Tech Mono, monospace',
-  fontSize: '0.65rem',
-  letterSpacing: '0.15em',
-  padding: '0.2rem 0.6rem',
-  clipPath: 'polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%)',
 }
 
 export default function App() {
@@ -244,31 +212,6 @@ export default function App() {
 
                 <ConfidenceBar score={analysis.confidence_score} lang={lang} />
 
-                {/* Article type + scam alert */}
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                  {analysis.article_type && TYPE_STYLES[analysis.article_type] && (
-                    <div style={{
-                      ...BADGE_STYLE,
-                      color: TYPE_STYLES[analysis.article_type].color,
-                      border: `1px solid ${TYPE_STYLES[analysis.article_type].border}`,
-                      background: TYPE_STYLES[analysis.article_type].bg,
-                    }}>
-                      {tx.articleType}: {tx[`type_${analysis.article_type}` as keyof typeof tx] || analysis.article_type}
-                    </div>
-                  )}
-                  {analysis.is_scam && (
-                    <div style={{
-                      ...BADGE_STYLE,
-                      color: '#ff003c',
-                      border: '1px solid #ff003c',
-                      background: 'rgba(255,0,60,0.12)',
-                      animation: 'pulse 1.5s ease-in-out infinite',
-                    }}>
-                      ⚠ {tx.scamAlert}
-                    </div>
-                  )}
-                </div>
-
                 <div className="panel">
                   <p className="label" style={{ marginBottom: '0.6rem' }}>{tx.summary}</p>
                   <p style={{ color: '#c8d6e5', lineHeight: 1.75, fontSize: '1rem' }}>{analysis.summary}</p>
@@ -345,7 +288,7 @@ export default function App() {
 
         <footer style={FOOTER_STYLE}>
           <p style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '0.7rem', color: '#1a2a3a', letterSpacing: '0.2em' }}>
-            VERIFEX v1.0 — POWERED BY GROQ API
+            VERIFEX v1.0 — POWERED BY OLLAMA + LOCAL AI
           </p>
         </footer>
       </div>
