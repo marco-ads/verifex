@@ -130,6 +130,12 @@ def scrape_url(url: str) -> dict:
 
         body = " ".join(body_parts)
 
+        # If no paragraphs found, grab all text from the article container
+        if not body or len(body) < 100:
+            text_content = article.get_text(separator=" ", strip=True) if article else ""
+            lines = [t.strip() for t in text_content.split() if len(t.strip()) > 60]
+            body = " ".join(lines[:80]) if lines else text_content[:5000]
+
         content = (
             f"Título: {title}\n"
             f"Descripción: {meta_desc}\n"

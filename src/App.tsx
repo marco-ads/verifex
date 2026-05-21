@@ -255,9 +255,9 @@ export default function App() {
                 />
 
                 {/* Article text preview */}
-                {result.article_text && (
-                  <div className="panel">
-                    <p className="label" style={{ marginBottom: '0.75rem' }}>{tx.articlePreview}</p>
+                <div className="panel">
+                  <p className="label" style={{ marginBottom: '0.75rem' }}>{tx.articlePreview}</p>
+                  {result.article_text ? (
                     <p style={{
                       color: '#4a6a7a',
                       fontSize: '0.85rem',
@@ -270,8 +270,12 @@ export default function App() {
                     }}>
                       {result.article_text}
                     </p>
-                  </div>
-                )}
+                  ) : (
+                    <p style={{ color: '#3a5a6a', fontSize: '0.85rem', fontStyle: 'italic' }}>
+                      —
+                    </p>
+                  )}
+                </div>
               </>
             )}
           </div>
