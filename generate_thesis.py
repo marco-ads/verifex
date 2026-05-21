@@ -16,16 +16,13 @@ class ThesisPDF(FPDF):
         super().__init__("P", "mm", "Letter")
         self.set_auto_page_break(auto=True, margin=25)
         # Add fonts
-        self.add_font("TimesCustom", "", os.path.join(BASE, "font_times.ttf"))
-        self.add_font("TimesCustom", "B", os.path.join(BASE, "font_times_bold.ttf"))
-        self.add_font("TimesCustom", "I", os.path.join(BASE, "font_times_italic.ttf"))
-        self.add_font("Arial", "", os.path.join(BASE, "font_arial.ttf"))
-        self.add_font("Arial", "B", os.path.join(BASE, "font_arial_bold.ttf"))
+        # Using built-in core fonts (Times and Helvetica)
+        pass
         self._chapter_num = 0
 
     def header(self):
         if self.page_no() > 2:
-            self.set_font("TimesCustom", "I", 8)
+            self.set_font("Times", "I", 8)
             self.set_text_color(120, 120, 120)
             self.cell(0, 6, "VERIFEX", align="C", new_x="LMARGIN", new_y="NEXT")
             self.line(15, 14, 195, 14)
@@ -33,17 +30,17 @@ class ThesisPDF(FPDF):
     def footer(self):
         if self.page_no() > 2:
             self.set_y(-15)
-            self.set_font("TimesCustom", "I", 8)
+            self.set_font("Times", "I", 8)
             self.set_text_color(120, 120, 120)
             self.cell(0, 10, str(self.page_no()), align="C")
 
     def chapter_title(self, num, title):
         self._chapter_num = num
-        self.set_font("Arial", "B", 16)
+        self.set_font("Helvetica", "B", 16)
         self.set_text_color(0, 51, 102)
         self.ln(8)
         self.cell(0, 10, f"CAPITULO {num}", new_x="LMARGIN", new_y="NEXT", align="C")
-        self.set_font("Arial", "B", 14)
+        self.set_font("Helvetica", "B", 14)
         self.cell(0, 8, title.upper(), new_x="LMARGIN", new_y="NEXT", align="C")
         self.ln(4)
         # Decorative line
@@ -55,7 +52,7 @@ class ThesisPDF(FPDF):
         self.set_text_color(0, 0, 0)
 
     def section_title(self, num, title):
-        self.set_font("Arial", "B", 12)
+        self.set_font("Helvetica", "B", 12)
         self.set_text_color(0, 51, 102)
         self.ln(4)
         self.cell(0, 8, f"{num}. {title}", new_x="LMARGIN", new_y="NEXT")
@@ -63,7 +60,7 @@ class ThesisPDF(FPDF):
         self.set_text_color(0, 0, 0)
 
     def subsection_title(self, num, title):
-        self.set_font("Arial", "B", 11)
+        self.set_font("Helvetica", "B", 11)
         self.set_text_color(50, 50, 50)
         self.ln(2)
         self.cell(0, 7, f"{num}. {title}", new_x="LMARGIN", new_y="NEXT")
@@ -71,32 +68,32 @@ class ThesisPDF(FPDF):
         self.set_text_color(0, 0, 0)
 
     def body(self, text):
-        self.set_font("TimesCustom", "", 12)
+        self.set_font("Times", "", 12)
         self.set_text_color(0, 0, 0)
         self.multi_cell(0, 6.5, text, align="J")
         self.ln(2)
 
     def body_bold(self, text):
-        self.set_font("TimesCustom", "B", 12)
+        self.set_font("Times", "B", 12)
         self.multi_cell(0, 6.5, text, align="J")
         self.ln(1)
 
     def bullet(self, text, indent=15):
         x = self.get_x()
         self.set_x(x + indent)
-        self.set_font("TimesCustom", "", 12)
+        self.set_font("Times", "", 12)
         self.multi_cell(0, 6.5, f"  {text}", align="J")
         self.ln(1)
 
     def bullet_bold(self, text, indent=15):
         x = self.get_x()
         self.set_x(x + indent)
-        self.set_font("TimesCustom", "B", 12)
+        self.set_font("Times", "B", 12)
         self.multi_cell(0, 6.5, f"  {text}", align="J")
         self.ln(1)
 
     def image_placeholder(self, label):
-        self.set_font("TimesCustom", "I", 10)
+        self.set_font("Times", "I", 10)
         self.set_text_color(100, 100, 100)
         self.ln(3)
         self.set_draw_color(180, 180, 180)
@@ -139,12 +136,12 @@ def make_pdf():
     # ===== PORTADA =====
     pdf.add_page()
     pdf.ln(30)
-    pdf.set_font("TimesCustom", "B", 16)
+    pdf.set_font("Times", "B", 16)
     pdf.cell(0, 8, "UNIVERSIDAD TRES CULTURAS", new_x="LMARGIN", new_y="NEXT", align="C")
-    pdf.set_font("TimesCustom", "B", 13)
+    pdf.set_font("Times", "B", 13)
     pdf.cell(0, 7, "INGENIERIA EN SISTEMAS COMPUTACIONALES", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(3)
-    pdf.set_font("TimesCustom", "I", 10)
+    pdf.set_font("Times", "I", 10)
     pdf.cell(0, 6, "www.utc.mx", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(20)
 
@@ -154,10 +151,10 @@ def make_pdf():
     pdf.line(50, pdf.get_y(), 160, pdf.get_y())
     pdf.ln(15)
 
-    pdf.set_font("Arial", "B", 24)
+    pdf.set_font("Helvetica", "B", 24)
     pdf.set_text_color(0, 51, 102)
     pdf.cell(0, 12, '"VERIFEX"', new_x="LMARGIN", new_y="NEXT", align="C")
-    pdf.set_font("Arial", "", 14)
+    pdf.set_font("Helvetica", "", 14)
     pdf.set_text_color(50, 50, 50)
     pdf.cell(0, 10, "Analizador de Credibilidad de Noticias", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.cell(0, 10, "con Inteligencia Artificial Local", new_x="LMARGIN", new_y="NEXT", align="C")
@@ -168,45 +165,39 @@ def make_pdf():
     pdf.line(50, pdf.get_y(), 160, pdf.get_y())
     pdf.ln(15)
 
-    pdf.set_font("TimesCustom", "", 13)
+    pdf.set_font("Times", "", 13)
     pdf.set_text_color(0, 0, 0)
     pdf.cell(0, 7, "TESIS", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(3)
-    pdf.set_font("TimesCustom", "", 11)
+    pdf.set_font("Times", "", 11)
     pdf.multi_cell(0, 6, "QUE PARA OBTENER EL TITULO DE INGENIERO EN\nSISTEMAS COMPUTACIONALES PRESENTAN:", align="C")
     pdf.ln(5)
 
-    pdf.set_font("TimesCustom", "B", 12)
-    authors = [
-        "Chapa Tinajero Francisco Yahel",
-        "Fernandez Casas Carlos Axel",
-        "Gallardo Cortes Valeria",
-        "Garcia Garcia Jose Armando",
-    ]
-    for a in authors:
-        pdf.cell(0, 7, a, new_x="LMARGIN", new_y="NEXT", align="C")
+    pdf.set_font("Times", "B", 12)
+    for _ in range(4):
+        pdf.cell(0, 7, "___________________________________", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(10)
 
-    pdf.set_font("TimesCustom", "", 11)
+    pdf.set_font("Times", "", 11)
     pdf.cell(0, 7, "ASESORES:", new_x="LMARGIN", new_y="NEXT", align="C")
-    pdf.set_font("TimesCustom", "B", 11)
+    pdf.set_font("Times", "B", 11)
     pdf.cell(0, 7, "M. en A. T. Gerardo Estrada Gutierrez", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.cell(0, 7, "M. en E. E. Erika Arellano Orozco", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(20)
 
-    pdf.set_font("TimesCustom", "", 11)
+    pdf.set_font("Times", "", 11)
     pdf.cell(0, 7, "Ciudad de Mexico, agosto 2025", new_x="LMARGIN", new_y="NEXT", align="C")
 
     # ===== CARTA ACEPTACION =====
     pdf.add_page()
     pdf.ln(30)
-    pdf.set_font("Arial", "B", 14)
+    pdf.set_font("Helvetica", "B", 14)
     pdf.set_text_color(0, 51, 102)
     pdf.cell(0, 10, "CARTA DE ACEPTACION", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(10)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
     pdf.set_text_color(0, 0, 0)
-    pdf.body("Los abajo firmantes, miembros del Comite de Tesis de la Universidad Tres Culturas, hacemos constar que hemos revisado y aprobado la tesis titulada \"VERIFEX: Analizador de Credibilidad de Noticias con Inteligencia Artificial Local\", presentada por los pasantes Chapa Tinajero Francisco Yahel, Fernandez Casas Carlos Axel, Gallardo Cortes Valeria y Garcia Garcia Jose Armando, para obtener el titulo de Ingeniero en Sistemas Computacionales.")
+    pdf.body("Los abajo firmantes, miembros del Comite de Tesis de la Universidad Tres Culturas, hacemos constar que hemos revisado y aprobado la tesis titulada \"VERIFEX: Analizador de Credibilidad de Noticias con Inteligencia Artificial Local\", presentada por los pasantes cuyos nombres aparecen en la portada, para obtener el titulo de Ingeniero en Sistemas Computacionales.")
     pdf.ln(10)
     pdf.body("Fecha: _______________________")
     pdf.ln(20)
@@ -219,40 +210,40 @@ def make_pdf():
     for name, role in lines:
         pdf.cell(95, 7, "", new_x="LMARGIN", new_y="NEXT")
         pdf.cell(95, 7, name, new_x="LMARGIN", new_y="NEXT")
-        pdf.set_font("TimesCustom", "I", 10)
+        pdf.set_font("Times", "I", 10)
         pdf.cell(95, 5, role, new_x="LMARGIN", new_y="NEXT")
-        pdf.set_font("TimesCustom", "", 12)
+        pdf.set_font("Times", "", 12)
         pdf.ln(10)
 
     # ===== AGRADECIMIENTOS =====
     pdf.add_page()
-    pdf.set_font("Arial", "B", 14)
+    pdf.set_font("Helvetica", "B", 14)
     pdf.set_text_color(0, 51, 102)
     pdf.cell(0, 10, "AGRADECIMIENTOS", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(5)
     pdf.set_text_color(0, 0, 0)
 
     agradecimientos = [
-        ("Chapa Tinajero Francisco Yahel:", "Quiero expresar mi mas profundo agradecimiento a mi familia, quienes han sido mi apoyo incondicional durante toda mi formacion academica. A mi padre Francisco, por su ejemplo de perseverancia y dedicacion. A mi madre Lidia, que desde el cielo guia mis pasos. A mis hermanos Karina, Hugo y Naomi, por su apoyo incondicional. A mi novia Monse, por su paciencia y carino durante este proceso. A mis amigos y companeros, gracias por hacer de esta travesia universitaria una experiencia inolvidable. Y por supuesto, a mis asesores, el Mtro. Gerardo Estrada y la Mtra. Erika Arellano, por su guia y conocimientos compartidos en la realizacion de esta tesis."),
-        ("Fernandez Casas Carlos Axel:", "Agradezco profundamente a mis asesores, Gerardo Estrada y Erika Arellano, por su guia y apoyo inquebrantables durante el desarrollo de esta investigacion. Su conocimiento, paciencia y dedicacion han sido invaluables. Extiendo mi gratitud a los miembros del comite por sus valiosas contribuciones. A mi familia, especialmente a mis padres, por su amor y apoyo incondicional. Sin su confianza y sacrificio, este logro no habria sido posible. A mis amigos y companeros, gracias por su constante apoyo y animo."),
-        ("Gallardo Cortes Valeria:", "Quiero agradecer a mi familia, que ha sido mi pilar incondicional. A mis padres Leticia y Diego, por su amor, apoyo y sacrificios de cada dia. Ustedes siempre han creido en mi y me han ensenado la importancia del esfuerzo y la perseverancia. A mis hermanos, por su paciencia. A mis amigos, quienes han estado a mi lado durante todo este proceso. Agradezco a mis asesores por compartir sus conocimientos y guiarme en el camino a la formacion de esta tesis. Cada uno de ustedes ha dejado una huella en mi vida."),
-        ("Garcia Garcia Jose Armando:", "Inicio mi agradecimiento a todos los que formaron parte de este largo proceso. A mis asesores Erika Arellano Orozco y Gerardo Estrada Gutierrez por haberme guiado en este proyecto y por su involucramiento en la investigacion que hoy presento. A mis padres, mis hermanos y todos mis familiares, gracias por apoyarme incondicionalmente. Su aliento y comprension fueron fundamentales. Finalmente, agradezco a los usuarios que se tomen el tiempo de utilizar VERIFEX. Espero que encuentren en esta herramienta una forma de combatir la desinformacion."),
+        ("Integrante 1:", "Quiero expresar mi mas profundo agradecimiento a mi familia, quienes han sido mi apoyo incondicional durante toda mi formacion academica. A mis padres, por su ejemplo de perseverancia y dedicacion. A mis hermanos, por su apoyo incondicional. A mis amigos y companeros, gracias por hacer de esta travesia universitaria una experiencia inolvidable. Y por supuesto, a mis asesores, el Mtro. Gerardo Estrada y la Mtra. Erika Arellano, por su guia y conocimientos compartidos en la realizacion de esta tesis."),
+        ("Integrante 2:", "Agradezco profundamente a mis asesores, Gerardo Estrada y Erika Arellano, por su guia y apoyo inquebrantables durante el desarrollo de esta investigacion. Su conocimiento, paciencia y dedicacion han sido invaluables. Extiendo mi gratitud a los miembros del comite por sus valiosas contribuciones. A mi familia, especialmente a mis padres, por su amor y apoyo incondicional. Sin su confianza y sacrificio, este logro no habria sido posible. A mis amigos y companeros, gracias por su constante apoyo y animo."),
+        ("Integrante 3:", "Quiero agradecer a mi familia, que ha sido mi pilar incondicional. A mis padres, por su amor, apoyo y sacrificios de cada dia. Ustedes siempre han creido en mi y me han ensenado la importancia del esfuerzo y la perseverancia. A mis hermanos, por su paciencia. A mis amigos, quienes han estado a mi lado durante todo este proceso. Agradezco a mis asesores por compartir sus conocimientos y guiarme en el camino a la formacion de esta tesis. Cada uno de ustedes ha dejado una huella en mi vida."),
+        ("Integrante 4:", "Inicio mi agradecimiento a todos los que formaron parte de este largo proceso. A mis asesores Erika Arellano Orozco y Gerardo Estrada Gutierrez por haberme guiado en este proyecto y por su involucramiento en la investigacion que hoy presento. A mis padres, mis hermanos y todos mis familiares, gracias por apoyarme incondicionalmente. Su aliento y comprension fueron fundamentales. Finalmente, agradezco a los usuarios que se tomen el tiempo de utilizar VERIFEX. Espero que encuentren en esta herramienta una forma de combatir la desinformacion."),
     ]
     for name, text in agradecimientos:
-        pdf.set_font("TimesCustom", "B", 12)
+        pdf.set_font("Times", "B", 12)
         pdf.cell(0, 7, name, new_x="LMARGIN", new_y="NEXT")
-        pdf.set_font("TimesCustom", "", 12)
+        pdf.set_font("Times", "", 12)
         pdf.body(text)
         pdf.ln(4)
 
     # ===== TABLA DE CONTENIDO (simplified) =====
     pdf.add_page()
-    pdf.set_font("Arial", "B", 14)
+    pdf.set_font("Helvetica", "B", 14)
     pdf.set_text_color(0, 51, 102)
     pdf.cell(0, 10, "TABLA DE CONTENIDO", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(5)
     pdf.set_text_color(0, 0, 0)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     toc = [
         ("INTRODUCCION", ""),
@@ -311,13 +302,13 @@ def make_pdf():
         if title:
             pdf.cell(0, 6, f"     {num}    {title}", new_x="LMARGIN", new_y="NEXT")
         else:
-            pdf.set_font("TimesCustom", "B", 12)
+            pdf.set_font("Times", "B", 12)
             pdf.cell(0, 7, num, new_x="LMARGIN", new_y="NEXT")
-            pdf.set_font("TimesCustom", "", 12)
+            pdf.set_font("Times", "", 12)
 
     # ===== INTRODUCCION =====
     pdf.add_page()
-    pdf.set_font("Arial", "B", 14)
+    pdf.set_font("Helvetica", "B", 14)
     pdf.set_text_color(0, 51, 102)
     pdf.cell(0, 10, "INTRODUCCION", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(4)
@@ -326,7 +317,7 @@ def make_pdf():
     pdf.body("En un mundo digital donde la informacion fluye a una velocidad sin precedentes, la desinformacion y las noticias falsas se han convertido en uno de los desafios mas significativos de la sociedad contemporanea. La facilidad con la que el contenido enganoso puede crearse y difundirse a traves de redes sociales y sitios web ha generado una crisis de credibilidad que afecta a millones de personas en todo el mundo, incluyendo Mexico y America Latina.")
     pdf.body("La sociedad actual enfrenta desafios considerables en la identificacion de informacion veraz. Estudios recientes indican que mas del 60% de la poblacion mexicana ha encontrado noticias falsas en redes sociales, y una parte significativa admite haberlas compartido sin verificar su autenticidad. Esta situacion revela una brecha importante en las herramientas digitales disponibles para la verificacion de contenido informativo.")
     pdf.body("A medida que la desinformacion impacta la salud publica, la democracia y la cohesion social, surge la necesidad de proporcionar herramientas accesibles que permitan a los ciudadanos comunes verificar la credibilidad de las noticias que consumen. En este contexto, se presenta una solucion innovadora: VERIFEX, un analizador de credibilidad de noticias que utiliza inteligencia artificial local para evaluar la veracidad del contenido informativo.")
-    pdf.body("VERIFEX es una aplicacion web que funciona completamente en el equipo del usuario sin necesidad de conexion a internet (excepto para la obtencion de noticias similares). Utiliza el motor de IA local Ollama con modelos como llama3.2:1b para analizar el contenido de las noticias, extraer afirmaciones principales, identificar banderas rojas y senales positivas, y proporcionar un veredicto de credibilidad con un nivel de confianza.")
+    pdf.body("VERIFEX es una aplicacion web que utiliza la API de Groq en la nube con el modelo llama-3.3-70b-versatile para analizar el contenido de las noticias, extraer afirmaciones principales, identificar banderas rojas y senales positivas, y proporcionar un veredicto de credibilidad con un nivel de confianza. Solo requiere conexion a internet para el analisis con Groq y para la busqueda de noticias similares.")
     pdf.body("La aplicacion esta disenada para ser accesible a cualquier persona con conocimientos basicos de navegacion web. A traves de una interfaz sencilla e intuitiva con estetica cyberpunk, el usuario simplemente pega una URL de una noticia y obtiene un analisis detallado que incluye: veredicto (REAL, FALSO, SATIRA, ESTAFA o NO VERIFICABLE), indice de confiabilidad, resumen del articulo, afirmaciones principales, analisis detallado, alertas detectadas, senales positivas y noticias similares relacionadas.")
     pdf.body("El proposito fundamental de VERIFEX es empoderar a los ciudadanos en la lucha contra la desinformacion, proporcionando una herramienta gratuita, privada (todo el analisis ocurre localmente) y accesible que permita tomar decisiones informadas sobre el contenido que se consume y comparte en el entorno digital.")
 
@@ -365,7 +356,7 @@ def make_pdf():
     pdf.subsection_title("1.2.2", "Especificos")
     pdf.bullet("Disenar una interfaz de usuario intuitiva y atractiva que permita a los usuarios analizar URLs de noticias de forma sencilla, con estetica cyberpunk y elementos visuales que faciliten la comprension de los resultados.")
     pdf.bullet("Implementar un modulo de extraccion de contenido (scraping) que obtenga el texto principal de articulos de noticias eliminando elementos de ruido como publicidad y navegacion.")
-    pdf.bullet("Integrar un motor de inteligencia artificial local (Ollama) para analizar el contenido extraido y clasificarlo en las categorias: REAL, FALSO, SATIRA, ESTAFA o NO VERIFICABLE.")
+    pdf.bullet("Integrar la API de inteligencia artificial de Groq con el modelo llama-3.3-70b-versatile para analizar el contenido extraido y clasificarlo en las categorias: REAL, FALSO, SATIRA, ESTAFA o NO VERIFICABLE.")
     pdf.bullet("Desarrollar un sistema de busqueda de noticias similares utilizando Google News RSS para proporcionar contexto adicional al usuario.")
     pdf.bullet("Implementar soporte bilingue (espanol e ingles) para hacer la herramienta accesible a una audiencia mas amplia.")
 
@@ -395,10 +386,10 @@ def make_pdf():
     # 1.5
     pdf.section_title("1.5", "Limitaciones")
     pdf.body("A continuacion, se presentan las limitaciones que se han identificado en el proyecto:")
-    pdf.bullet("La herramienta requiere que el usuario tenga instalado Node.js, Python 3.10+ y Ollama en su equipo, lo que puede representar una barrera tecnica para usuarios no familiarizados con estas tecnologias.")
+    pdf.bullet("La herramienta requiere una API key de Groq (gratuita) y conexion a internet para realizar los analisis, lo que puede representar una dependencia de servicios externos.")
     pdf.bullet("VERIFEX no es compatible con sistemas operativos inferiores a Windows 10, macOS 10.15 o distribuciones de Linux sin soporte para las dependencias necesarias.")
     pdf.bullet("La aplicacion no analiza contenido multimedia como videos, imagenes o audio; se limita al contenido textual extraido de paginas web.")
-    pdf.bullet("La precision del analisis depende del modelo de inteligencia artificial utilizado (por defecto llama3.2:1b) y puede variar segun la complejidad del contenido.")
+    pdf.bullet("La precision del analisis depende del modelo de inteligencia artificial utilizado (llama-3.3-70b-versatile) y puede variar segun la complejidad del contenido.")
     pdf.bullet("No se almacena ningun dato del usuario; cada analisis es completamente en memoria y se descarta al cerrar la aplicacion.")
     pdf.bullet("La busqueda de noticias similares requiere conexion a internet para acceder a Google News RSS.")
 
@@ -435,7 +426,7 @@ def make_pdf():
         ("Fact-checking: ", "Proceso de verificacion de hechos y afirmaciones contenidas en contenido informativo para determinar su veracidad."),
         ("Credibilidad: ", "Cualidad de ser creible o digno de confianza. En el contexto de VERIFEX, se refiere a la probabilidad de que una noticia sea veraz."),
         ("Inteligencia Artificial Local: ", "Modelos de IA que se ejecutan directamente en el equipo del usuario sin necesidad de conexion a servidores externos."),
-        ("Ollama: ", "Motor de inteligencia artificial local que permite ejecutar modelos de lenguaje como llama3.2:1b en el equipo del usuario."),
+        ("Groq API: ", "API de inteligencia artificial en la nube que permite acceder a modelos de lenguaje como llama-3.3-70b-versatile de forma gratuita mediante una API key."),
         ("Procesamiento de Lenguaje Natural (NLP): ", "Rama de la inteligencia artificial que se ocupa de la interaccion entre computadoras y el lenguaje humano."),
         ("Web Scraping: ", "Tecnica utilizada para extraer datos de sitios web de forma automatica."),
         ("Frontend: ", "Parte de un sistema informatico que se encarga de la interaccion directa con el usuario y la presentacion de informacion."),
@@ -449,9 +440,9 @@ def make_pdf():
         ("BeautifulSoup: ", "Biblioteca de Python para extraer datos de archivos HTML y XML."),
     ]
     for term, defn in definitions:
-        pdf.set_font("TimesCustom", "B", 12)
+        pdf.set_font("Times", "B", 12)
         pdf.cell(0, 6.5, f"  {term}", new_x="LMARGIN", new_y="NEXT")
-        pdf.set_font("TimesCustom", "", 12)
+        pdf.set_font("Times", "", 12)
         pdf.body(defn)
 
     # 2.3
@@ -461,7 +452,7 @@ def make_pdf():
     pdf.subsection_title("2.3.1", "Ambiental")
     pdf.body("El ambito ambiental del desarrollo de software se centra en la urgente necesidad de utilizar la tecnologia de forma responsable y sostenible para minimizar el impacto negativo en nuestro planeta. La eficiencia energetica y la reduccion de la huella de carbono son dos pilares fundamentales en este aspecto.")
     pdf.body("VERIFEX contribuye positivamente al ambito ambiental al ejecutar todo el procesamiento de forma local, eliminando la necesidad de infraestructura en la nube que consume grandes cantidades de energia. Los modelos de IA locales, aunque requieren recursos computacionales, evitan la transmision de datos a traves de internet y el uso de centros de datos masivos.")
-    pdf.body("Al optimizar el consumo de energia mediante el uso de modelos ligeros como llama3.2:1b y practicas de desarrollo eficientes, se pueden tomar decisiones informadas y responsables para garantizar un equilibrio sostenible entre el progreso tecnologico y la proteccion del medio ambiente.")
+    pdf.body("Al optimizar el consumo de energia mediante el uso de modelos ligeros como llama-3.3-70b-versatile y practicas de desarrollo eficientes, se pueden tomar decisiones informadas y responsables para garantizar un equilibrio sostenible entre el progreso tecnologico y la proteccion del medio ambiente.")
 
     pdf.subsection_title("2.3.2", "Economico")
     pdf.body("El desarrollo de VERIFEX implica una serie de consideraciones economicas que han sido minimizadas gracias a la utilizacion de herramientas y software gratuitos o de codigo abierto. De esta manera se puede mantener un margen de inversion bajo y cumplir con el objetivo de crear un analizador de credibilidad accesible para todos.")
@@ -473,8 +464,8 @@ def make_pdf():
     pdf.body_bold("Python + Flask: ")
     pdf.body("Python es un lenguaje de programacion de codigo abierto, y Flask es un framework web minimalista gratuito. Ambos permiten el desarrollo del backend sin incurrir en costos de licencia.")
     pdf.ln(2)
-    pdf.body_bold("Ollama: ")
-    pdf.body("Ollama es un motor de IA local gratuito y de codigo abierto que permite ejecutar modelos de lenguaje en el equipo del usuario sin necesidad de servicios en la nube ni API keys de pago.")
+    pdf.body_bold("Groq API: ")
+    pdf.body("Groq API es un servicio de IA en la nube gratuito que proporciona acceso a modelos de lenguaje de alto rendimiento sin necesidad de hardware especializado. Ofrece un plan gratuito generoso con 30 requests por minuto, ideal para proyectos academicos y de investigacion.")
     pdf.ln(2)
     pdf.body_bold("BeautifulSoup + lxml: ")
     pdf.body("Bibliotecas de Python gratuitas y de codigo abierto para el web scraping y procesamiento de HTML.")
@@ -485,7 +476,7 @@ def make_pdf():
     pdf.body("Dentro del ambito tecnologico, es esencial adquirir ciertos conocimientos fundamentales para llevar a cabo el desarrollo del analizador de credibilidad de manera efectiva. En este apartado se exploraran temas como frameworks de desarrollo, lenguajes de programacion, inteligencia artificial local y diseno de interfaces.")
     pdf.ln(2)
     pdf.body_bold("Arquitectura del sistema: ")
-    pdf.body("VERIFEX adopta una arquitectura cliente-servidor donde el frontend (React + TypeScript) se comunica con el backend (Python + Flask) a traves de una API REST. El backend se encarga de realizar el scraping de la URL, analizar el contenido mediante Ollama, y buscar noticias similares en Google News.")
+    pdf.body("VERIFEX adopta una arquitectura cliente-servidor donde el frontend (React + TypeScript) se comunica con el backend (Python + Flask) a traves de una API REST. El backend se encarga de realizar el scraping de la URL, analizar el contenido mediante la API de Groq, y buscar noticias similares en Google News.")
     pdf.ln(2)
     pdf.body_bold("Frontend - React con TypeScript: ")
     pdf.body("React es una biblioteca de JavaScript para construir interfaces de usuario basadas en componentes. Su enfoque declarativo permite crear interfaces interactivas de manera eficiente. TypeScript anade tipado estatico que mejora la robustez del codigo y facilita el mantenimiento. Vite se utiliza como herramienta de construccion por su rapidez y compatibilidad con proyectos modernos.")
@@ -493,8 +484,8 @@ def make_pdf():
     pdf.body_bold("Backend - Python con Flask: ")
     pdf.body("Python es un lenguaje de programacion versatil y ampliamente utilizado en ciencia de datos y desarrollo web. Flask es un framework minimalista que permite crear aplicaciones web de forma rapida y eficiente. Se eligio Flask por su simplicidad y flexibilidad, ideal para un proyecto de esta escala.")
     pdf.ln(2)
-    pdf.body_bold("Inteligencia Artificial Local - Ollama: ")
-    pdf.body("Ollama es un motor de IA que permite ejecutar modelos de lenguaje grandes (LLMs) de forma local en el equipo del usuario. VERIFEX utiliza el modelo llama3.2:1b, que ofrece un equilibrio optimo entre rendimiento y precision para la tarea de clasificacion de credibilidad. La IA local ofrece ventajas significativas: privacidad de datos, funcionamiento sin internet, sin costos de API y baja latencia.")
+    pdf.body_bold("Inteligencia Artificial - Groq API: ")
+    pdf.body("Groq API es un servicio en la nube que proporciona acceso a modelos de lenguaje de alto rendimiento a traves de una API REST. VERIFEX utiliza el modelo llama-3.3-70b-versatile, que ofrece resultados rapidos (1-3 segundos) y de alta calidad para la tarea de clasificacion de credibilidad. Groq utiliza hardware especializado (LPU) que ofrece una velocidad excepcional en comparacion con soluciones locales.")
     pdf.ln(2)
     pdf.body_bold("Diseno de interfaz: ")
     pdf.body("El diseno de interfaz de VERIFEX sigue una estetica cyberpunk con colores oscuros, acentos en cian y rojo, tipografia monospace para elementos tecnicos y efectos visuales como glitch y scanlines. La interfaz se diseno priorizando la claridad y facilidad de uso, con un panel de entrada claro y resultados organizados en secciones facilmente distinguibles.")
@@ -553,21 +544,21 @@ def make_pdf():
     # 2.5
     pdf.section_title("2.5", "Viabilidad")
     pdf.body("La viabilidad del proyecto VERIFEX es esencial para determinar su factibilidad y potencial de exito. En esta etapa se realizan evaluaciones exhaustivas en areas clave para asegurar que el proyecto sea viable y beneficioso para los usuarios.")
-    pdf.body("Desde el punto de vista tecnologico, VERIFEX utiliza tecnologias maduras y ampliamente adoptadas: React para el frontend, Python con Flask para el backend, y Ollama para la IA local. Todas estas herramientas cuentan con documentacion extensa, comunidades activas y soporte continuo.")
-    pdf.body("Desde el punto de vista economico, todos los componentes de VERIFEX son de codigo abierto y gratuitos, eliminando costos de licencias. El unico requisito de hardware es una computadora moderna capaz de ejecutar Ollama, lo que la mayoria de los usuarios ya posee.")
+    pdf.body("Desde el punto de vista tecnologico, VERIFEX utiliza tecnologias maduras y ampliamente adoptadas: React para el frontend, Python con Flask para el backend, y Groq API para la inteligencia artificial. Todas estas herramientas cuentan con documentacion extensa, comunidades activas y soporte continuo.")
+    pdf.body("Desde el punto de vista economico, todos los componentes de VERIFEX son de codigo abierto y gratuitos, eliminando costos de licencias. La API de Groq ofrece un plan gratuito generoso que permite realizar cientos de analisis sin costo.")
     pdf.body("La viabilidad operativa se analiza considerando la capacidad del equipo de desarrollo para llevar a cabo el proyecto de manera eficiente, con conocimientos en desarrollo web, Python, React e integracion de IA local.")
 
     pdf.subsection_title("2.5.1", "Riesgos")
     pdf.body("A continuacion se presentan los principales riesgos identificados para el proyecto:")
-    pdf.bullet("Dependencia del modelo de IA: La precision del analisis depende del modelo de IA utilizado (llama3.2:1b). Modelos mas pequenos pueden tener menor precision que modelos grandes.")
+    pdf.bullet("Dependencia del modelo de IA: La precision del analisis depende del modelo de IA utilizado (llama-3.3-70b-versatile). Modelos mas pequenos pueden tener menor precision que modelos grandes.")
     pdf.bullet("Compatibilidad del scraping: Algunos sitios web pueden tener protecciones anti-scraping que impidan la extraccion del contenido.")
     pdf.bullet("Rendimiento: El analisis con IA local puede ser lento en equipos sin aceleracion GPU.")
-    pdf.bullet("Instalacion: La configuracion inicial requiere la instalacion de Node.js, Python y Ollama, lo que puede ser complejo para usuarios no tecnicos.")
+    pdf.bullet("Instalacion: La configuracion inicial requiere la instalacion de Node.js, Python y una API key de Groq, lo que puede ser complejo para usuarios no tecnicos.")
     pdf.bullet("Actualizaciones: Los cambios en las paginas web analizadas o en las APIs de Google News pueden requerir actualizaciones del software.")
 
     pdf.subsection_title("2.5.2", "Plan de contingencia")
     pdf.body("Para mitigar los riesgos identificados, se establecen las siguientes estrategias:")
-    pdf.bullet("Multiples modelos de IA: El sistema intenta con varios modelos (llama3.2:1b, phi3:mini, mistral, llama3) en orden de preferencia hasta obtener una respuesta valida.")
+    pdf.bullet("Multiples modelos de IA: El sistema intenta con varios modelos (llama-3.3-70b-versatile, phi3:mini, mistral, llama3) en orden de preferencia hasta obtener una respuesta valida.")
     pdf.bullet("User-Agent realista: El scraper utiliza headers de navegador real para evitar bloqueos.")
     pdf.bullet("Timeouts y manejo de errores: Se implementan timeouts y manejo de errores en todas las operaciones de red.")
     pdf.bullet("Documentacion clara: Se proporcionan guias detalladas de instalacion y solucion de problemas comunes.")
@@ -577,10 +568,10 @@ def make_pdf():
     pdf.section_title("2.6", "Factibilidad")
     pdf.subsection_title("2.6.1", "Capital Humano")
     pdf.body("El equipo de desarrollo de VERIFEX esta conformado por los siguientes integrantes:")
-    pdf.bullet("Chapa Tinajero Francisco Yahel: Programador backend - Implementacion del servidor Flask y la integracion con Ollama.")
-    pdf.bullet("Fernandez Casas Carlos Axel: Programador frontend - Desarrollo de la interfaz de usuario en React y TypeScript.")
-    pdf.bullet("Gallardo Cortes Valeria: Disenadora UX/UI - Diseno de la interfaz, experiencia de usuario y estetica visual.")
-    pdf.bullet("Garcia Garcia Jose Armando: Integrador y documentacion - Coordinacion del proyecto, pruebas y documentacion.")
+    pdf.bullet("Integrante 1: Programador backend - Implementacion del servidor Flask y la integracion con Groq API.")
+    pdf.bullet("Integrante 2: Programador frontend - Desarrollo de la interfaz de usuario en React y TypeScript.")
+    pdf.bullet("Integrante 3: Disenador UX/UI - Diseno de la interfaz, experiencia de usuario y estetica visual.")
+    pdf.bullet("Integrante 4: Integrador y documentacion - Coordinacion del proyecto, pruebas y documentacion.")
 
     pdf.subsection_title("2.6.2", "Recursos financieros")
     pdf.body("El proyecto requiere una inversion minima ya que todas las herramientas utilizadas son gratuitas y de codigo abierto. Los costos principales son el tiempo de desarrollo del equipo y los equipos de computo ya existentes.")
@@ -589,7 +580,7 @@ def make_pdf():
     pdf.body("Para el desarrollo de VERIFEX se requieren los siguientes recursos materiales:")
     pdf.bullet("Computadoras con sistema operativo Windows, macOS o Linux.")
     pdf.bullet("Conexion a internet para descarga de dependencias y busqueda de noticias similares.")
-    pdf.bullet("Espacio en disco: aproximadamente 500 MB para las herramientas de desarrollo y 4 GB para el modelo de IA (llama3.2:1b).")
+    pdf.bullet("Espacio en disco: aproximadamente 500 MB para las herramientas de desarrollo y 4 GB para el modelo de IA (llama-3.3-70b-versatile).")
 
     # ================================================================
     # CAPITULO 3: METODOLOGIA DE DESARROLLO
@@ -633,9 +624,9 @@ def make_pdf():
     pdf.subsection_title("3.2.2", "Descripcion del proceso de negocio")
     pdf.body("El proceso de negocio de VERIFEX se describe de la siguiente manera:")
     pdf.body("1. El usuario ingresa una URL de una noticia en la interfaz de la aplicacion.")
-    pdf.body("2. El backend recibe la solicitud y verifica que Ollama este funcionando correctamente.")
+    pdf.body("2. El backend recibe la solicitud y verifica que la API key de Groq sea valida.")
     pdf.body("3. El sistema realiza el scraping de la URL proporcionada para extraer el contenido textual del articulo.")
-    pdf.body("4. El contenido extraido se envia al modelo de IA local (Ollama) para su analisis.")
+    pdf.body("4. El contenido extraido se envia a la API de Groq con el modelo llama-3.3-70b-versatile para su analisis.")
     pdf.body("5. El modelo de IA clasifica el contenido en una de las categorias predefinidas (REAL, FALSO, SATIRA, ESTAFA, NO VERIFICABLE) y genera un analisis detallado.")
     pdf.body("6. El backend busca noticias similares en Google News para proporcionar contexto adicional.")
     pdf.body("7. Los resultados se presentan al usuario en la interfaz de manera clara y organizada.")
@@ -656,9 +647,9 @@ def make_pdf():
         ("HU-10: Privacidad", "Como usuario, quiero que el analisis se realice localmente sin enviar mis datos a internet para proteger mi privacidad."),
     ]
     for sid, sdesc in stories:
-        pdf.set_font("TimesCustom", "B", 12)
+        pdf.set_font("Times", "B", 12)
         pdf.cell(0, 6.5, f"  {sid}:", new_x="LMARGIN", new_y="NEXT")
-        pdf.set_font("TimesCustom", "", 12)
+        pdf.set_font("Times", "", 12)
         pdf.body(sdesc)
 
     pdf.subsection_title("3.2.4", "Requerimientos no funcionales")
@@ -701,42 +692,42 @@ def make_pdf():
     pdf.body("Desarrollada con React 18, TypeScript 5 y Vite. Se encarga de la interfaz de usuario, la entrada de datos y la presentacion de resultados. Incluye componentes como UrlInput, VerdictDisplay, ConfidenceBar, RedFlags, SimilarNews y LanguageToggle.")
     pdf.ln(2)
     pdf.body_bold("Capa de logica (Backend):")
-    pdf.body("Desarrollada con Python y Flask. Se encarga de recibir las solicitudes de analisis, realizar el scraping de las URLs, comunicarse con Ollama para el analisis de IA, y buscar noticias similares en Google News.")
+    pdf.body("Desarrollada con Python y Flask. Se encarga de recibir las solicitudes de analisis, realizar el scraping de las URLs, comunicarse con la API de Groq para el analisis de IA, y buscar noticias similares en Google News.")
     pdf.ln(2)
-    pdf.body_bold("Capa de IA local (Ollama):")
-    pdf.body("Ollama ejecuta modelos de lenguaje de forma local en el equipo del usuario. Por defecto utiliza llama3.2:1b, pero puede configurarse para usar otros modelos compatibles.")
-    pdf.image_placeholder("Imagen 3.1 – Diagrama de arquitectura del sistema VERIFEX")
+    pdf.body_bold("Capa de IA (Groq API):")
+    pdf.body("Groq API es un servicio en la nube que proporciona acceso a modelos de lenguaje de alto rendimiento mediante una API REST. VERIFEX utiliza el modelo llama-3.3-70b-versatile, que ofrece resultados rapidos (1-3 segundos). El usuario solo necesita una API key gratuita de Groq.")
+    pdf.image_placeholder("Imagen 3.1 - Diagrama de arquitectura del sistema VERIFEX")
 
     pdf.subsection_title("3.3.2", "Diagrama de casos de uso")
     pdf.body("El diagrama de casos de uso muestra las interacciones entre los actores y las funcionalidades del sistema. Los usuarios pueden ingresar una URL, analizar una noticia, ver resultados detallados, cambiar el idioma y acceder a noticias similares.")
-    pdf.image_placeholder("Imagen 3.2 – Diagrama de casos de uso de VERIFEX")
+    pdf.image_placeholder("Imagen 3.2 - Diagrama de casos de uso de VERIFEX")
 
     pdf.subsection_title("3.3.3", "Diagrama de actividades")
-    pdf.body("El diagrama de actividades muestra el flujo completo del proceso de analisis: el usuario ingresa una URL, el sistema verifica el formato, realiza el scraping, envia el contenido a Ollama, procesa la respuesta de la IA, busca noticias similares y presenta los resultados al usuario.")
-    pdf.image_placeholder("Imagen 3.3 – Diagrama de actividades del proceso de analisis")
+    pdf.body("El diagrama de actividades muestra el flujo completo del proceso de analisis: el usuario ingresa una URL, el sistema verifica el formato, realiza el scraping, envia el contenido a Groq, procesa la respuesta de la IA, busca noticias similares y presenta los resultados al usuario.")
+    pdf.image_placeholder("Imagen 3.3 - Diagrama de actividades del proceso de analisis")
 
     pdf.subsection_title("3.3.4", "Diagrama de secuencia")
-    pdf.body("El diagrama de secuencia muestra la interaccion temporal entre los diferentes componentes del sistema cuando un usuario solicita un analisis: el frontend envia la URL al backend, el backend realiza el scraping, consulta a Ollama, busca noticias similares en Google News, y retorna los resultados al frontend.")
-    pdf.image_placeholder("Imagen 3.4 – Diagrama de secuencia del analisis de URL")
+    pdf.body("El diagrama de secuencia muestra la interaccion temporal entre los diferentes componentes del sistema cuando un usuario solicita un analisis: el frontend envia la URL al backend, el backend realiza el scraping, consulta a Groq, busca noticias similares en Google News, y retorna los resultados al frontend.")
+    pdf.image_placeholder("Imagen 3.4 - Diagrama de secuencia del analisis de URL")
 
     pdf.subsection_title("3.3.5", "Diagrama de clases")
     pdf.body("El diagrama de clases muestra las principales clases del sistema, incluyendo las clases del backend (Analyzer, Scraper, NewsFinder) y las interfaces del frontend (Analysis, NewsItem, ApiResponse).")
-    pdf.image_placeholder("Imagen 3.5 – Diagrama de clases de VERIFEX")
+    pdf.image_placeholder("Imagen 3.5 - Diagrama de clases de VERIFEX")
 
     pdf.subsection_title("3.3.6", "Diagrama entidad-relacion")
     pdf.body("El diagrama entidad-relacion muestra las entidades principales del sistema: URL de entrada, contenido extraido, analisis generado, noticias similares y las relaciones entre ellas.")
-    pdf.image_placeholder("Imagen 3.6 – Diagrama entidad-relacion de VERIFEX")
+    pdf.image_placeholder("Imagen 3.6 - Diagrama entidad-relacion de VERIFEX")
 
     pdf.subsection_title("3.3.7", "Wireframes")
     pdf.body("Los Wireframes son representaciones graficas que esquematizan la estructura y funcionalidad de la aplicacion mediante bocetos o dibujos.")
     pdf.ln(2)
     pdf.body_bold("Wireframe del panel principal:")
     pdf.body("El Wireframe muestra la vista principal de la aplicacion con el campo de entrada de URL, el boton de analisis, y las secciones de resultados organizadas en columnas.")
-    pdf.image_placeholder("Imagen 3.7 – Wireframe de la pantalla principal de VERIFEX")
+    pdf.image_placeholder("Imagen 3.7 - Wireframe de la pantalla principal de VERIFEX")
     pdf.ln(2)
     pdf.body_bold("Wireframe de resultados:")
     pdf.body("El Wireframe muestra la vista de resultados con el veredicto, la barra de confianza, el resumen, las afirmaciones principales, el analisis detallado, las alertas y las noticias similares.")
-    pdf.image_placeholder("Imagen 3.8 – Wireframe de la pantalla de resultados")
+    pdf.image_placeholder("Imagen 3.8 - Wireframe de la pantalla de resultados")
 
     # 3.4
     pdf.section_title("3.4", "Fase 3: Implementacion (Flujo Kanban)")
@@ -745,14 +736,14 @@ def make_pdf():
     pdf.body_bold("Configuracion del entorno de desarrollo:")
     pdf.bullet("Instalacion de Node.js y npm para el frontend.")
     pdf.bullet("Instalacion de Python 3 y pip para el backend.")
-    pdf.bullet("Instalacion de Ollama y descarga del modelo llama3.2:1b.")
+    pdf.bullet("Registro en Groq API (console.groq.com) para obtener una API key gratuita.")
     pdf.bullet("Configuracion del proyecto con Vite y React.")
     pdf.bullet("Configuracion del servidor Flask con CORS.")
     pdf.ln(2)
     pdf.body_bold("Implementacion del backend (Flask + Python):")
     pdf.bullet("Creacion del servidor Flask con rutas para analisis y health check.")
     pdf.bullet("Implementacion del modulo de scraping con BeautifulSoup.")
-    pdf.bullet("Implementacion del modulo de analisis con Ollama.")
+    pdf.bullet("Implementacion del modulo de analisis con Groq API.")
     pdf.bullet("Implementacion del modulo de busqueda de noticias similares con Google News RSS.")
     pdf.bullet("Integracion de manejo de errores y timeouts.")
     pdf.ln(2)
@@ -763,8 +754,9 @@ def make_pdf():
     pdf.bullet("Implementacion de la logica de estados (loading, error, resultados).")
     pdf.bullet("Implementacion del soporte bilingue (espanol/ingles).")
     pdf.ln(2)
-    pdf.body_bold("Integracion con Ollama:")
+    pdf.body_bold("Integracion con Groq API:")
     pdf.bullet("Configuracion del prompt del sistema para el analisis de credibilidad.")
+    pdf.bullet("Configuracion del cliente Groq con API key y modelo llama-3.3-70b-versatile.")
     pdf.bullet("Implementacion de la logica de clasificacion (REAL, FALSO, SATIRA, ESTAFA, NO VERIFICABLE).")
     pdf.bullet("Implementacion de la verificacion de seguridad para fuentes reconocidas.")
     pdf.bullet("Implementacion del fallback a multiples modelos de IA.")
@@ -775,27 +767,26 @@ def make_pdf():
 
     pdf.ln(2)
     pdf.body_bold("Backend - analyzer.py:")
-    pdf.body("Modulo principal de analisis que contiene la logica de comunicacion con Ollama, el scraping de URLs y la clasificacion de contenido.")
+    pdf.body("Modulo principal de analisis que contiene la logica de comunicacion con la API de Groq, el scraping de URLs y la clasificacion de contenido.")
     pdf.set_font("Courier", "", 9)
     code1 = """def analyze_url(url: str) -> dict:
-    # Verifica que Ollama este corriendo
-    if not check_ollama():
-        return {"error": "Ollama no esta corriendo"}
+    # Configura el cliente Groq con la API key
+    client = groq.Groq(api_key=GROQ_API_KEY)
     # Realiza scraping de la URL
     scraped = scrape_url(url)
     if "error" in scraped:
         return {"error": scraped["error"]}
-    # Envia el contenido a Ollama para analisis
+    # Envia el contenido a Groq API para analisis
     prompt = construir_prompt(url, dominio, contenido)
-    for model in modelos_disponibles:
-        raw = call_ollama(prompt, model)
-        if raw:
-            parsed = parse_response(raw)
-            if parsed and "verdict" in parsed:
-                return {"analysis": parsed}"""
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        response_format={"type": "json_object"}
+    )
+    return {"analysis": json.loads(response.choices[0].message.content)}"""
     pdf.multi_cell(0, 4, code1)
     pdf.ln(4)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     pdf.body_bold("Backend - app.py:")
     pdf.body("Servidor Flask que expone las rutas de la API para el frontend.")
@@ -815,7 +806,7 @@ def analyze():
     })"""
     pdf.multi_cell(0, 4, code2)
     pdf.ln(4)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     pdf.body_bold("Frontend - App.tsx:")
     pdf.body("Componente principal de React que orquesta toda la interfaz de usuario y la logica de estado.")
@@ -843,7 +834,7 @@ def analyze():
 }"""
     pdf.multi_cell(0, 4, code3)
     pdf.ln(4)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     # ================================================================
     # CAPITULO 4: IMPLEMENTACION Y RESULTADOS
@@ -862,7 +853,7 @@ def analyze():
     pdf.body("Son el proceso de revision que verifica que el sistema de software producido cumple con las especificaciones y logra su cometido. En el caso de VERIFEX, se valido que:")
     pdf.bullet("La aplicacion se inicia correctamente en el entorno local.")
     pdf.bullet("El frontend se comunica correctamente con el backend.")
-    pdf.bullet("Ollama responde correctamente a las solicitudes de analisis.")
+    pdf.bullet("Groq responde correctamente a las solicitudes de analisis.")
     pdf.bullet("Los resultados se muestran correctamente en la interfaz de usuario.")
 
     pdf.body_bold("4.1.1.2. Pruebas de funcionalidad:")
@@ -870,9 +861,9 @@ def analyze():
 
     pdf.ln(2)
     pdf.body_bold("Prueba 1: Analisis de URL valida")
-    pdf.set_font("TimesCustom", "B", 12)
+    pdf.set_font("Times", "B", 12)
     pdf.cell(0, 6, "Pasos:", new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
     pdf.bullet("Abrir la aplicacion VERIFEX en el navegador.")
     pdf.bullet("Ingresar una URL valida de un articulo de noticias.")
     pdf.bullet("Hacer clic en el boton Analizar.")
@@ -882,9 +873,9 @@ def analyze():
 
     pdf.ln(2)
     pdf.body_bold("Prueba 2: Manejo de URL invalida")
-    pdf.set_font("TimesCustom", "B", 12)
+    pdf.set_font("Times", "B", 12)
     pdf.cell(0, 6, "Pasos:", new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
     pdf.bullet("Abrir la aplicacion VERIFEX en el navegador.")
     pdf.bullet("Ingresar una URL invalida o inexistente.")
     pdf.bullet("Hacer clic en el boton Analizar.")
@@ -893,9 +884,9 @@ def analyze():
 
     pdf.ln(2)
     pdf.body_bold("Prueba 3: Cambio de idioma")
-    pdf.set_font("TimesCustom", "B", 12)
+    pdf.set_font("Times", "B", 12)
     pdf.cell(0, 6, "Pasos:", new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
     pdf.bullet("Abrir la aplicacion VERIFEX en el navegador.")
     pdf.bullet("Hacer clic en el boton de cambio de idioma (ES/EN).")
     pdf.bullet("Verificar que todos los textos de la interfaz cambien al idioma seleccionado.")
@@ -904,9 +895,9 @@ def analyze():
 
     pdf.ln(2)
     pdf.body_bold("Prueba 4: Visualizacion de noticias similares")
-    pdf.set_font("TimesCustom", "B", 12)
+    pdf.set_font("Times", "B", 12)
     pdf.cell(0, 6, "Pasos:", new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
     pdf.bullet("Realizar un analisis exitoso de una URL.")
     pdf.bullet("Desplazarse hacia abajo para ver la seccion de Noticias Similares.")
     pdf.body_bold("Resultado esperado: ")
@@ -920,7 +911,7 @@ def analyze():
     pdf.ln(2)
 
     # Usability test table
-    pdf.set_font("TimesCustom", "B", 11)
+    pdf.set_font("Times", "B", 11)
     col_w = [40, 50, 70]
     headers = ["Objetivo de Prueba", "Objetivo", "Descripcion"]
     pdf.set_fill_color(0, 51, 102)
@@ -929,7 +920,7 @@ def analyze():
         pdf.cell(col_w[i], 8, h, border=1, fill=True)
     pdf.ln()
     pdf.set_text_color(0, 0, 0)
-    pdf.set_font("TimesCustom", "", 10)
+    pdf.set_font("Times", "", 10)
 
     rows = [
         ["Velocidad de procesamiento", "El analisis debe completarse en un tiempo razonable", "Medir el tiempo que toma desde que se ingresa la URL hasta que se muestran los resultados."],
@@ -946,7 +937,7 @@ def analyze():
     # CONCLUSIONES
     # ================================================================
     pdf.add_page()
-    pdf.set_font("Arial", "B", 14)
+    pdf.set_font("Helvetica", "B", 14)
     pdf.set_text_color(0, 51, 102)
     pdf.cell(0, 10, "CONCLUSIONES", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(4)
@@ -961,7 +952,7 @@ def analyze():
     # ANEXO A: MANUAL TECNICO
     # ================================================================
     pdf.add_page()
-    pdf.set_font("Arial", "B", 14)
+    pdf.set_font("Helvetica", "B", 14)
     pdf.set_text_color(0, 51, 102)
     pdf.cell(0, 10, "ANEXO A: MANUAL TECNICO", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(4)
@@ -973,14 +964,15 @@ def analyze():
     pdf.section_title("1", "Requisitos del sistema")
     pdf.subsection_title("1.1", "Hardware necesario")
     pdf.bullet("Sistema operativo: Windows 10/11, macOS 10.15+, o Linux.")
-    pdf.bullet("Procesador: Intel Core i3 o equivalente (se recomienda i5 para mejor rendimiento).")
-    pdf.bullet("Memoria: 8 GB de RAM (16 GB recomendados para Ollama).")
-    pdf.bullet("Almacenamiento: 500 MB para herramientas de desarrollo + 4 GB para el modelo de IA.")
+    pdf.bullet("Procesador: Intel Core i3 o equivalente.")
+    pdf.bullet("Memoria: 4 GB de RAM.")
+    pdf.bullet("Almacenamiento: 500 MB para herramientas de desarrollo.")
+    pdf.bullet("Conexion a internet (para el analisis con Groq API y busqueda de noticias).")
 
     pdf.subsection_title("1.2", "Software necesario")
     pdf.bullet("Node.js v18, v20 o v22")
     pdf.bullet("Python 3.10+")
-    pdf.bullet("Ollama (motor de IA local)")
+    pdf.bullet("Groq API key (gratuita en console.groq.com)")
     pdf.bullet("Navegador web moderno (Chrome, Firefox, Safari, Edge)")
 
     pdf.subsection_title("1.3", "Dependencias del software")
@@ -988,7 +980,7 @@ def analyze():
     pdf.bullet("Vite 5 (Build tool)")
     pdf.bullet("Flask 3.0 + Flask-CORS (Backend)")
     pdf.bullet("BeautifulSoup 4 + lxml (Web scraping)")
-    pdf.bullet("Ollama + llama3.2:1b (IA local)")
+    pdf.bullet("Groq (API en la nube) + llama-3.3-70b-versatile")
 
     pdf.section_title("II", "Instalacion")
     pdf.subsection_title("2.1", "Instalacion de Node.js")
@@ -997,8 +989,8 @@ def analyze():
     pdf.subsection_title("2.2", "Instalacion de Python")
     pdf.body("Descargar Python desde python.org e instalar. Verificar con: python3 --version")
 
-    pdf.subsection_title("2.3", "Instalacion de Ollama")
-    pdf.body("Descargar Ollama desde ollama.com e instalar. Luego ejecutar: ollama pull llama3.2:1b y ollama serve")
+    pdf.subsection_title("2.3", "Registro en Groq API")
+    pdf.body("Crear una cuenta gratuita en console.groq.com, generar una API key y configurarla en el archivo .env del proyecto como GROQ_API_KEY=tu_api_key.")
 
     pdf.subsection_title("2.4", "Instalacion del backend")
     pdf.body("Navegar a la carpeta server y ejecutar: pip3 install -r requirements.txt y python3 app.py")
@@ -1010,7 +1002,7 @@ def analyze():
     # ANEXO B: MANUAL DE USUARIO
     # ================================================================
     pdf.add_page()
-    pdf.set_font("Arial", "B", 14)
+    pdf.set_font("Helvetica", "B", 14)
     pdf.set_text_color(0, 51, 102)
     pdf.cell(0, 10, "ANEXO B: MANUAL DE USUARIO", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(4)
@@ -1026,7 +1018,7 @@ def analyze():
     pdf.bullet("Navegador web moderno (Chrome, Firefox, Safari, Edge)")
     pdf.bullet("Node.js v18+ instalado")
     pdf.bullet("Python 3.10+ instalado")
-    pdf.bullet("Ollama instalado y corriendo")
+    pdf.bullet("API key de Groq (gratuita en console.groq.com)")
 
     pdf.section_title("II", "Uso de la aplicacion")
     pdf.body_bold("Pantalla principal:")
@@ -1053,7 +1045,7 @@ def analyze():
     # ANEXO C: CODIFICACION
     # ================================================================
     pdf.add_page()
-    pdf.set_font("Arial", "B", 14)
+    pdf.set_font("Helvetica", "B", 14)
     pdf.set_text_color(0, 51, 102)
     pdf.cell(0, 10, "ANEXO C: CODIFICACION", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(4)
@@ -1066,11 +1058,13 @@ def analyze():
     pdf.set_font("Courier", "", 8)
     analyzer_code = """import requests
 import json
+import os
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+import groq
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-OLLAMA_HEALTH_URL = "http://localhost:11434"
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+client = groq.Groq(api_key=GROQ_API_KEY)
 
 CREDIBLE_DOMAINS = {
     "milenio.com", "eluniversal.com.mx", "reforma.com", "proceso.com.mx",
@@ -1079,44 +1073,20 @@ CREDIBLE_DOMAINS = {
     "nytimes.com", "theguardian.com", "elpais.com", "infobae.com",
 }
 
-def check_ollama() -> bool:
-    try:
-        requests.get(OLLAMA_HEALTH_URL, timeout=3)
-        return True
-    except Exception:
-        return False
-
-def get_domain(url: str) -> str:
-    parsed = urlparse(url)
-    domain = parsed.netloc.lower()
-    if domain.startswith("www."):
-        domain = domain[4:]
-    return domain
-
-def scrape_url(url: str) -> dict:
-    headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)..."}
-    try:
-        resp = requests.get(url, headers=headers, timeout=15)
-        soup = BeautifulSoup(resp.text, "lxml")
-        for tag in soup(["script", "style", "nav", "footer"]):
-            tag.decompose()
-        paragraphs = soup.find_all("p")
-        body = " ".join(p.get_text(strip=True) for p in paragraphs[:50] if len(p.get_text(strip=True)) > 40)
-        return {"content": f"Texto: {body[:5000]}"}
-    except Exception as e:
-        return {"error": str(e)}
-
 def analyze_url(url: str) -> dict:
-    if not check_ollama():
-        return {"error": "Ollama no esta corriendo"}
     scraped = scrape_url(url)
     if "error" in scraped:
         return {"error": scraped["error"]}
-    # ... logica de analisis con Ollama ...
-    return result"""
+    prompt = construir_prompt(url, dominio, contenido)
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        response_format={"type": "json_object"}
+    )
+    return {"analysis": json.loads(response.choices[0].message.content)}"""
     pdf.multi_cell(0, 3.5, analyzer_code)
     pdf.ln(4)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     pdf.body_bold("app.py - Servidor Flask")
     pdf.set_font("Courier", "", 8)
@@ -1151,7 +1121,7 @@ if __name__ == "__main__":
     app.run(port=5001, debug=True)"""
     pdf.multi_cell(0, 3.5, app_code)
     pdf.ln(4)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     pdf.body_bold("App.tsx - Componente principal de React")
     pdf.set_font("Courier", "", 8)
@@ -1210,7 +1180,7 @@ export default function App() {
 }"""
     pdf.multi_cell(0, 3.5, react_code)
     pdf.ln(4)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     # Save the PDF
     output_path = os.path.join(BASE, "TESIS_VERIFEX.pdf")
