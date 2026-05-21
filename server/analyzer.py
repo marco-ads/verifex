@@ -29,6 +29,15 @@ REGLAS ABSOLUTAS DE CLASIFICACIÓN — síguelas al pie de la letra:
 
 5. ESTAFA → SOLO para contenido diseñado para defraudar, phishing, o productos/inversiones fraudulentos.
 
+CRITERIO ADICIONAL: Determina el tipo de artículo (article_type):
+- informativa → Noticia periodística neutral que reporta hechos (política, sociedad, economía, etc.)
+- comercial → Noticia sobre apertura de negocios, lanzamiento de productos, anuncios empresariales, promociones
+- opinion → Columna, editorial o contenido con postura clara del autor
+- clickbait → Titular engañoso que no corresponde al contenido real
+- denuncia → Reportaje de investigación o denuncia social
+
+Además, indica is_scam=true SOLO si el artículo promueve estafas, fraudes, phishing o esquemas piramidales.
+
 CRITERIO CLAVE: Si el artículo parece periodismo profesional normal de un medio reconocido → REAL.
 Si hay señales claras de fabricación o errores factuales graves → FALSO.
 Si es ambiguo o no puedes confirmar → NO VERIFICABLE.
@@ -51,6 +60,8 @@ Responde con este JSON exacto (sin texto fuera del JSON):
   "summary": "resumen neutral del artículo en 2-3 oraciones",
   "extracted_claims": ["afirmación principal del artículo", "dato clave 2", "dato clave 3"],
   "reasoning": ["razón detallada 1 para el veredicto", "razón 2", "razón 3"],
+  "article_type": "informativa|comercial|opinion|clickbait|denuncia",
+  "is_scam": false,
   "red_flags": ["señal de alarma concreta si existe, o lista vacía"],
   "positive_signals": ["señal positiva concreta si existe, o lista vacía"]
 }}"""
