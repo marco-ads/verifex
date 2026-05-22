@@ -1,5 +1,6 @@
 import os
 import json
+import requests
 import pytest
 from unittest.mock import patch, MagicMock
 from analyzer import (
@@ -49,7 +50,7 @@ def test_scrape_url_success(mock_get):
 
 @patch("analyzer.requests.get")
 def test_scrape_url_timeout(mock_get):
-    mock_get.side_effect = TimeoutError()
+    mock_get.side_effect = requests.exceptions.Timeout()
     result = scrape_url("https://example.com")
     assert "error" in result
     assert "timeout" in result["error"].lower()

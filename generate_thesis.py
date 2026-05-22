@@ -163,7 +163,7 @@ def make_pdf():
     pdf.set_font("Arial", "", 14)
     pdf.set_text_color(50, 50, 50)
     pdf.cell(0, 10, "Analizador de Credibilidad de Noticias", new_x="LMARGIN", new_y="NEXT", align="C")
-    pdf.cell(0, 10, "con Inteligencia Artificial Local", new_x="LMARGIN", new_y="NEXT", align="C")
+    pdf.cell(0, 10, "con Inteligencia Artificial (Groq API)", new_x="LMARGIN", new_y="NEXT", align="C")
 
     pdf.ln(5)
     pdf.set_draw_color(0, 51, 102)
@@ -236,7 +236,7 @@ def make_pdf():
     pdf.set_text_color(0, 0, 0)
 
     agradecimientos = [
-        ("Chapa Tinajero Francisco Yahel:", "Quiero expresar mi mas profundo agradecimiento a mi familia, quienes han sido mi apoyo incondicional durante toda mi formacion academica. A mi padre Francisco, por su ejemplo de perseverancia y dedicacion. A mi madre Lidia, que desde el cielo guia mis pasos. A mis hermanos Karina, Hugo y Naomi, por su apoyo incondicional. A mi novia Monse, por su paciencia y carino durante este proceso. A mis amigos y companeros, gracias por hacer de esta travesia universitaria una experiencia inolvidable. Y por supuesto, a mis asesores, el Mtro. Gerardo Estrada y la Mtra. Erika Arellano, por su guia y conocimientos compartidos en la realizacion de esta tesis."),
+        ("Chapa Tinajero Francisco Yahel:", "Quiero expresar mi mas profundo agradecimiento a mi familia, quienes han sido mi apoyo incondicional durante toda mi formacion academica. A mi padre Francisco, por su ejemplo de perseverancia y dedicacion. A mi madre Lidia, que desde el cielo guia mis pasos. A mis hermanos Karina, Hugo y Naomi, por su apoyo incondicional. A mi novia Monse, por su paciencia y carino durante este proceso. A mis amigos y companeros, gracias por hacer de esta traves deia universitaria una experiencia inolvidable. Y por supuesto, a mis asesores, el Mtro. Gerardo Estrada y la Mtra. Erika Arellano, por su guia y conocimientos compartidos en la realizacion de esta tesis."),
         ("Fernandez Casas Carlos Axel:", "Agradezco profundamente a mis asesores, Gerardo Estrada y Erika Arellano, por su guia y apoyo inquebrantables durante el desarrollo de esta investigacion. Su conocimiento, paciencia y dedicacion han sido invaluables. Extiendo mi gratitud a los miembros del comite por sus valiosas contribuciones. A mi familia, especialmente a mis padres, por su amor y apoyo incondicional. Sin su confianza y sacrificio, este logro no habria sido posible. A mis amigos y companeros, gracias por su constante apoyo y animo."),
         ("Gallardo Cortes Valeria:", "Quiero agradecer a mi familia, que ha sido mi pilar incondicional. A mis padres Leticia y Diego, por su amor, apoyo y sacrificios de cada dia. Ustedes siempre han creido en mi y me han ensenado la importancia del esfuerzo y la perseverancia. A mis hermanos, por su paciencia. A mis amigos, quienes han estado a mi lado durante todo este proceso. Agradezco a mis asesores por compartir sus conocimientos y guiarme en el camino a la formacion de esta tesis. Cada uno de ustedes ha dejado una huella en mi vida."),
         ("Garcia Garcia Jose Armando:", "Inicio mi agradecimiento a todos los que formaron parte de este largo proceso. A mis asesores Erika Arellano Orozco y Gerardo Estrada Gutierrez por haberme guiado en este proyecto y por su involucramiento en la investigacion que hoy presento. A mis padres, mis hermanos y todos mis familiares, gracias por apoyarme incondicionalmente. Su aliento y comprension fueron fundamentales. Finalmente, agradezco a los usuarios que se tomen el tiempo de utilizar VERIFEX. Espero que encuentren en esta herramienta una forma de combatir la desinformacion."),
@@ -330,9 +330,9 @@ def make_pdf():
     pdf.body("En un mundo digital donde la informacion fluye a una velocidad sin precedentes, la desinformacion y las noticias falsas se han convertido en uno de los desafios mas significativos de la sociedad contemporanea. La facilidad con la que el contenido enganoso puede crearse y difundirse a traves de redes sociales y sitios web ha generado una crisis de credibilidad que afecta a millones de personas en todo el mundo, incluyendo Mexico y America Latina.")
     pdf.body("La sociedad actual enfrenta desafios considerables en la identificacion de informacion veraz. Estudios recientes indican que mas del 60% de la poblacion mexicana ha encontrado noticias falsas en redes sociales, y una parte significativa admite haberlas compartido sin verificar su autenticidad. Esta situacion revela una brecha importante en las herramientas digitales disponibles para la verificacion de contenido informativo.")
     pdf.body("A medida que la desinformacion impacta la salud publica, la democracia y la cohesion social, surge la necesidad de proporcionar herramientas accesibles que permitan a los ciudadanos comunes verificar la credibilidad de las noticias que consumen. En este contexto, se presenta una solucion innovadora: VERIFEX, un analizador de credibilidad de noticias que utiliza inteligencia artificial local para evaluar la veracidad del contenido informativo.")
-    pdf.body("VERIFEX es una aplicacion web que funciona completamente en el equipo del usuario sin necesidad de conexion a internet (excepto para la obtencion de noticias similares). Utiliza el motor de IA local Ollama con modelos como llama3.2:1b para analizar el contenido de las noticias, extraer afirmaciones principales, identificar banderas rojas y senales positivas, y proporcionar un veredicto de credibilidad con un nivel de confianza.")
+    pdf.body("VERIFEX es una aplicacion web que utiliza la API en la nube de Groq (llama-3.3-70b-versatile) para analizar el contenido de las noticias, extraer afirmaciones principales, identificar banderas rojas y senales positivas, y proporcionar un veredicto de credibilidad con un nivel de confianza. La aplicacion solo requiere conexion a internet para el analisis via Groq y la busqueda de noticias similares en Google News.")
     pdf.body("La aplicacion esta disenada para ser accesible a cualquier persona con conocimientos basicos de navegacion web. A traves de una interfaz sencilla e intuitiva con estetica cyberpunk, el usuario simplemente pega una URL de una noticia y obtiene un analisis detallado que incluye: veredicto (REAL, FALSO, SATIRA, ESTAFA o NO VERIFICABLE), indice de confiabilidad, resumen del articulo, afirmaciones principales, analisis detallado, alertas detectadas, senales positivas y noticias similares relacionadas.")
-    pdf.body("El proposito fundamental de VERIFEX es empoderar a los ciudadanos en la lucha contra la desinformacion, proporcionando una herramienta gratuita, privada (todo el analisis ocurre localmente) y accesible que permita tomar decisiones informadas sobre el contenido que se consume y comparte en el entorno digital.")
+    pdf.body("El proposito fundamental de VERIFEX es empoderar a los ciudadanos en la lucha contra la desinformacion, proporcionando una herramienta gratuita, accesible y eficiente que permita tomar decisiones informadas sobre el contenido que se consume y comparte en el entorno digital.")
 
     # ================================================================
     # CAPITULO 1: GENERALIDADES DEL PROYECTO
@@ -369,18 +369,17 @@ def make_pdf():
     pdf.subsection_title("1.2.2", "Especificos")
     pdf.bullet("Disenar una interfaz de usuario intuitiva y atractiva que permita a los usuarios analizar URLs de noticias de forma sencilla, con estetica cyberpunk y elementos visuales que faciliten la comprension de los resultados.")
     pdf.bullet("Implementar un modulo de extraccion de contenido (scraping) que obtenga el texto principal de articulos de noticias eliminando elementos de ruido como publicidad y navegacion.")
-    pdf.bullet("Integrar un motor de inteligencia artificial local (Ollama) para analizar el contenido extraido y clasificarlo en las categorias: REAL, FALSO, SATIRA, ESTAFA o NO VERIFICABLE.")
+    pdf.bullet("Integrar un motor de inteligencia artificial (Groq API) para analizar el contenido extraido y clasificarlo en las categorias: REAL, FALSO, SATIRA, ESTAFA o NO VERIFICABLE.")
     pdf.bullet("Desarrollar un sistema de busqueda de noticias similares utilizando Google News RSS para proporcionar contexto adicional al usuario.")
     pdf.bullet("Implementar soporte bilingue (espanol e ingles) para hacer la herramienta accesible a una audiencia mas amplia.")
 
     # 1.3
     pdf.section_title("1.3", "Justificacion")
     pdf.body("Tal y como se comentaba en el apartado de planteamiento del problema, se buscaba realizar una herramienta que estuviera enfocada a combatir la desinformacion. Es decir, se buscaba un enfoque donde ademas de ser funcional y accesible, tuviera un impacto social positivo. Entre las investigaciones preliminares y la observacion del panorama actual de las noticias falsas en Mexico, se identifico que existe un conocimiento limitado sobre como verificar la informacion que se consume diariamente.")
-    pdf.body("Se realizo una investigacion preliminar para identificar herramientas existentes de verificacion de noticias, encontrando que las principales opciones son servicios en linea que requieren conexion a internet y muchas veces dependen de suscripciones o donaciones. Herramientas como Verificado, Google Fact Check Tool y plataformas internacionales como Snopes o Politifact ofrecen servicios valiosos, pero presentan limitaciones en cuanto a disponibilidad local, idioma, y accesibilidad para el usuario promedio.")
-    pdf.body("Al no haber muchas herramientas accesibles, gratuitas y que funcionen de manera local para la verificacion de noticias, se genero la idea del proyecto VERIFEX. La carencia de informacion y herramientas de verificacion contribuye a la propagacion de desinformacion, por lo que VERIFEX se propone desarrollar un analizador de credibilidad con las siguientes caracteristicas:")
-    pdf.bullet("Funcionamiento 100% local: todo el analisis se realiza en el equipo del usuario sin enviar datos a servidores externos.")
-    pdf.bullet("Gratuito: utiliza software de codigo abierto y modelos de IA locales sin costo.")
-    pdf.bullet("Privacidad: al ser local, no se almacena ni comparte informacion del usuario.")
+    pdf.body("Se realizo una investigacion preliminar para identificar herramientas existentes de verificacion de noticias, encontrando que las principales opciones son servicios en linea que requieren conexion a internet y muchas veces dependen de suscripciones o donaciones. Herramientas como Verificado, Google Fact Check Tool y plataformas internacionales como Snopes o PolitiFact ofrecen servicios valiosos, pero presentan limitaciones en cuanto a disponibilidad local, idioma, y accesibilidad para el usuario promedio.")
+    pdf.body("Al no haber muchas herramientas accesibles y gratuitas para la verificacion de noticias, se genero la idea del proyecto VERIFEX. La carencia de informacion y herramientas de verificacion contribuye a la propagacion de desinformacion, por lo que VERIFEX se propone desarrollar un analizador de credibilidad con las siguientes caracteristicas:")
+    pdf.bullet("Analisis mediante Groq API: utiliza el modelo llama-3.3-70b-versatile para analisis precisos.")
+    pdf.bullet("Gratuito: utiliza tecnologias de codigo abierto sin costo de licencias.")
     pdf.bullet("Accesible: interfaz sencilla e intuitiva disenada para el publico general.")
     pdf.bullet("Bilingue: soporte para espanol e ingles.")
     pdf.body("Esta iniciativa es vital para abordar la falta de herramientas accesibles de verificacion de noticias y contribuir a una mejor alfabetizacion mediatica en la sociedad mexicana.")
@@ -399,12 +398,12 @@ def make_pdf():
     # 1.5
     pdf.section_title("1.5", "Limitaciones")
     pdf.body("A continuacion, se presentan las limitaciones que se han identificado en el proyecto:")
-    pdf.bullet("La herramienta requiere que el usuario tenga instalado Node.js, Python 3.10+ y Ollama en su equipo, lo que puede representar una barrera tecnica para usuarios no familiarizados con estas tecnologias.")
-    pdf.bullet("VERIFEX no es compatible con sistemas operativos inferiores a Windows 10, macOS 10.15 o distribuciones de Linux sin soporte para las dependencias necesarias.")
+    pdf.bullet("La herramienta requiere que el usuario tenga instalado Node.js y Python 3.10+ en su equipo, lo que puede representar una barrera tecnica para usuarios no familiarizados con estas tecnologias.")
+    pdf.bullet("VERIFEX no es compatible con sistemas operativos inferiores a Windows 10, macOS 10.15+ o distribuciones de Linux sin soporte para las dependencias necesarias.")
     pdf.bullet("La aplicacion no analiza contenido multimedia como videos, imagenes o audio; se limita al contenido textual extraido de paginas web.")
-    pdf.bullet("La precision del analisis depende del modelo de inteligencia artificial utilizado (por defecto llama3.2:1b) y puede variar segun la complejidad del contenido.")
-    pdf.bullet("No se almacena ningun dato del usuario; cada analisis es completamente en memoria y se descarta al cerrar la aplicacion.")
-    pdf.bullet("La busqueda de noticias similares requiere conexion a internet para acceder a Google News RSS.")
+    pdf.bullet("La precision del analisis depende del modelo de inteligencia artificial utilizado (por defecto llama-3.3-70b-versatile) y puede variar segun la complejidad del contenido.")
+    pdf.bullet("No se almacena ningun dato del usuario; cada analisis se descarta al cerrar la aplicacion.")
+    pdf.bullet("La aplicacion requiere conexion a internet para el analisis via Groq API y para la busqueda de noticias similares en Google News RSS.")
 
     # ================================================================
     # CAPITULO 2: FUNDAMENTO TEORICO
@@ -424,8 +423,8 @@ def make_pdf():
     pdf.body_bold("- Google Fact Check Tools (Global, 2017):")
     pdf.body("Google lanzo Fact Check Tools como parte de su iniciativa contra la desinformacion. Esta herramienta permite buscar verificaciones de hechos realizadas por organizaciones de fact-checking en todo el mundo. Sin embargo, depende totalmente de que organizaciones externas hayan verificado previamente un contenido, y no realiza analisis automatico del contenido.")
     pdf.ln(2)
-    pdf.body_bold("- Snopes y Politifact (Estados Unidos, 1994/2007):")
-    pdf.body("Snopes y Politifact son dos de las plataformas de verificacion de hechos mas reconocidas a nivel mundial. Snopes se enfoca en desmentir rumores y leyendas urbanas, mientras que Politifact verifica declaraciones de politicos. Ambas plataformas requieren verificacion manual por parte de periodistas y no ofrecen analisis automatico de contenido.")
+    pdf.body_bold("- Snopes y PolitiFact (Estados Unidos, 1994/2007):")
+    pdf.body("Snopes y PolitiFact son dos de las plataformas de verificacion de hechos mas reconocidas a nivel mundial. Snopes se enfoca en desmentir rumores y leyendas urbanas, mientras que PolitiFact verifica declaraciones de politicos. Ambas plataformas requieren verificacion manual por parte de periodistas y no ofrecen analisis automatico de contenido.")
     pdf.ln(2)
     pdf.body_bold("- Proyectos de deteccion automatica de fake news con IA:")
     pdf.body("En el ambito academico y tecnologico, diversos proyectos han explorado el uso de inteligencia artificial para la deteccion automatica de noticias falsas. Estos incluyen sistemas basados en procesamiento de lenguaje natural (NLP), aprendizaje automatico y analisis de redes. Sin embargo, la mayoria de estos proyectos requieren infraestructura en la nube, grandes conjuntos de datos y recursos computacionales significativos, lo que limita su accesibilidad para el usuario comun.")
@@ -438,8 +437,8 @@ def make_pdf():
         ("Noticias falsas (Fake News): ", "Contenido informativo que imita el formato de noticias legitimas pero contiene informacion falsa, fabricada o enganosa."),
         ("Fact-checking: ", "Proceso de verificacion de hechos y afirmaciones contenidas en contenido informativo para determinar su veracidad."),
         ("Credibilidad: ", "Cualidad de ser creible o digno de confianza. En el contexto de VERIFEX, se refiere a la probabilidad de que una noticia sea veraz."),
-        ("Inteligencia Artificial Local: ", "Modelos de IA que se ejecutan directamente en el equipo del usuario sin necesidad de conexion a servidores externos."),
-        ("Ollama: ", "Motor de inteligencia artificial local que permite ejecutar modelos de lenguaje como llama3.2:1b en el equipo del usuario."),
+        ("Inteligencia Artificial en la Nube: ", "Modelos de IA que se ejecutan en servidores remotos y se accede a ellos mediante API, ofreciendo mayor capacidad de procesamiento sin requerir hardware especializado."),
+        ("Groq API: ", "Plataforma en la nube que proporciona acceso a modelos de lenguaje de alto rendimiento como llama-3.3-70b-versatile mediante API, ofreciendo analisis rapidos y precisos."),
         ("Procesamiento de Lenguaje Natural (NLP): ", "Rama de la inteligencia artificial que se ocupa de la interaccion entre computadoras y el lenguaje humano."),
         ("Web Scraping: ", "Tecnica utilizada para extraer datos de sitios web de forma automatica."),
         ("Frontend: ", "Parte de un sistema informatico que se encarga de la interaccion directa con el usuario y la presentacion de informacion."),
@@ -464,8 +463,8 @@ def make_pdf():
 
     pdf.subsection_title("2.3.1", "Ambiental")
     pdf.body("El ambito ambiental del desarrollo de software se centra en la urgente necesidad de utilizar la tecnologia de forma responsable y sostenible para minimizar el impacto negativo en nuestro planeta. La eficiencia energetica y la reduccion de la huella de carbono son dos pilares fundamentales en este aspecto.")
-    pdf.body("VERIFEX contribuye positivamente al ambito ambiental al ejecutar todo el procesamiento de forma local, eliminando la necesidad de infraestructura en la nube que consume grandes cantidades de energia. Los modelos de IA locales, aunque requieren recursos computacionales, evitan la transmision de datos a traves de internet y el uso de centros de datos masivos.")
-    pdf.body("Al optimizar el consumo de energia mediante el uso de modelos ligeros como llama3.2:1b y practicas de desarrollo eficientes, se pueden tomar decisiones informadas y responsables para garantizar un equilibrio sostenible entre el progreso tecnologico y la proteccion del medio ambiente.")
+    pdf.body("VERIFEX contribuye positivamente al ambito ambiental al utilizar Groq API, que emplea centros de datos optimizados energeticamente y utiliza hardware especializado (LPUs) que ofrece mayor eficiencia por operacion comparado con infraestructura tradicional. Ademas, al no requerir hardware de alto rendimiento en el equipo del usuario, se extiende la vida util de los dispositivos existentes.")
+    pdf.body("Al optimizar el consumo de energia mediante el uso de modelos ligeros como llama-3.3-70b-versatile y practicas de desarrollo eficientes, se pueden tomar decisiones informadas y responsables para garantizar un equilibrio sostenible entre el progreso tecnologico y la proteccion del medio ambiente.")
 
     pdf.subsection_title("2.3.2", "Economico")
     pdf.body("El desarrollo de VERIFEX implica una serie de consideraciones economicas que han sido minimizadas gracias a la utilizacion de herramientas y software gratuitos o de codigo abierto. De esta manera se puede mantener un margen de inversion bajo y cumplir con el objetivo de crear un analizador de credibilidad accesible para todos.")
@@ -477,8 +476,8 @@ def make_pdf():
     pdf.body_bold("Python + Flask: ")
     pdf.body("Python es un lenguaje de programacion de codigo abierto, y Flask es un framework web minimalista gratuito. Ambos permiten el desarrollo del backend sin incurrir en costos de licencia.")
     pdf.ln(2)
-    pdf.body_bold("Ollama: ")
-    pdf.body("Ollama es un motor de IA local gratuito y de codigo abierto que permite ejecutar modelos de lenguaje en el equipo del usuario sin necesidad de servicios en la nube ni API keys de pago.")
+    pdf.body_bold("Groq API: ")
+    pdf.body("Groq API es un servicio en la nube que proporciona acceso a modelos de lenguaje de alto rendimiento. A diferencia de los modelos locales, Groq ofrece mayor potencia de procesamiento sin requerir hardware especializado en el equipo del usuario.")
     pdf.ln(2)
     pdf.body_bold("BeautifulSoup + lxml: ")
     pdf.body("Bibliotecas de Python gratuitas y de codigo abierto para el web scraping y procesamiento de HTML.")
@@ -489,7 +488,7 @@ def make_pdf():
     pdf.body("Dentro del ambito tecnologico, es esencial adquirir ciertos conocimientos fundamentales para llevar a cabo el desarrollo del analizador de credibilidad de manera efectiva. En este apartado se exploraran temas como frameworks de desarrollo, lenguajes de programacion, inteligencia artificial local y diseno de interfaces.")
     pdf.ln(2)
     pdf.body_bold("Arquitectura del sistema: ")
-    pdf.body("VERIFEX adopta una arquitectura cliente-servidor donde el frontend (React + TypeScript) se comunica con el backend (Python + Flask) a traves de una API REST. El backend se encarga de realizar el scraping de la URL, analizar el contenido mediante Ollama, y buscar noticias similares en Google News.")
+    pdf.body("VERIFEX adopta una arquitectura cliente-servidor donde el frontend (React + TypeScript) se comunica con el backend (Python + Flask) a traves de una API REST. El backend se encarga de realizar el scraping de la URL, analizar el contenido mediante Groq API, y buscar noticias similares en Google News.")
     pdf.ln(2)
     pdf.body_bold("Frontend - React con TypeScript: ")
     pdf.body("React es una biblioteca de JavaScript para construir interfaces de usuario basadas en componentes. Su enfoque declarativo permite crear interfaces interactivas de manera eficiente. TypeScript anade tipado estatico que mejora la robustez del codigo y facilita el mantenimiento. Vite se utiliza como herramienta de construccion por su rapidez y compatibilidad con proyectos modernos.")
@@ -497,8 +496,8 @@ def make_pdf():
     pdf.body_bold("Backend - Python con Flask: ")
     pdf.body("Python es un lenguaje de programacion versatil y ampliamente utilizado en ciencia de datos y desarrollo web. Flask es un framework minimalista que permite crear aplicaciones web de forma rapida y eficiente. Se eligio Flask por su simplicidad y flexibilidad, ideal para un proyecto de esta escala.")
     pdf.ln(2)
-    pdf.body_bold("Inteligencia Artificial Local - Ollama: ")
-    pdf.body("Ollama es un motor de IA que permite ejecutar modelos de lenguaje grandes (LLMs) de forma local en el equipo del usuario. VERIFEX utiliza el modelo llama3.2:1b, que ofrece un equilibrio optimo entre rendimiento y precision para la tarea de clasificacion de credibilidad. La IA local ofrece ventajas significativas: privacidad de datos, funcionamiento sin internet, sin costos de API y baja latencia.")
+    pdf.body_bold("Inteligencia Artificial - Groq API: ")
+    pdf.body("Groq API es una plataforma en la nube que proporciona acceso a modelos de lenguaje grandes (LLMs) de alto rendimiento. VERIFEX utiliza el modelo llama-3.3-70b-versatile, que ofrece resultados precisos y rapidos para la tarea de clasificacion de credibilidad. La API en la nube ofrece ventajas significativas: mayor capacidad de procesamiento, modelos mas grandes y mejor precision sin requerir hardware especializado.")
     pdf.ln(2)
     pdf.body_bold("Diseno de interfaz: ")
     pdf.body("El diseno de interfaz de VERIFEX sigue una estetica cyberpunk con colores oscuros, acentos en cian y rojo, tipografia monospace para elementos tecnicos y efectos visuales como glitch y scanlines. La interfaz se diseno priorizando la claridad y facilidad de uso, con un panel de entrada claro y resultados organizados en secciones facilmente distinguibles.")
@@ -517,12 +516,13 @@ def make_pdf():
     pdf.body("Es importante que la herramienta sea accesible para todos los usuarios, independientemente de su nivel de habilidad tecnica. Se busco disenar una interfaz sencilla y facil de usar, con instrucciones claras y resultados faciles de interpretar. VERIFEX esta disponible en espanol e ingles para garantizar un mayor alcance.")
     pdf.ln(2)
     pdf.body_bold("Privacidad y Etica: ")
-    pdf.body("Una parte importante en el desarrollo de VERIFEX es la proteccion de la privacidad de los datos de los usuarios. A diferencia de muchas herramientas en linea que envian datos a servidores externos, VERIFEX realiza todo el analisis de forma local en el equipo del usuario. Esto significa que ninguna informacion sale del equipo, garantizando la privacidad total.")
+    pdf.body("Una parte importante en el desarrollo de VERIFEX es la proteccion de la privacidad de los datos de los usuarios. VERIFEX realiza el analisis mediante la API de Groq, enviando unicamente el contenido extraido del articulo para su procesamiento. No se almacena ningun dato del usuario en ningun momento.")
     pdf.body("Existe un codigo de Etica del Ingeniero en Sistemas Computacionales que incluye principios fundamentales como la confidencialidad, honestidad y el compromiso con el bienestar social. VERIFEX se alinea con estos principios al:")
     pdf.bullet("No almacenar ningun dato del usuario (principio de confidencialidad).")
     pdf.bullet("Ser transparente en su funcionamiento (principio de honestidad).")
     pdf.bullet("Proporcionar una herramienta gratuita que beneficia a la sociedad (principio de bienestar social).")
     pdf.bullet("No crear sistemas que comprometan la informacion de terceros.")
+    pdf.bullet("Utilizar conexiones seguras (HTTPS) para la comunicacion con Groq API.")
 
     # 2.4
     pdf.section_title("2.4", "Estudio de mercado")
@@ -546,33 +546,33 @@ def make_pdf():
     pdf.body("Plataforma: Web (gratuita con publicidad)")
     pdf.body("Limitaciones: Contenido mayormente en ingles, verificacion manual.")
     pdf.ln(2)
-    pdf.body_bold("d) Politifact:")
+    pdf.body_bold("d) PolitiFact:")
     pdf.body("Creador: Poynter Institute")
     pdf.body("Descripcion: Plataforma de fact-checking enfocada en verificar declaraciones de figuras politicas.")
     pdf.body("Plataforma: Web")
     pdf.body("Limitaciones: Enfoque en politica estadounidense, verificacion manual.")
     pdf.ln(2)
-    pdf.body("VERIFEX se diferencia de estas herramientas al ofrecer: analisis automatico mediante IA local, funcionamiento sin conexion a internet, privacidad total (sin envio de datos), soporte bilingue espanol/ingles, y disponibilidad gratuita sin publicidad.")
+    pdf.body("VERIFEX se diferencia de estas herramientas al ofrecer: analisis automatico mediante Groq API con modelos de alto rendimiento, soporte bilingue espanol/ingles, disponibilidad gratuita sin publicidad, y una interfaz intuitiva con estetica cyberpunk.")
 
     # 2.5
     pdf.section_title("2.5", "Viabilidad")
     pdf.body("La viabilidad del proyecto VERIFEX es esencial para determinar su factibilidad y potencial de exito. En esta etapa se realizan evaluaciones exhaustivas en areas clave para asegurar que el proyecto sea viable y beneficioso para los usuarios.")
-    pdf.body("Desde el punto de vista tecnologico, VERIFEX utiliza tecnologias maduras y ampliamente adoptadas: React para el frontend, Python con Flask para el backend, y Ollama para la IA local. Todas estas herramientas cuentan con documentacion extensa, comunidades activas y soporte continuo.")
-    pdf.body("Desde el punto de vista economico, todos los componentes de VERIFEX son de codigo abierto y gratuitos, eliminando costos de licencias. El unico requisito de hardware es una computadora moderna capaz de ejecutar Ollama, lo que la mayoria de los usuarios ya posee.")
-    pdf.body("La viabilidad operativa se analiza considerando la capacidad del equipo de desarrollo para llevar a cabo el proyecto de manera eficiente, con conocimientos en desarrollo web, Python, React e integracion de IA local.")
+    pdf.body("Desde el punto de vista tecnologico, VERIFEX utiliza tecnologias maduras y ampliamente adoptadas: React para el frontend, Python con Flask para el backend, y Groq API para la inteligencia artificial. Todas estas herramientas cuentan con documentacion extensa, comunidades activas y soporte continuo.")
+    pdf.body("Desde el punto de vista economico, los componentes principales de VERIFEX son de codigo abierto y gratuitos, eliminando costos de licencias. Groq API ofrece un nivel gratuito generoso que permite el funcionamiento de la aplicacion sin costo inicial.")
+    pdf.body("La viabilidad operativa se analiza considerando la capacidad del equipo de desarrollo para llevar a cabo el proyecto de manera eficiente, con conocimientos en desarrollo web, Python, React e integracion de APIs de IA.")
 
     pdf.subsection_title("2.5.1", "Riesgos")
     pdf.body("A continuacion se presentan los principales riesgos identificados para el proyecto:")
-    pdf.bullet("Dependencia del modelo de IA: La precision del analisis depende del modelo de IA utilizado (llama3.2:1b). Modelos mas pequenos pueden tener menor precision que modelos grandes.")
+    pdf.bullet("Dependencia del modelo de IA: La precision del analisis depende del modelo de IA utilizado (llama-3.3-70b-versatile) y de la calidad del prompt.")
     pdf.bullet("Compatibilidad del scraping: Algunos sitios web pueden tener protecciones anti-scraping que impidan la extraccion del contenido.")
-    pdf.bullet("Rendimiento: El analisis con IA local puede ser lento en equipos sin aceleracion GPU.")
-    pdf.bullet("Instalacion: La configuracion inicial requiere la instalacion de Node.js, Python y Ollama, lo que puede ser complejo para usuarios no tecnicos.")
+    pdf.bullet("Rendimiento: El analisis via API puede verse afectado por la velocidad de la conexion a internet y la disponibilidad del servicio de Groq.")
+    pdf.bullet("Instalacion: La configuracion inicial requiere la instalacion de Node.js y Python, lo que puede ser complejo para usuarios no tecnicos.")
     pdf.bullet("Actualizaciones: Los cambios en las paginas web analizadas o en las APIs de Google News pueden requerir actualizaciones del software.")
 
     pdf.subsection_title("2.5.2", "Plan de contingencia")
     pdf.body("Para mitigar los riesgos identificados, se establecen las siguientes estrategias:")
-    pdf.bullet("Multiples modelos de IA: El sistema intenta con varios modelos (llama3.2:1b, phi3:mini, mistral, llama3) en orden de preferencia hasta obtener una respuesta valida.")
-    pdf.bullet("User-Agent realista: El scraper utiliza headers de navegador real para evitar bloqueos.")
+    pdf.bullet("Multiples modelos de IA: El sistema intenta con varios modelos (llama-3.3-70b-versatile, llama-3.1-8b-instant) en orden de preferencia hasta obtener una respuesta valida.")
+    pdf.bullet("User-Agent realista: El scraper utiliza headers de navegador real para evitar bloqueos en los sitios web.")
     pdf.bullet("Timeouts y manejo de errores: Se implementan timeouts y manejo de errores en todas las operaciones de red.")
     pdf.bullet("Documentacion clara: Se proporcionan guias detalladas de instalacion y solucion de problemas comunes.")
     pdf.bullet("Codigo modular: El sistema esta disenado con componentes modulares que facilitan las actualizaciones y el mantenimiento.")
@@ -581,7 +581,7 @@ def make_pdf():
     pdf.section_title("2.6", "Factibilidad")
     pdf.subsection_title("2.6.1", "Capital Humano")
     pdf.body("El equipo de desarrollo de VERIFEX esta conformado por los siguientes integrantes:")
-    pdf.bullet("Chapa Tinajero Francisco Yahel: Programador backend - Implementacion del servidor Flask y la integracion con Ollama.")
+    pdf.bullet("Chapa Tinajero Francisco Yahel: Programador backend - Implementacion del servidor Flask y la integracion con Groq API.")
     pdf.bullet("Fernandez Casas Carlos Axel: Programador frontend - Desarrollo de la interfaz de usuario en React y TypeScript.")
     pdf.bullet("Gallardo Cortes Valeria: Disenadora UX/UI - Diseno de la interfaz, experiencia de usuario y estetica visual.")
     pdf.bullet("Garcia Garcia Jose Armando: Integrador y documentacion - Coordinacion del proyecto, pruebas y documentacion.")
@@ -593,7 +593,7 @@ def make_pdf():
     pdf.body("Para el desarrollo de VERIFEX se requieren los siguientes recursos materiales:")
     pdf.bullet("Computadoras con sistema operativo Windows, macOS o Linux.")
     pdf.bullet("Conexion a internet para descarga de dependencias y busqueda de noticias similares.")
-    pdf.bullet("Espacio en disco: aproximadamente 500 MB para las herramientas de desarrollo y 4 GB para el modelo de IA (llama3.2:1b).")
+    pdf.bullet("Espacio en disco: aproximadamente 500 MB para las herramientas de desarrollo.")
 
     # ================================================================
     # CAPITULO 3: METODOLOGIA DE DESARROLLO
@@ -637,9 +637,9 @@ def make_pdf():
     pdf.subsection_title("3.2.2", "Descripcion del proceso de negocio")
     pdf.body("El proceso de negocio de VERIFEX se describe de la siguiente manera:")
     pdf.body("1. El usuario ingresa una URL de una noticia en la interfaz de la aplicacion.")
-    pdf.body("2. El backend recibe la solicitud y verifica que Ollama este funcionando correctamente.")
+    pdf.body("2. El backend recibe la solicitud y prepara el analisis del contenido.")
     pdf.body("3. El sistema realiza el scraping de la URL proporcionada para extraer el contenido textual del articulo.")
-    pdf.body("4. El contenido extraido se envia al modelo de IA local (Ollama) para su analisis.")
+    pdf.body("4. El contenido extraido se envia a Groq API (modelo llama-3.3-70b-versatile) para su analisis.")
     pdf.body("5. El modelo de IA clasifica el contenido en una de las categorias predefinidas (REAL, FALSO, SATIRA, ESTAFA, NO VERIFICABLE) y genera un analisis detallado.")
     pdf.body("6. El backend busca noticias similares en Google News para proporcionar contexto adicional.")
     pdf.body("7. Los resultados se presentan al usuario en la interfaz de manera clara y organizada.")
@@ -657,7 +657,7 @@ def make_pdf():
         ("HU-07: Alertas y senales", "Como usuario, quiero ver alertas detectadas y senales positivas para identificar rapidamente aspectos problematicos o confiables."),
         ("HU-08: Noticias similares", "Como usuario, quiero ver noticias similares relacionadas para tener contexto adicional sobre el tema."),
         ("HU-09: Soporte bilingue", "Como usuario, quiero poder cambiar entre espanol e ingles para usar la herramienta en mi idioma preferido."),
-        ("HU-10: Privacidad", "Como usuario, quiero que el analisis se realice localmente sin enviar mis datos a internet para proteger mi privacidad."),
+        ("HU-10: Privacidad", "Como usuario, quiero que mis datos no sean almacenados ni compartidos con terceros durante el proceso de analisis."),
     ]
     for sid, sdesc in stories:
         pdf.set_font("Times", "B", 12)
@@ -668,8 +668,8 @@ def make_pdf():
     pdf.subsection_title("3.2.4", "Requerimientos no funcionales")
     pdf.body("Los requerimientos no funcionales identificados para VERIFEX son:")
     pdf.bullet("Rendimiento: El analisis de una URL no debe tomar mas de 60 segundos en condiciones normales.")
-    pdf.bullet("Disponibilidad: La aplicacion debe funcionar sin conexion a internet (excepto para la busqueda de noticias similares).")
-    pdf.bullet("Privacidad: Todos los analisis deben realizarse localmente sin transmision de datos a servidores externos.")
+    pdf.bullet("Disponibilidad: La aplicacion debe funcionar con conexion a internet para el analisis via Groq API y busqueda de noticias similares.")
+    pdf.bullet("Privacidad: No se debe almacenar ningun dato del usuario y el unico envio de datos externo es hacia Groq API para el analisis.")
     pdf.bullet("Compatibilidad: La aplicacion debe funcionar en navegadores modernos (Chrome, Firefox, Safari, Edge).")
     pdf.bullet("Usabilidad: La interfaz debe ser intuitiva y requerir minimo conocimiento tecnico para su uso.")
     pdf.bullet("Seguridad: No se debe almacenar ningun dato del usuario en ningun momento.")
@@ -705,10 +705,10 @@ def make_pdf():
     pdf.body("Desarrollada con React 18, TypeScript 5 y Vite. Se encarga de la interfaz de usuario, la entrada de datos y la presentacion de resultados. Incluye componentes como UrlInput, VerdictDisplay, ConfidenceBar, RedFlags, SimilarNews y LanguageToggle.")
     pdf.ln(2)
     pdf.body_bold("Capa de logica (Backend):")
-    pdf.body("Desarrollada con Python y Flask. Se encarga de recibir las solicitudes de analisis, realizar el scraping de las URLs, comunicarse con Ollama para el analisis de IA, y buscar noticias similares en Google News.")
+    pdf.body("Desarrollada con Python y Flask. Se encarga de recibir las solicitudes de analisis, realizar el scraping de las URLs, comunicarse con Groq API para el analisis de IA, y buscar noticias similares en Google News.")
     pdf.ln(2)
-    pdf.body_bold("Capa de IA local (Ollama):")
-    pdf.body("Ollama ejecuta modelos de lenguaje de forma local en el equipo del usuario. Por defecto utiliza llama3.2:1b, pero puede configurarse para usar otros modelos compatibles.")
+    pdf.body_bold("Capa de IA (Groq API):")
+    pdf.body("Groq API proporciona acceso en la nube al modelo llama-3.3-70b-versatile, ofreciendo analisis de alta calidad sin necesidad de hardware especializado en el equipo del usuario.")
     pdf.image_placeholder("Imagen 3.1 - Diagrama de arquitectura del sistema VERIFEX")
 
     pdf.subsection_title("3.3.2", "Diagrama de casos de uso")
@@ -716,11 +716,11 @@ def make_pdf():
     pdf.image_placeholder("Imagen 3.2 - Diagrama de casos de uso de VERIFEX")
 
     pdf.subsection_title("3.3.3", "Diagrama de actividades")
-    pdf.body("El diagrama de actividades muestra el flujo completo del proceso de analisis: el usuario ingresa una URL, el sistema verifica el formato, realiza el scraping, envia el contenido a Ollama, procesa la respuesta de la IA, busca noticias similares y presenta los resultados al usuario.")
+    pdf.body("El diagrama de actividades muestra el flujo completo del proceso de analisis: el usuario ingresa una URL, el sistema verifica el formato, realiza el scraping, envia el contenido a Groq API, procesa la respuesta de la IA, busca noticias similares y presenta los resultados al usuario.")
     pdf.image_placeholder("Imagen 3.3 - Diagrama de actividades del proceso de analisis")
 
     pdf.subsection_title("3.3.4", "Diagrama de secuencia")
-    pdf.body("El diagrama de secuencia muestra la interaccion temporal entre los diferentes componentes del sistema cuando un usuario solicita un analisis: el frontend envia la URL al backend, el backend realiza el scraping, consulta a Ollama, busca noticias similares en Google News, y retorna los resultados al frontend.")
+    pdf.body("El diagrama de secuencia muestra la interaccion temporal entre los diferentes componentes del sistema cuando un usuario solicita un analisis: el frontend envia la URL al backend, el backend realiza el scraping, consulta a Groq API, busca noticias similares en Google News, y retorna los resultados al frontend.")
     pdf.image_placeholder("Imagen 3.4 - Diagrama de secuencia del analisis de URL")
 
     pdf.subsection_title("3.3.5", "Diagrama de clases")
@@ -749,14 +749,14 @@ def make_pdf():
     pdf.body_bold("Configuracion del entorno de desarrollo:")
     pdf.bullet("Instalacion de Node.js y npm para el frontend.")
     pdf.bullet("Instalacion de Python 3 y pip para el backend.")
-    pdf.bullet("Instalacion de Ollama y descarga del modelo llama3.2:1b.")
+    pdf.bullet("Obtencion de API key de Groq (console.groq.com).")
     pdf.bullet("Configuracion del proyecto con Vite y React.")
     pdf.bullet("Configuracion del servidor Flask con CORS.")
     pdf.ln(2)
     pdf.body_bold("Implementacion del backend (Flask + Python):")
     pdf.bullet("Creacion del servidor Flask con rutas para analisis y health check.")
     pdf.bullet("Implementacion del modulo de scraping con BeautifulSoup.")
-    pdf.bullet("Implementacion del modulo de analisis con Ollama.")
+    pdf.bullet("Implementacion del modulo de analisis con Groq API.")
     pdf.bullet("Implementacion del modulo de busqueda de noticias similares con Google News RSS.")
     pdf.bullet("Integracion de manejo de errores y timeouts.")
     pdf.ln(2)
@@ -767,7 +767,7 @@ def make_pdf():
     pdf.bullet("Implementacion de la logica de estados (loading, error, resultados).")
     pdf.bullet("Implementacion del soporte bilingue (espanol/ingles).")
     pdf.ln(2)
-    pdf.body_bold("Integracion con Ollama:")
+    pdf.body_bold("Integracion con Groq API:")
     pdf.bullet("Configuracion del prompt del sistema para el analisis de credibilidad.")
     pdf.bullet("Implementacion de la logica de clasificacion (REAL, FALSO, SATIRA, ESTAFA, NO VERIFICABLE).")
     pdf.bullet("Implementacion de la verificacion de seguridad para fuentes reconocidas.")
@@ -778,28 +778,30 @@ def make_pdf():
     pdf.ln(2)
 
     versiones = [
-        ("v0.1.0 - Scraper de URLs funcional (24/02/2026)",
+        ("v0.0.1 - Esqueleto del proyecto (05/11/2025)",
+         "Configuracion inicial del proyecto con Vite, React 18, TypeScript 5 y Tailwind CSS. Setup del servidor Flask con CORS y rutas base (/analyze y /health)."),
+        ("v0.1.0 - Scraper de URLs funcional (22/11/2025)",
          "Implementacion del scraper con BeautifulSoup para extraer titulo, descripcion y cuerpo de articulos de noticias a partir de una URL."),
-        ("v0.2.0 - Analisis con IA via Groq API (07/03/2026)",
+        ("v0.2.0 - Analisis con IA via Groq API (12/12/2025)",
          "Integracion con Groq API utilizando el modelo llama-3.3-70b-versatile. Se elimino la dependencia de Ollama para mejorar la precision y velocidad del analisis."),
-        ("v0.3.0 - Clasificador de credibilidad funcional (25/03/2026)",
-         "Implementacion del clasificador con las categorias: REAL, FALSO, SATIRA, ESTAFA y NO VERIFICABLE. Se incorporo el prompt engineering para analisis detallado con niveles de confianza numericos."),
-        ("v0.4.0 - Frontend conectado al backend (15/04/2026)",
-         "Conexion API REST entre React y Flask. Primer renderizado de resultados en la interfaz de usuario. Arquitectura cliente-servidor completamente funcional."),
-        ("v0.5.0 - UI completa con estados y noticias similares (03/05/2026)",
-         "Implementacion de componentes base de UI (UrlInput, VerdictDisplay, ConfidenceBar, RedFlags). Estados de carga, error y resultados. Busqueda de noticias similares via Google News RSS y busqueda semantica."),
-        ("v0.6.0 - Soporte bilingue ES/EN (09/05/2026)",
+        ("v0.3.0 - Clasificador de credibilidad funcional (30/12/2025)",
+         "Implementacion del clasificador con las categorias: REAL, FALSO, SATIRA, ESTAFA y NO VERIFICABLE. Se incorporo el prompt engineering para analisis detallado con niveles de confianza numericos y lista de 29 dominios confiables."),
+        ("v0.4.0 - Frontend conectado al backend (17/01/2026)",
+         "Conexion API REST entre React y Flask mediante fetch con AbortController para manejo de timeouts. Primer renderizado de resultados en la interfaz de usuario."),
+        ("v0.5.0 - UI completa con estados y noticias similares (10/02/2026)",
+         "Implementacion de componentes base de UI (UrlInput, VerdictDisplay, ConfidenceBar, RedFlags, SimilarNews, LanguageToggle). Manejo de estados (loading, error, resultados). Busqueda de noticias similares via Google News RSS."),
+        ("v0.6.0 - Soporte bilingue ES/EN (19/02/2026)",
          "Implementacion del cambio de idioma espanol/ingles. Traduccion completa de toda la interfaz y textos dinamicos segun el idioma seleccionado."),
-        ("v0.7.0 - Clasificacion avanzada: tipo de articulo y deteccion de estafas (16/05/2026)",
+        ("v0.7.0 - Clasificacion avanzada: tipo de articulo y deteccion de estafas (28/02/2026)",
          "Incorporacion de article_type con categorias: informativa, comercial, opinion, clickbait y denuncia. Deteccion de estafas (is_scam). Badges visuales con colores distintivos para cada tipo."),
-        ("v0.8.0 - Diseno visual cyberpunk finalizado (25/05/2026)",
-         "Estetica visual cyberpunk completa con efectos glitch, scanlines y vignette. Panel de previsualizacion del articulo siempre visible. Footer actualizado a POWERED BY GROQ API."),
-        ("v1.0.0 - Version estable desplegada en Render (20/07/2026)",
+        ("v0.8.0 - Diseno visual cyberpunk finalizado (13/03/2026)",
+         "Estetica visual cyberpunk completa con animacion de cuadricula, efecto glitch en el titulo, scanlines, vignette CRT y clip-paths en paneles. Footer actualizado a POWERED BY GROQ API."),
+        ("v1.0.0 - Version estable desplegada en Render (27/04/2026)",
          "Configuracion de produccion con Procfile y gunicorn. Despliegue exitoso en Render con dominio publico. Variables de entorno, CORS y PORT configurados para produccion."),
-        ("v1.1.0 - Refinamiento y optimizacion del clasificador (05/08/2026)",
-         "Pruebas exhaustivas con URLs reales. Evaluacion de precision del clasificador. Correccion de errores y timeouts. Optimizacion de prompts para mejores resultados."),
-        ("v1.2.0 - Version final de tesis (21/08/2026)",
-         "Analisis de casos de prueba y documentacion de resultados. Version estable completa para entrega de tesis con todas las funcionalidades implementadas."),
+        ("v1.1.0 - Refinamiento y correccion de errores (25/05/2026)",
+         "Pruebas exhaustivas con URLs reales. Correccion de timeouts (AbortController), override de dominios confiables y edge cases. Creacion de suite de pruebas automatizadas."),
+        ("v1.2.0 - Version final de tesis (30/06/2026)",
+         "Analisis de casos de prueba y documentacion de resultados. Suite completa de 52 pruebas frontend y 16 pruebas backend. Version estable para entrega de tesis."),
     ]
     for titulo, desc in versiones:
         pdf.body_bold(titulo)
@@ -814,20 +816,21 @@ def make_pdf():
 
     pdf.ln(2)
     pdf.body_bold("Backend - analyzer.py:")
-    pdf.body("Modulo principal de analisis que contiene la logica de comunicacion con Ollama, el scraping de URLs y la clasificacion de contenido.")
+    pdf.body("Modulo principal de analisis que contiene la logica de comunicacion con Groq API, el scraping de URLs y la clasificacion de contenido.")
     pdf.set_font("Courier", "", 9)
     code1 = """def analyze_url(url: str) -> dict:
-    # Verifica que Ollama este corriendo
-    if not check_ollama():
-        return {"error": "Ollama no esta corriendo"}
+    # Obtiene el cliente de Groq
+    client = get_groq_client()
+    if not client:
+        return {"error": "GROQ_API_KEY no configurada"}
     # Realiza scraping de la URL
     scraped = scrape_url(url)
     if "error" in scraped:
         return {"error": scraped["error"]}
-    # Envia el contenido a Ollama para analisis
-    prompt = construir_prompt(url, dominio, contenido)
-    for model in modelos_disponibles:
-        raw = call_ollama(prompt, model)
+    # Envia el contenido a Groq API para analisis
+    prompt = USER_PROMPT_TEMPLATE.format(...)
+    for model in ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]:
+        raw = call_groq(client, SYSTEM_PROMPT, prompt)
         if raw:
             parsed = parse_response(raw)
             if parsed and "verdict" in parsed:
@@ -901,7 +904,7 @@ def analyze():
     pdf.body("Son el proceso de revision que verifica que el sistema de software producido cumple con las especificaciones y logra su cometido. En el caso de VERIFEX, se valido que:")
     pdf.bullet("La aplicacion se inicia correctamente en el entorno local.")
     pdf.bullet("El frontend se comunica correctamente con el backend.")
-    pdf.bullet("Ollama responde correctamente a las solicitudes de analisis.")
+    pdf.bullet("Groq API responde correctamente a las solicitudes de analisis.")
     pdf.bullet("Los resultados se muestran correctamente en la interfaz de usuario.")
 
     pdf.body_bold("4.1.1.2. Pruebas de funcionalidad:")
@@ -991,10 +994,10 @@ def analyze():
     pdf.ln(4)
     pdf.set_text_color(0, 0, 0)
 
-    pdf.body("El desarrollo de VERIFEX, un analizador de credibilidad de noticias basado en inteligencia artificial local, se presenta como una solucion innovadora para abordar los desafios asociados con la desinformacion y las noticias falsas en el entorno digital. Este enfoque tecnologico, que combina accesibilidad con inteligencia artificial local, tiene el potencial de transformar la manera en que los usuarios verifican la informacion que consumen.")
-    pdf.body("VERIFEX, al estar disenado como una aplicacion web que funciona de manera local con IA gratuita, se centra en ofrecer una experiencia accesible para cualquier usuario, desde jovenes hasta adultos. A traves de su interfaz intuitiva y sus analisis detallados, los usuarios no solo obtienen una clasificacion de credibilidad, sino que tambien adquieren un entendimiento de por que un contenido se considera confiable o no. Este metodo innovador permite superar las limitaciones de las herramientas tradicionales de verificacion, que a menudo dependen de verificaciones manuales, conexiones a internet o suscripciones de pago.")
+    pdf.body("El desarrollo de VERIFEX, un analizador de credibilidad de noticias basado en inteligencia artificial (Groq API), se presenta como una solucion innovadora para abordar los desafios asociados con la desinformacion y las noticias falsas en el entorno digital. Este enfoque tecnologico, que combina accesibilidad con inteligencia artificial en la nube, tiene el potencial de transformar la manera en que los usuarios verifican la informacion que consumen.")
+    pdf.body("VERIFEX, al estar disenado como una aplicacion web con IA via Groq API, se centra en ofrecer una experiencia accesible para cualquier usuario, desde jovenes hasta adultos. A traves de su interfaz intuitiva y sus analisis detallados, los usuarios no solo obtienen una clasificacion de credibilidad, sino que tambien adquieren un entendimiento de por que un contenido se considera confiable o no. Este metodo innovador permite superar las limitaciones de las herramientas tradicionales de verificacion, que a menudo dependen de verificaciones manuales o suscripciones de pago.")
     pdf.body("El objetivo del proyecto VERIFEX de proporcionar una herramienta accesible y gratuita para la verificacion de credibilidad responde a una necesidad critica de mayor alfabetizacion mediatica y conciencia publica sobre la desinformacion. Al ofrecer una herramienta educativa que combina tecnologia con accesibilidad, VERIFEX tiene el potencial de mejorar significativamente la capacidad de los usuarios para identificar noticias falsas, contribuyendo asi a reducir la propagacion de desinformacion y fomentar un consumo mas critico de informacion.")
-    pdf.body("La implementacion de VERIFEX representa un avance importante en la utilizacion de inteligencia artificial local para fines sociales, demostrando que es posible crear herramientas poderosas y accesibles que funcionen completamente en el equipo del usuario sin comprometer la privacidad ni requerir costosas suscripciones. Si el proyecto se promueve eficazmente, VERIFEX no solo informara, sino que tambien empoderara a los usuarios para enfrentar y combatir la desinformacion, marcando una diferencia significativa en la educacion mediatica y la conciencia publica sobre este problema.")
+    pdf.body("La implementacion de VERIFEX representa un avance importante en la utilizacion de inteligencia artificial para fines sociales, demostrando que es posible crear herramientas poderosas y accesibles sin requerir costosas suscripciones. Si el proyecto se promueve eficazmente, VERIFEX no solo informara, sino que tambien empoderara a los usuarios para enfrentar y combatir la desinformacion, marcando una diferencia significativa en la educacion mediatica y la conciencia publica sobre este problema.")
 
     # ================================================================
     # ANEXO A: MANUAL TECNICO
@@ -1007,19 +1010,19 @@ def analyze():
     pdf.set_text_color(0, 0, 0)
 
     pdf.section_title("I", "Introduccion")
-    pdf.body("Este manual tecnico esta disenado para proporcionar una vision detallada y comprensible de VERIFEX, un analizador de credibilidad de noticias basado en IA local. Proporciona una guia paso a paso sobre como instalar y usar la aplicacion, asi como una descripcion detallada de sus componentes y funcionalidades.")
+    pdf.body("Este manual tecnico esta disenado para proporcionar una vision detallada y comprensible de VERIFEX, un analizador de credibilidad de noticias basado en IA (Groq API). Proporciona una guia paso a paso sobre como instalar y usar la aplicacion, asi como una descripcion detallada de sus componentes y funcionalidades.")
 
     pdf.section_title("1", "Requisitos del sistema")
     pdf.subsection_title("1.1", "Hardware necesario")
     pdf.bullet("Sistema operativo: Windows 10/11, macOS 10.15+, o Linux.")
     pdf.bullet("Procesador: Intel Core i3 o equivalente (se recomienda i5 para mejor rendimiento).")
-    pdf.bullet("Memoria: 8 GB de RAM (16 GB recomendados para Ollama).")
-    pdf.bullet("Almacenamiento: 500 MB para herramientas de desarrollo + 4 GB para el modelo de IA.")
+    pdf.bullet("Memoria: 8 GB de RAM.")
+    pdf.bullet("Almacenamiento: 500 MB para herramientas de desarrollo.")
 
     pdf.subsection_title("1.2", "Software necesario")
     pdf.bullet("Node.js v18, v20 o v22")
     pdf.bullet("Python 3.10+")
-    pdf.bullet("Ollama (motor de IA local)")
+    pdf.bullet("Groq API key (registro gratuito en console.groq.com)")
     pdf.bullet("Navegador web moderno (Chrome, Firefox, Safari, Edge)")
 
     pdf.subsection_title("1.3", "Dependencias del software")
@@ -1027,7 +1030,7 @@ def analyze():
     pdf.bullet("Vite 5 (Build tool)")
     pdf.bullet("Flask 3.0 + Flask-CORS (Backend)")
     pdf.bullet("BeautifulSoup 4 + lxml (Web scraping)")
-    pdf.bullet("Ollama + llama3.2:1b (IA local)")
+    pdf.bullet("Groq API + llama-3.3-70b-versatile (IA en la nube)")
 
     pdf.section_title("II", "Instalacion")
     pdf.subsection_title("2.1", "Instalacion de Node.js")
@@ -1036,8 +1039,8 @@ def analyze():
     pdf.subsection_title("2.2", "Instalacion de Python")
     pdf.body("Descargar Python desde python.org e instalar. Verificar con: python3 --version")
 
-    pdf.subsection_title("2.3", "Instalacion de Ollama")
-    pdf.body("Descargar Ollama desde ollama.com e instalar. Luego ejecutar: ollama pull llama3.2:1b y ollama serve")
+    pdf.subsection_title("2.3", "Configuracion de Groq API")
+    pdf.body("Crear una cuenta gratuita en console.groq.com, generar una API key y copiarla al archivo server/.env como GROQ_API_KEY=tu_api_key")
 
     pdf.subsection_title("2.4", "Instalacion del backend")
     pdf.body("Navegar a la carpeta server y ejecutar: pip3 install -r requirements.txt y python3 app.py")
@@ -1065,7 +1068,7 @@ def analyze():
     pdf.bullet("Navegador web moderno (Chrome, Firefox, Safari, Edge)")
     pdf.bullet("Node.js v18+ instalado")
     pdf.bullet("Python 3.10+ instalado")
-    pdf.bullet("Ollama instalado y corriendo")
+    pdf.bullet("Groq API key configurada en server/.env")
 
     pdf.section_title("II", "Uso de la aplicacion")
     pdf.body_bold("Pantalla principal:")
@@ -1108,8 +1111,7 @@ import json
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-OLLAMA_HEALTH_URL = "http://localhost:11434"
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 CREDIBLE_DOMAINS = {
     "milenio.com", "eluniversal.com.mx", "reforma.com", "proceso.com.mx",
@@ -1118,12 +1120,11 @@ CREDIBLE_DOMAINS = {
     "nytimes.com", "theguardian.com", "elpais.com", "infobae.com",
 }
 
-def check_ollama() -> bool:
-    try:
-        requests.get(OLLAMA_HEALTH_URL, timeout=3)
-        return True
-    except Exception:
-        return False
+def get_groq_client():
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        return None
+    return Groq(api_key=api_key)
 
 def get_domain(url: str) -> str:
     parsed = urlparse(url)
@@ -1146,12 +1147,13 @@ def scrape_url(url: str) -> dict:
         return {"error": str(e)}
 
 def analyze_url(url: str) -> dict:
-    if not check_ollama():
-        return {"error": "Ollama no esta corriendo"}
+    client = get_groq_client()
+    if not client:
+        return {"error": "GROQ_API_KEY no configurada"}
     scraped = scrape_url(url)
     if "error" in scraped:
         return {"error": scraped["error"]}
-    # ... logica de analisis con Ollama ...
+    # ... logica de analisis con Groq API ...
     return result"""
     pdf.multi_cell(0, 3.5, analyzer_code)
     pdf.ln(4)
