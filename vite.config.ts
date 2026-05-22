@@ -8,5 +8,11 @@ export default defineConfig({
     proxy: {
       '/analyze': 'http://localhost:5001'
     }
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test-setup.ts',
+    css: false,
   }
 })

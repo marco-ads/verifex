@@ -15,17 +15,20 @@ class ThesisPDF(FPDF):
     def __init__(self):
         super().__init__("P", "mm", "Letter")
         self.set_auto_page_break(auto=True, margin=25)
-        # Add fonts
-        self.add_font("TimesCustom", "", os.path.join(BASE, "font_times.ttf"))
-        self.add_font("TimesCustom", "B", os.path.join(BASE, "font_times_bold.ttf"))
-        self.add_font("TimesCustom", "I", os.path.join(BASE, "font_times_italic.ttf"))
-        self.add_font("Arial", "", os.path.join(BASE, "font_arial.ttf"))
-        self.add_font("Arial", "B", os.path.join(BASE, "font_arial_bold.ttf"))
+        # Use built-in fonts (Times and Courier) + system Arial
+        arial_path = "/System/Library/Fonts/Supplemental/Arial.ttf"
+        arial_bold_path = "/System/Library/Fonts/Supplemental/Arial Bold.ttf"
+        if os.path.exists(arial_path):
+            self.add_font("Arial", "", arial_path)
+            self.add_font("Arial", "B", arial_bold_path)
+        else:
+            self.add_font("Arial", "", "/Library/Fonts/Arial.ttf")
+            self.add_font("Arial", "B", "/Library/Fonts/Arial Bold.ttf")
         self._chapter_num = 0
 
     def header(self):
         if self.page_no() > 2:
-            self.set_font("TimesCustom", "I", 8)
+            self.set_font("Times", "I", 8)
             self.set_text_color(120, 120, 120)
             self.cell(0, 6, "VERIFEX", align="C", new_x="LMARGIN", new_y="NEXT")
             self.line(15, 14, 195, 14)
@@ -33,7 +36,7 @@ class ThesisPDF(FPDF):
     def footer(self):
         if self.page_no() > 2:
             self.set_y(-15)
-            self.set_font("TimesCustom", "I", 8)
+            self.set_font("Times", "I", 8)
             self.set_text_color(120, 120, 120)
             self.cell(0, 10, str(self.page_no()), align="C")
 
@@ -71,32 +74,32 @@ class ThesisPDF(FPDF):
         self.set_text_color(0, 0, 0)
 
     def body(self, text):
-        self.set_font("TimesCustom", "", 12)
+        self.set_font("Times", "", 12)
         self.set_text_color(0, 0, 0)
         self.multi_cell(0, 6.5, text, align="J")
         self.ln(2)
 
     def body_bold(self, text):
-        self.set_font("TimesCustom", "B", 12)
+        self.set_font("Times", "B", 12)
         self.multi_cell(0, 6.5, text, align="J")
         self.ln(1)
 
     def bullet(self, text, indent=15):
         x = self.get_x()
         self.set_x(x + indent)
-        self.set_font("TimesCustom", "", 12)
+        self.set_font("Times", "", 12)
         self.multi_cell(0, 6.5, f"  {text}", align="J")
         self.ln(1)
 
     def bullet_bold(self, text, indent=15):
         x = self.get_x()
         self.set_x(x + indent)
-        self.set_font("TimesCustom", "B", 12)
+        self.set_font("Times", "B", 12)
         self.multi_cell(0, 6.5, f"  {text}", align="J")
         self.ln(1)
 
     def image_placeholder(self, label):
-        self.set_font("TimesCustom", "I", 10)
+        self.set_font("Times", "I", 10)
         self.set_text_color(100, 100, 100)
         self.ln(3)
         self.set_draw_color(180, 180, 180)
@@ -139,12 +142,12 @@ def make_pdf():
     # ===== PORTADA =====
     pdf.add_page()
     pdf.ln(30)
-    pdf.set_font("TimesCustom", "B", 16)
+    pdf.set_font("Times", "B", 16)
     pdf.cell(0, 8, "UNIVERSIDAD TRES CULTURAS", new_x="LMARGIN", new_y="NEXT", align="C")
-    pdf.set_font("TimesCustom", "B", 13)
+    pdf.set_font("Times", "B", 13)
     pdf.cell(0, 7, "INGENIERIA EN SISTEMAS COMPUTACIONALES", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(3)
-    pdf.set_font("TimesCustom", "I", 10)
+    pdf.set_font("Times", "I", 10)
     pdf.cell(0, 6, "www.utc.mx", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(20)
 
@@ -168,15 +171,15 @@ def make_pdf():
     pdf.line(50, pdf.get_y(), 160, pdf.get_y())
     pdf.ln(15)
 
-    pdf.set_font("TimesCustom", "", 13)
+    pdf.set_font("Times", "", 13)
     pdf.set_text_color(0, 0, 0)
     pdf.cell(0, 7, "TESIS", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(3)
-    pdf.set_font("TimesCustom", "", 11)
+    pdf.set_font("Times", "", 11)
     pdf.multi_cell(0, 6, "QUE PARA OBTENER EL TITULO DE INGENIERO EN\nSISTEMAS COMPUTACIONALES PRESENTAN:", align="C")
     pdf.ln(5)
 
-    pdf.set_font("TimesCustom", "B", 12)
+    pdf.set_font("Times", "B", 12)
     authors = [
         "Chapa Tinajero Francisco Yahel",
         "Fernandez Casas Carlos Axel",
@@ -187,14 +190,14 @@ def make_pdf():
         pdf.cell(0, 7, a, new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(10)
 
-    pdf.set_font("TimesCustom", "", 11)
+    pdf.set_font("Times", "", 11)
     pdf.cell(0, 7, "ASESORES:", new_x="LMARGIN", new_y="NEXT", align="C")
-    pdf.set_font("TimesCustom", "B", 11)
+    pdf.set_font("Times", "B", 11)
     pdf.cell(0, 7, "M. en A. T. Gerardo Estrada Gutierrez", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.cell(0, 7, "M. en E. E. Erika Arellano Orozco", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(20)
 
-    pdf.set_font("TimesCustom", "", 11)
+    pdf.set_font("Times", "", 11)
     pdf.cell(0, 7, "Ciudad de Mexico, agosto 2025", new_x="LMARGIN", new_y="NEXT", align="C")
 
     # ===== CARTA ACEPTACION =====
@@ -204,7 +207,7 @@ def make_pdf():
     pdf.set_text_color(0, 51, 102)
     pdf.cell(0, 10, "CARTA DE ACEPTACION", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(10)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
     pdf.set_text_color(0, 0, 0)
     pdf.body("Los abajo firmantes, miembros del Comite de Tesis de la Universidad Tres Culturas, hacemos constar que hemos revisado y aprobado la tesis titulada \"VERIFEX: Analizador de Credibilidad de Noticias con Inteligencia Artificial Local\", presentada por los pasantes Chapa Tinajero Francisco Yahel, Fernandez Casas Carlos Axel, Gallardo Cortes Valeria y Garcia Garcia Jose Armando, para obtener el titulo de Ingeniero en Sistemas Computacionales.")
     pdf.ln(10)
@@ -219,9 +222,9 @@ def make_pdf():
     for name, role in lines:
         pdf.cell(95, 7, "", new_x="LMARGIN", new_y="NEXT")
         pdf.cell(95, 7, name, new_x="LMARGIN", new_y="NEXT")
-        pdf.set_font("TimesCustom", "I", 10)
+        pdf.set_font("Times", "I", 10)
         pdf.cell(95, 5, role, new_x="LMARGIN", new_y="NEXT")
-        pdf.set_font("TimesCustom", "", 12)
+        pdf.set_font("Times", "", 12)
         pdf.ln(10)
 
     # ===== AGRADECIMIENTOS =====
@@ -239,9 +242,9 @@ def make_pdf():
         ("Garcia Garcia Jose Armando:", "Inicio mi agradecimiento a todos los que formaron parte de este largo proceso. A mis asesores Erika Arellano Orozco y Gerardo Estrada Gutierrez por haberme guiado en este proyecto y por su involucramiento en la investigacion que hoy presento. A mis padres, mis hermanos y todos mis familiares, gracias por apoyarme incondicionalmente. Su aliento y comprension fueron fundamentales. Finalmente, agradezco a los usuarios que se tomen el tiempo de utilizar VERIFEX. Espero que encuentren en esta herramienta una forma de combatir la desinformacion."),
     ]
     for name, text in agradecimientos:
-        pdf.set_font("TimesCustom", "B", 12)
+        pdf.set_font("Times", "B", 12)
         pdf.cell(0, 7, name, new_x="LMARGIN", new_y="NEXT")
-        pdf.set_font("TimesCustom", "", 12)
+        pdf.set_font("Times", "", 12)
         pdf.body(text)
         pdf.ln(4)
 
@@ -252,7 +255,7 @@ def make_pdf():
     pdf.cell(0, 10, "TABLA DE CONTENIDO", new_x="LMARGIN", new_y="NEXT", align="C")
     pdf.ln(5)
     pdf.set_text_color(0, 0, 0)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     toc = [
         ("INTRODUCCION", ""),
@@ -295,6 +298,7 @@ def make_pdf():
         ("3.3.6", "Diagrama entidad-relacion"),
         ("3.3.7", "Wireframes"),
         ("3.4", "Fase 3: Implementacion (Flujo Kanban)"),
+        ("3.4.1", "Historial de versiones del sistema"),
         ("3.5", "Fase 4: Codificacion"),
         ("CAPITULO 4: IMPLEMENTACION Y RESULTADOS", ""),
         ("4.1", "Fase de pruebas"),
@@ -311,9 +315,9 @@ def make_pdf():
         if title:
             pdf.cell(0, 6, f"     {num}    {title}", new_x="LMARGIN", new_y="NEXT")
         else:
-            pdf.set_font("TimesCustom", "B", 12)
+            pdf.set_font("Times", "B", 12)
             pdf.cell(0, 7, num, new_x="LMARGIN", new_y="NEXT")
-            pdf.set_font("TimesCustom", "", 12)
+            pdf.set_font("Times", "", 12)
 
     # ===== INTRODUCCION =====
     pdf.add_page()
@@ -449,9 +453,9 @@ def make_pdf():
         ("BeautifulSoup: ", "Biblioteca de Python para extraer datos de archivos HTML y XML."),
     ]
     for term, defn in definitions:
-        pdf.set_font("TimesCustom", "B", 12)
+        pdf.set_font("Times", "B", 12)
         pdf.cell(0, 6.5, f"  {term}", new_x="LMARGIN", new_y="NEXT")
-        pdf.set_font("TimesCustom", "", 12)
+        pdf.set_font("Times", "", 12)
         pdf.body(defn)
 
     # 2.3
@@ -656,9 +660,9 @@ def make_pdf():
         ("HU-10: Privacidad", "Como usuario, quiero que el analisis se realice localmente sin enviar mis datos a internet para proteger mi privacidad."),
     ]
     for sid, sdesc in stories:
-        pdf.set_font("TimesCustom", "B", 12)
+        pdf.set_font("Times", "B", 12)
         pdf.cell(0, 6.5, f"  {sid}:", new_x="LMARGIN", new_y="NEXT")
-        pdf.set_font("TimesCustom", "", 12)
+        pdf.set_font("Times", "", 12)
         pdf.body(sdesc)
 
     pdf.subsection_title("3.2.4", "Requerimientos no funcionales")
@@ -705,38 +709,38 @@ def make_pdf():
     pdf.ln(2)
     pdf.body_bold("Capa de IA local (Ollama):")
     pdf.body("Ollama ejecuta modelos de lenguaje de forma local en el equipo del usuario. Por defecto utiliza llama3.2:1b, pero puede configurarse para usar otros modelos compatibles.")
-    pdf.image_placeholder("Imagen 3.1 – Diagrama de arquitectura del sistema VERIFEX")
+    pdf.image_placeholder("Imagen 3.1 - Diagrama de arquitectura del sistema VERIFEX")
 
     pdf.subsection_title("3.3.2", "Diagrama de casos de uso")
     pdf.body("El diagrama de casos de uso muestra las interacciones entre los actores y las funcionalidades del sistema. Los usuarios pueden ingresar una URL, analizar una noticia, ver resultados detallados, cambiar el idioma y acceder a noticias similares.")
-    pdf.image_placeholder("Imagen 3.2 – Diagrama de casos de uso de VERIFEX")
+    pdf.image_placeholder("Imagen 3.2 - Diagrama de casos de uso de VERIFEX")
 
     pdf.subsection_title("3.3.3", "Diagrama de actividades")
     pdf.body("El diagrama de actividades muestra el flujo completo del proceso de analisis: el usuario ingresa una URL, el sistema verifica el formato, realiza el scraping, envia el contenido a Ollama, procesa la respuesta de la IA, busca noticias similares y presenta los resultados al usuario.")
-    pdf.image_placeholder("Imagen 3.3 – Diagrama de actividades del proceso de analisis")
+    pdf.image_placeholder("Imagen 3.3 - Diagrama de actividades del proceso de analisis")
 
     pdf.subsection_title("3.3.4", "Diagrama de secuencia")
     pdf.body("El diagrama de secuencia muestra la interaccion temporal entre los diferentes componentes del sistema cuando un usuario solicita un analisis: el frontend envia la URL al backend, el backend realiza el scraping, consulta a Ollama, busca noticias similares en Google News, y retorna los resultados al frontend.")
-    pdf.image_placeholder("Imagen 3.4 – Diagrama de secuencia del analisis de URL")
+    pdf.image_placeholder("Imagen 3.4 - Diagrama de secuencia del analisis de URL")
 
     pdf.subsection_title("3.3.5", "Diagrama de clases")
     pdf.body("El diagrama de clases muestra las principales clases del sistema, incluyendo las clases del backend (Analyzer, Scraper, NewsFinder) y las interfaces del frontend (Analysis, NewsItem, ApiResponse).")
-    pdf.image_placeholder("Imagen 3.5 – Diagrama de clases de VERIFEX")
+    pdf.image_placeholder("Imagen 3.5 - Diagrama de clases de VERIFEX")
 
     pdf.subsection_title("3.3.6", "Diagrama entidad-relacion")
     pdf.body("El diagrama entidad-relacion muestra las entidades principales del sistema: URL de entrada, contenido extraido, analisis generado, noticias similares y las relaciones entre ellas.")
-    pdf.image_placeholder("Imagen 3.6 – Diagrama entidad-relacion de VERIFEX")
+    pdf.image_placeholder("Imagen 3.6 - Diagrama entidad-relacion de VERIFEX")
 
     pdf.subsection_title("3.3.7", "Wireframes")
     pdf.body("Los Wireframes son representaciones graficas que esquematizan la estructura y funcionalidad de la aplicacion mediante bocetos o dibujos.")
     pdf.ln(2)
     pdf.body_bold("Wireframe del panel principal:")
     pdf.body("El Wireframe muestra la vista principal de la aplicacion con el campo de entrada de URL, el boton de analisis, y las secciones de resultados organizadas en columnas.")
-    pdf.image_placeholder("Imagen 3.7 – Wireframe de la pantalla principal de VERIFEX")
+    pdf.image_placeholder("Imagen 3.7 - Wireframe de la pantalla principal de VERIFEX")
     pdf.ln(2)
     pdf.body_bold("Wireframe de resultados:")
     pdf.body("El Wireframe muestra la vista de resultados con el veredicto, la barra de confianza, el resumen, las afirmaciones principales, el analisis detallado, las alertas y las noticias similares.")
-    pdf.image_placeholder("Imagen 3.8 – Wireframe de la pantalla de resultados")
+    pdf.image_placeholder("Imagen 3.8 - Wireframe de la pantalla de resultados")
 
     # 3.4
     pdf.section_title("3.4", "Fase 3: Implementacion (Flujo Kanban)")
@@ -769,6 +773,41 @@ def make_pdf():
     pdf.bullet("Implementacion de la verificacion de seguridad para fuentes reconocidas.")
     pdf.bullet("Implementacion del fallback a multiples modelos de IA.")
 
+    pdf.subsection_title("3.4.1", "Historial de versiones del sistema")
+    pdf.body("A lo largo del desarrollo de VERIFEX se liberaron multiples versiones incrementales, cada una anadiendo funcionalidades especificas. A continuacion se presenta el historial completo de versiones:")
+    pdf.ln(2)
+
+    versiones = [
+        ("v0.1.0 - Scraper de URLs funcional (24/02/2026)",
+         "Implementacion del scraper con BeautifulSoup para extraer titulo, descripcion y cuerpo de articulos de noticias a partir de una URL."),
+        ("v0.2.0 - Analisis con IA via Groq API (07/03/2026)",
+         "Integracion con Groq API utilizando el modelo llama-3.3-70b-versatile. Se elimino la dependencia de Ollama para mejorar la precision y velocidad del analisis."),
+        ("v0.3.0 - Clasificador de credibilidad funcional (25/03/2026)",
+         "Implementacion del clasificador con las categorias: REAL, FALSO, SATIRA, ESTAFA y NO VERIFICABLE. Se incorporo el prompt engineering para analisis detallado con niveles de confianza numericos."),
+        ("v0.4.0 - Frontend conectado al backend (15/04/2026)",
+         "Conexion API REST entre React y Flask. Primer renderizado de resultados en la interfaz de usuario. Arquitectura cliente-servidor completamente funcional."),
+        ("v0.5.0 - UI completa con estados y noticias similares (03/05/2026)",
+         "Implementacion de componentes base de UI (UrlInput, VerdictDisplay, ConfidenceBar, RedFlags). Estados de carga, error y resultados. Busqueda de noticias similares via Google News RSS y busqueda semantica."),
+        ("v0.6.0 - Soporte bilingue ES/EN (09/05/2026)",
+         "Implementacion del cambio de idioma espanol/ingles. Traduccion completa de toda la interfaz y textos dinamicos segun el idioma seleccionado."),
+        ("v0.7.0 - Clasificacion avanzada: tipo de articulo y deteccion de estafas (16/05/2026)",
+         "Incorporacion de article_type con categorias: informativa, comercial, opinion, clickbait y denuncia. Deteccion de estafas (is_scam). Badges visuales con colores distintivos para cada tipo."),
+        ("v0.8.0 - Diseno visual cyberpunk finalizado (25/05/2026)",
+         "Estetica visual cyberpunk completa con efectos glitch, scanlines y vignette. Panel de previsualizacion del articulo siempre visible. Footer actualizado a POWERED BY GROQ API."),
+        ("v1.0.0 - Version estable desplegada en Render (20/07/2026)",
+         "Configuracion de produccion con Procfile y gunicorn. Despliegue exitoso en Render con dominio publico. Variables de entorno, CORS y PORT configurados para produccion."),
+        ("v1.1.0 - Refinamiento y optimizacion del clasificador (05/08/2026)",
+         "Pruebas exhaustivas con URLs reales. Evaluacion de precision del clasificador. Correccion de errores y timeouts. Optimizacion de prompts para mejores resultados."),
+        ("v1.2.0 - Version final de tesis (21/08/2026)",
+         "Analisis de casos de prueba y documentacion de resultados. Version estable completa para entrega de tesis con todas las funcionalidades implementadas."),
+    ]
+    for titulo, desc in versiones:
+        pdf.body_bold(titulo)
+        pdf.body(desc)
+        pdf.ln(2)
+
+    pdf.body("Cada version fue documentada en el tablero Kanban del proyecto y registrada en el repositorio de GitHub mediante etiquetas (tags) correspondientes. El diagrama de Gantt del proyecto (ver Anexo) muestra la linea de tiempo completa de desarrollo con cada uno de estos hitos.")
+
     # 3.5
     pdf.section_title("3.5", "Fase 4: Codificacion")
     pdf.body("En esta seccion se muestran las principales clases y modulos implementados para VERIFEX, con una breve descripcion de su funcion.")
@@ -795,7 +834,7 @@ def make_pdf():
                 return {"analysis": parsed}"""
     pdf.multi_cell(0, 4, code1)
     pdf.ln(4)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     pdf.body_bold("Backend - app.py:")
     pdf.body("Servidor Flask que expone las rutas de la API para el frontend.")
@@ -815,7 +854,7 @@ def analyze():
     })"""
     pdf.multi_cell(0, 4, code2)
     pdf.ln(4)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     pdf.body_bold("Frontend - App.tsx:")
     pdf.body("Componente principal de React que orquesta toda la interfaz de usuario y la logica de estado.")
@@ -843,7 +882,7 @@ def analyze():
 }"""
     pdf.multi_cell(0, 4, code3)
     pdf.ln(4)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     # ================================================================
     # CAPITULO 4: IMPLEMENTACION Y RESULTADOS
@@ -870,9 +909,9 @@ def analyze():
 
     pdf.ln(2)
     pdf.body_bold("Prueba 1: Analisis de URL valida")
-    pdf.set_font("TimesCustom", "B", 12)
+    pdf.set_font("Times", "B", 12)
     pdf.cell(0, 6, "Pasos:", new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
     pdf.bullet("Abrir la aplicacion VERIFEX en el navegador.")
     pdf.bullet("Ingresar una URL valida de un articulo de noticias.")
     pdf.bullet("Hacer clic en el boton Analizar.")
@@ -882,9 +921,9 @@ def analyze():
 
     pdf.ln(2)
     pdf.body_bold("Prueba 2: Manejo de URL invalida")
-    pdf.set_font("TimesCustom", "B", 12)
+    pdf.set_font("Times", "B", 12)
     pdf.cell(0, 6, "Pasos:", new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
     pdf.bullet("Abrir la aplicacion VERIFEX en el navegador.")
     pdf.bullet("Ingresar una URL invalida o inexistente.")
     pdf.bullet("Hacer clic en el boton Analizar.")
@@ -893,9 +932,9 @@ def analyze():
 
     pdf.ln(2)
     pdf.body_bold("Prueba 3: Cambio de idioma")
-    pdf.set_font("TimesCustom", "B", 12)
+    pdf.set_font("Times", "B", 12)
     pdf.cell(0, 6, "Pasos:", new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
     pdf.bullet("Abrir la aplicacion VERIFEX en el navegador.")
     pdf.bullet("Hacer clic en el boton de cambio de idioma (ES/EN).")
     pdf.bullet("Verificar que todos los textos de la interfaz cambien al idioma seleccionado.")
@@ -904,9 +943,9 @@ def analyze():
 
     pdf.ln(2)
     pdf.body_bold("Prueba 4: Visualizacion de noticias similares")
-    pdf.set_font("TimesCustom", "B", 12)
+    pdf.set_font("Times", "B", 12)
     pdf.cell(0, 6, "Pasos:", new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
     pdf.bullet("Realizar un analisis exitoso de una URL.")
     pdf.bullet("Desplazarse hacia abajo para ver la seccion de Noticias Similares.")
     pdf.body_bold("Resultado esperado: ")
@@ -920,7 +959,7 @@ def analyze():
     pdf.ln(2)
 
     # Usability test table
-    pdf.set_font("TimesCustom", "B", 11)
+    pdf.set_font("Times", "B", 11)
     col_w = [40, 50, 70]
     headers = ["Objetivo de Prueba", "Objetivo", "Descripcion"]
     pdf.set_fill_color(0, 51, 102)
@@ -929,7 +968,7 @@ def analyze():
         pdf.cell(col_w[i], 8, h, border=1, fill=True)
     pdf.ln()
     pdf.set_text_color(0, 0, 0)
-    pdf.set_font("TimesCustom", "", 10)
+    pdf.set_font("Times", "", 10)
 
     rows = [
         ["Velocidad de procesamiento", "El analisis debe completarse en un tiempo razonable", "Medir el tiempo que toma desde que se ingresa la URL hasta que se muestran los resultados."],
@@ -1116,7 +1155,7 @@ def analyze_url(url: str) -> dict:
     return result"""
     pdf.multi_cell(0, 3.5, analyzer_code)
     pdf.ln(4)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     pdf.body_bold("app.py - Servidor Flask")
     pdf.set_font("Courier", "", 8)
@@ -1151,7 +1190,7 @@ if __name__ == "__main__":
     app.run(port=5001, debug=True)"""
     pdf.multi_cell(0, 3.5, app_code)
     pdf.ln(4)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     pdf.body_bold("App.tsx - Componente principal de React")
     pdf.set_font("Courier", "", 8)
@@ -1210,7 +1249,7 @@ export default function App() {
 }"""
     pdf.multi_cell(0, 3.5, react_code)
     pdf.ln(4)
-    pdf.set_font("TimesCustom", "", 12)
+    pdf.set_font("Times", "", 12)
 
     # Save the PDF
     output_path = os.path.join(BASE, "TESIS_VERIFEX.pdf")
