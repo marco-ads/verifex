@@ -1,7 +1,6 @@
 import os
 import json
-import requests
-import cloudscraper
+from curl_cffi import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from groq import Groq
@@ -109,25 +108,8 @@ def get_domain(url: str) -> str:
 
 
 def scrape_url(url: str) -> dict:
-    headers = {
-        "User-Agent": (
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-        ),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Language": "es-MX,es;q=0.9,en;q=0.8",
-        "Accept-Encoding": "gzip, deflate",
-        "Connection": "keep-alive",
-        "Upgrade-Insecure-Requests": "1",
-        "Sec-Fetch-Dest": "document",
-        "Sec-Fetch-Mode": "navigate",
-        "Sec-Fetch-Site": "none",
-        "Sec-Fetch-User": "?1",
-        "Cache-Control": "max-age=0",
-    }
     try:
-        scraper = cloudscraper.create_scraper()
-        resp = scraper.get(url, headers=headers, timeout=15)
+        resp = requests.get(url, impersonate="chrome", timeout=15)
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "lxml")
 
