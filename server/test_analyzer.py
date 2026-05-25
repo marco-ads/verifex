@@ -28,8 +28,8 @@ def test_get_domain_with_subdomain():
 
 # ── scrape_url ──
 
-@patch("analyzer.requests.get")
-def test_scrape_url_success(mock_get):
+@patch("analyzer.cloudscraper.create_scraper")
+def test_scrape_url_success(mock_create):
     html = """<html><head><title>Test Article</title>
     <meta name="description" content="A test article">
     </head><body><article><p>This is a paragraph with enough text to be included in the extraction process because it exceeds the minimum length requirement of forty characters.</p>
@@ -39,7 +39,9 @@ def test_scrape_url_success(mock_get):
     mock_resp = MagicMock()
     mock_resp.text = html
     mock_resp.raise_for_status = MagicMock()
-    mock_get.return_value = mock_resp
+    mock_scraper = MagicMock()
+    mock_scraper.get.return_value = mock_resp
+    mock_create.return_value = mock_scraper
 
     result = scrape_url("https://example.com/news")
     assert "error" not in result
@@ -48,34 +50,41 @@ def test_scrape_url_success(mock_get):
     assert "Test Article" in result["content"]
 
 
-@patch("analyzer.requests.get")
-def test_scrape_url_timeout(mock_get):
-    mock_get.side_effect = requests.exceptions.Timeout()
+@patch("analyzer.cloudscraper.create_scraper")
+def test_scrape_url_timeout(mock_create):
+    from requests.exceptions import Timeout
+    mock_scraper = MagicMock()
+    mock_scraper.get.side_effect = Timeout()
+    mock_create.return_value = mock_scraper
     result = scrape_url("https://example.com")
     assert "error" in result
     assert "timeout" in result["error"].lower()
 
 
-@patch("analyzer.requests.get")
-def test_scrape_url_http_error(mock_get):
+@patch("analyzer.cloudscraper.create_scraper")
+def test_scrape_url_http_error(mock_create):
     from requests.exceptions import HTTPError
     mock_resp = MagicMock()
     mock_resp.raise_for_status.side_effect = HTTPError("404 Not Found")
-    mock_get.return_value = mock_resp
+    mock_scraper = MagicMock()
+    mock_scraper.get.return_value = mock_resp
+    mock_create.return_value = mock_scraper
     result = scrape_url("https://example.com/404")
     assert "error" in result
     assert "HTTP" in result["error"]
 
 
-@patch("analyzer.requests.get")
-def test_scrape_url_general_exception(mock_get):
-    mock_get.side_effect = Exception("Connection refused")
+@patch("analyzer.cloudscraper.create_scraper")
+def test_scrape_url_general_exception(mock_create):
+    mock_scraper = MagicMock()
+    mock_scraper.get.side_effect = Exception("Connection refused")
+    mock_create.return_value = mock_scraper
     result = scrape_url("https://example.com")
     assert "error" in result
 
 
-@patch("analyzer.requests.get")
-def test_scrape_url_no_paragraphs_fallback(mock_get):
+@patch("analyzer.cloudscraper.create_scraper")
+def test_scrape_url_no_paragraphs_fallback(mock_create):
     html = """<html><head><title>No Paragraphs</title></head>
     <body>
       <div>Short text.</div>
@@ -85,14 +94,16 @@ def test_scrape_url_no_paragraphs_fallback(mock_get):
     mock_resp = MagicMock()
     mock_resp.text = html
     mock_resp.raise_for_status = MagicMock()
-    mock_get.return_value = mock_resp
+    mock_scraper = MagicMock()
+    mock_scraper.get.return_value = mock_resp
+    mock_create.return_value = mock_scraper
 
     result = scrape_url("https://example.com/no-p")
     assert "error" not in result
 
 
-@patch("analyzer.requests.get")
-def test_scrape_url_removes_unwanted_tags(mock_get):
+@patch("analyzer.cloudscraper.create_scraper")
+def test_scrape_url_removes_unwanted_tags(mock_create):
     html = """<html><body><article>
     <script>alert('bad')</script>
     <style>.css{}</style>
@@ -104,7 +115,9 @@ def test_scrape_url_removes_unwanted_tags(mock_get):
     mock_resp = MagicMock()
     mock_resp.text = html
     mock_resp.raise_for_status = MagicMock()
-    mock_get.return_value = mock_resp
+    mock_scraper = MagicMock()
+    mock_scraper.get.return_value = mock_resp
+    mock_create.return_value = mock_scraper
 
     result = scrape_url("https://example.com/stripped")
     assert "Navigation" not in result["content"]

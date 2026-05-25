@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+import cloudscraper
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from groq import Groq
@@ -125,7 +126,8 @@ def scrape_url(url: str) -> dict:
         "Cache-Control": "max-age=0",
     }
     try:
-        resp = requests.get(url, headers=headers, timeout=15)
+        scraper = cloudscraper.create_scraper()
+        resp = scraper.get(url, headers=headers, timeout=15)
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "lxml")
 
