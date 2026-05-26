@@ -1,6 +1,7 @@
 import os
 import json
-from curl_cffi import requests
+from curl_cffi import requests as curl_requests
+import requests as std_requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from groq import Groq
@@ -148,10 +149,34 @@ def get_domain(url: str) -> str:
         return ""
 
 
-def scrape_url(url: str) -> dict:
+def _http_get(url: str) -> tuple:
+    """Try curl_cffi first, fallback to standard requests on 403."""
     try:
-        resp = requests.get(url, impersonate="chrome", timeout=15)
-        resp.raise_for_status()
+        resp = curl_requests.get(url, impersonate="chrome", timeout=15)
+        if resp.status_code == 403:
+            raise curl_requests.exceptions.HTTPError("403 Client Error", response=resp)
+        return resp, None
+    except (curl_requests.exceptions.HTTPError, curl_requests.exceptions.Timeout) as e:
+        if isinstance(e, curl_requests.exceptions.HTTPError) and resp.status_code == 403:
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "es-MX,es;q=0.9,en;q=0.8",
+                "Accept-Encoding": "gzip, deflate",
+            }
+            try:
+                resp = std_requests.get(url, headers=headers, timeout=15)
+                resp.raise_for_status()
+                return resp, None
+            except std_requests.exceptions.RequestException as e2:
+                return None, str(e2)
+        return None, str(e)
+
+def scrape_url(url: str) -> dict:
+    resp, err = _http_get(url)
+    if err or resp is None:
+        return {"error": err or "No se pudo acceder a la URL"}
+    try:
         soup = BeautifulSoup(resp.text, "lxml")
 
         for tag in soup(["script", "style", "nav", "footer", "aside", "header", "iframe", "noscript"]):
@@ -186,12 +211,8 @@ def scrape_url(url: str) -> dict:
             f"Texto del artículo: {body[:5000]}"
         )
         return {"content": content, "title": title, "article_text": body[:2000]}
-    except requests.exceptions.Timeout:
-        return {"error": "La URL tardó demasiado en responder (timeout)."}
-    except requests.exceptions.HTTPError as e:
-        return {"error": f"Error HTTP al acceder a la URL: {e}"}
     except Exception as e:
-        return {"error": f"No se pudo acceder a la URL: {str(e)}"}
+        return {"error": f"Error al procesar el contenido: {str(e)}"}
 
 
 def parse_response(text: str) -> dict | None:

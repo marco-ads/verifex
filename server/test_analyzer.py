@@ -28,7 +28,14 @@ def test_get_domain_with_subdomain():
 
 # ── scrape_url ──
 
-@patch("analyzer.requests.get")
+def _make_mock_resp(html: str):
+    mock_resp = MagicMock()
+    mock_resp.text = html
+    mock_resp.status_code = 200
+    return mock_resp
+
+
+@patch("analyzer._http_get")
 def test_scrape_url_success(mock_get):
     html = """<html><head><title>Test Article</title>
     <meta name="description" content="A test article">
@@ -36,10 +43,8 @@ def test_scrape_url_success(mock_get):
     <p>Another paragraph that also exceeds the minimum character threshold so it gets picked up by the scraper for processing and analysis.</p>
     </article></body></html>"""
 
-    mock_resp = MagicMock()
-    mock_resp.text = html
-    mock_resp.raise_for_status = MagicMock()
-    mock_get.return_value = mock_resp
+    mock_resp = _make_mock_resp(html)
+    mock_get.return_value = (mock_resp, None)
 
     result = scrape_url("https://example.com/news")
     assert "error" not in result
@@ -48,32 +53,30 @@ def test_scrape_url_success(mock_get):
     assert "Test Article" in result["content"]
 
 
-@patch("analyzer.requests.get")
+@patch("analyzer._http_get")
 def test_scrape_url_timeout(mock_get):
-    mock_get.side_effect = curl_requests.exceptions.Timeout("Connection timed out")
+    mock_get.return_value = (None, "La URL tardó demasiado en responder (timeout).")
     result = scrape_url("https://example.com")
     assert "error" in result
     assert "timeout" in result["error"].lower()
 
 
-@patch("analyzer.requests.get")
+@patch("analyzer._http_get")
 def test_scrape_url_http_error(mock_get):
-    mock_resp = MagicMock()
-    mock_resp.raise_for_status.side_effect = curl_requests.exceptions.HTTPError("404 Not Found")
-    mock_get.return_value = mock_resp
+    mock_get.return_value = (None, "Error HTTP al acceder a la URL: 404 Not Found")
     result = scrape_url("https://example.com/404")
     assert "error" in result
     assert "HTTP" in result["error"]
 
 
-@patch("analyzer.requests.get")
+@patch("analyzer._http_get")
 def test_scrape_url_general_exception(mock_get):
-    mock_get.side_effect = Exception("Connection refused")
+    mock_get.return_value = (None, "Connection refused")
     result = scrape_url("https://example.com")
     assert "error" in result
 
 
-@patch("analyzer.requests.get")
+@patch("analyzer._http_get")
 def test_scrape_url_no_paragraphs_fallback(mock_get):
     html = """<html><head><title>No Paragraphs</title></head>
     <body>
@@ -81,16 +84,14 @@ def test_scrape_url_no_paragraphs_fallback(mock_get):
       <div>This is a longer text that should be captured by the fallback mechanism because it exceeds the minimum character threshold required for extraction by the scraper component.</div>
     </body></html>"""
 
-    mock_resp = MagicMock()
-    mock_resp.text = html
-    mock_resp.raise_for_status = MagicMock()
-    mock_get.return_value = mock_resp
+    mock_resp = _make_mock_resp(html)
+    mock_get.return_value = (mock_resp, None)
 
     result = scrape_url("https://example.com/no-p")
     assert "error" not in result
 
 
-@patch("analyzer.requests.get")
+@patch("analyzer._http_get")
 def test_scrape_url_removes_unwanted_tags(mock_get):
     html = """<html><body><article>
     <script>alert('bad')</script>
@@ -100,10 +101,8 @@ def test_scrape_url_removes_unwanted_tags(mock_get):
     <p>This is the actual article content that should be extracted by the scraper for further processing and analysis by the system.</p>
     </article></body></html>"""
 
-    mock_resp = MagicMock()
-    mock_resp.text = html
-    mock_resp.raise_for_status = MagicMock()
-    mock_get.return_value = mock_resp
+    mock_resp = _make_mock_resp(html)
+    mock_get.return_value = (mock_resp, None)
 
     result = scrape_url("https://example.com/stripped")
     assert "Navigation" not in result["content"]
