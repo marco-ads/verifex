@@ -4,6 +4,7 @@ import cloudscraper
 from curl_cffi import requests as curl_requests
 import requests as std_requests
 from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright
 from urllib.parse import urlparse
 from groq import Groq
 
@@ -166,22 +167,35 @@ BROWSER_HEADERS = {
 
 def _try_cloudscraper(url: str) -> tuple:
     try:
-        scraper = cloudscraper.create_scraper(browser="chrome")
-        for k, v in BROWSER_HEADERS.items():
-            scraper.headers[k] = v
-        resp = scraper.get(url, timeout=15)
-        resp.raise_for_status()
-        return resp, None
+        scraper = cloudscraper.create_scraper(
+            browser={"browser": "chrome", "platform": "intel", "desktop": True, "mobile": False},
+            delay=15,
+        )
+        scraper.headers.update(BROWSER_HEADERS)
+        for attempt in range(3):
+            try:
+                resp = scraper.get(url, timeout=30)
+                resp.raise_for_status()
+                return resp, None
+            except Exception:
+                if attempt == 2:
+                    raise
+                continue
+        return None, "cloudscraper: retries exhausted"
     except Exception as e:
         return None, f"{type(e).__name__}: {e}"
 
 def _try_curl_cffi(url: str) -> tuple:
-    try:
-        resp = curl_requests.get(url, impersonate="chrome", headers=BROWSER_HEADERS, timeout=15)
-        resp.raise_for_status()
-        return resp, None
-    except Exception as e:
-        return None, f"{type(e).__name__}: {e}"
+    last_err = None
+    for version in ("chrome124", "chrome123", "chrome120", "safari17_0", "safari16_5", "firefox120"):
+        try:
+            resp = curl_requests.get(url, impersonate=version, headers=BROWSER_HEADERS, timeout=30)
+            resp.raise_for_status()
+            return resp, None
+        except Exception as e:
+            last_err = f"{type(e).__name__}: {e}"
+            continue
+    return None, f"curl_cffi ({version}): {last_err}"
 
 def _try_requests(url: str) -> tuple:
     try:
@@ -191,10 +205,34 @@ def _try_requests(url: str) -> tuple:
     except Exception as e:
         return None, f"{type(e).__name__}: {e}"
 
+_PLAYWRIGHT = None
+
+def _try_playwright(url: str) -> tuple:
+    global _PLAYWRIGHT
+    try:
+        if _PLAYWRIGHT is None:
+            _PLAYWRIGHT = sync_playwright().start()
+        browser = _PLAYWRIGHT.firefox.launch(headless=True)
+        page = browser.new_page()
+        page.goto(url, timeout=45000, wait_until="domcontentloaded")
+        page.wait_for_timeout(15000)
+        content = page.content()
+        browser.close()
+        if "just a moment" not in content.lower():
+            mock_resp = type("obj", (), {"text": content, "status_code": 200})()
+            return mock_resp, None
+        return None, "Cloudflare challenge not resolved"
+    except Exception as e:
+        return None, f"playwright: {type(e).__name__}: {e}"
+
 def _http_get(url: str) -> tuple:
-    """Try cloudscraper, curl_cffi, then standard requests."""
     all_errs = []
-    for name, attempt in [("cloudscraper", _try_cloudscraper), ("curl_cffi", _try_curl_cffi), ("requests", _try_requests)]:
+    for name, attempt in [
+        ("cloudscraper", _try_cloudscraper),
+        ("curl_cffi", _try_curl_cffi),
+        ("requests", _try_requests),
+        ("playwright", _try_playwright),
+    ]:
         resp, err = attempt(url)
         if resp:
             return resp, None

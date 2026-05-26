@@ -3,6 +3,7 @@ flask-cors==4.0.1
 requests==2.32.3
 cloudscraper==1.2.71
 curl_cffi==0.15.*
+playwright==1.53.*
 beautifulsoup4==4.12.3
 python-dotenv==1.0.1
 lxml==5.2.2
