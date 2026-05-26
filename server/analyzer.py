@@ -149,28 +149,34 @@ def get_domain(url: str) -> str:
         return ""
 
 
+BROWSER_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+    "Accept-Language": "es-MX,es;q=0.9,en;q=0.8",
+    "Accept-Encoding": "gzip, deflate",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+    "Cache-Control": "max-age=0",
+}
+
 def _http_get(url: str) -> tuple:
-    """Try curl_cffi first, fallback to standard requests on 403."""
+    """Try standard requests first, fallback to curl_cffi on 403."""
     try:
-        resp = curl_requests.get(url, impersonate="chrome", timeout=15)
-        if resp.status_code == 403:
-            raise curl_requests.exceptions.HTTPError("403 Client Error", response=resp)
+        resp = std_requests.get(url, headers=BROWSER_HEADERS, timeout=15)
+        resp.raise_for_status()
         return resp, None
-    except (curl_requests.exceptions.HTTPError, curl_requests.exceptions.Timeout) as e:
-        if isinstance(e, curl_requests.exceptions.HTTPError) and resp.status_code == 403:
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "Accept-Language": "es-MX,es;q=0.9,en;q=0.8",
-                "Accept-Encoding": "gzip, deflate",
-            }
-            try:
-                resp = std_requests.get(url, headers=headers, timeout=15)
-                resp.raise_for_status()
-                return resp, None
-            except std_requests.exceptions.RequestException as e2:
-                return None, str(e2)
-        return None, str(e)
+    except std_requests.exceptions.RequestException:
+        # Fallback: curl_cffi handles Cloudflare et al.
+        try:
+            resp = curl_requests.get(url, impersonate="chrome", timeout=15)
+            resp.raise_for_status()
+            return resp, None
+        except Exception as e:
+            return None, str(e)
 
 def scrape_url(url: str) -> dict:
     resp, err = _http_get(url)
