@@ -166,8 +166,10 @@ BROWSER_HEADERS = {
 
 def _try_cloudscraper(url: str) -> tuple:
     try:
-        scraper = cloudscraper.create_scraper()
-        resp = scraper.get(url, headers=BROWSER_HEADERS, timeout=15)
+        scraper = cloudscraper.create_scraper(browser="chrome")
+        for k, v in BROWSER_HEADERS.items():
+            scraper.headers[k] = v
+        resp = scraper.get(url, timeout=15)
         resp.raise_for_status()
         return resp, None
     except Exception as e:
@@ -175,7 +177,7 @@ def _try_cloudscraper(url: str) -> tuple:
 
 def _try_curl_cffi(url: str) -> tuple:
     try:
-        resp = curl_requests.get(url, impersonate="chrome", timeout=15)
+        resp = curl_requests.get(url, impersonate="chrome", headers=BROWSER_HEADERS, timeout=15)
         resp.raise_for_status()
         return resp, None
     except Exception as e:
