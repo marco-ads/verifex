@@ -173,7 +173,7 @@ def _try_cloudscraper(url: str) -> tuple:
         resp.raise_for_status()
         return resp, None
     except Exception as e:
-        return None, str(e)
+        return None, f"[cloudscraper] {type(e).__name__}: {e}"
 
 def _try_curl_cffi(url: str) -> tuple:
     try:
@@ -181,7 +181,7 @@ def _try_curl_cffi(url: str) -> tuple:
         resp.raise_for_status()
         return resp, None
     except Exception as e:
-        return None, str(e)
+        return None, f"[curl_cffi] {type(e).__name__}: {e}"
 
 def _try_requests(url: str) -> tuple:
     try:
@@ -189,7 +189,7 @@ def _try_requests(url: str) -> tuple:
         resp.raise_for_status()
         return resp, None
     except Exception as e:
-        return None, str(e)
+        return None, f"[requests] {type(e).__name__}: {e}"
 
 def _http_get(url: str) -> tuple:
     """Try cloudscraper, curl_cffi, then standard requests."""
