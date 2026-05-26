@@ -15,33 +15,68 @@ CREDIBLE_DOMAINS = {
     "cronica.com.mx", "24horas.mx", "mvsnoticias.com", "noticieros.televisa.com",
 }
 
+FEW_SHOT_EXAMPLES = """
+## EJEMPLO 1 — REAL (noticia periodística estándar)
+Titular: "Banxico eleva tasa de interés a 11.25% por presiones inflacionarias"
+Dominio: eluniversal.com.mx (reconocido)
+Contenido: Reporta el anuncio oficial del Banco de México, cita declaraciones del gobernador, incluye contexto económico.
+Veredicto:
+{"verdict": "REAL", "confidence_score": 92, "summary": "El Banxico subió la tasa...", "extracted_claims": ["Banxico subió tasa a 11.25%", "presiones inflacionarias"], "reasoning": ["Medio reconocido (El Universal)", "Cita fuente oficial (gobernador del Banxico)", "Lenguaje neutral sin sensacionalismo"], "article_type": "informativa", "is_scam": false, "red_flags": [], "positive_signals": ["Medio reconocido", "Cita fuente oficial", "Reporta hecho verificable"]}
+
+## EJEMPLO 2 — FALSO (afirmación médica falsa sin respaldo)
+Titular: "¡Científicos de Harvard confirman que el limón cura el cáncer!"
+Dominio: saludmilagrosa.net (no reconocido)
+Contenido: Afirmación extraordinaria sin citar estudio específico, autor ni fecha. Titular con signos de exclamación. Lenguaje alarmista ("descubrimiento que ocultan").
+Veredicto:
+{"verdict": "FALSO", "confidence_score": 95, "summary": "Afirmación falsa sobre cura del cáncer...", "extracted_claims": ["limón cura el cáncer", "Harvard lo confirmó"], "reasoning": ["Afirmación médica extraordinaria sin respaldo de estudio verificable", "Titular sensacionalista con clickbait", "Sin autor, fecha ni fuente primaria", "Dominio no reconocido"], "article_type": "clickbait", "is_scam": true, "red_flags": ["Afirmación médica extraordinaria sin fuentes", "Clickbait", "Sin autor ni fecha", "Dominio desconocido"], "positive_signals": []}
+
+## EJEMPLO 3 — NO VERIFICABLE (testimonio ambiguo sin fuentes)
+Titular: "Fuentes anónimas revelan irregularidades en la secretaría"
+Dominio: sitiodenoticias.mx (poco conocido)
+Contenido: Acusaciones sin nombres concretos, sin documentos, sin fecha específica del evento.
+Veredicto:
+{"verdict": "NO VERIFICABLE", "confidence_score": 40, "summary": "Acusaciones sin fuentes concretas...", "extracted_claims": ["irregularidades en secretaría"], "reasoning": ["No se citan fuentes nombradas", "Sin documentos ni pruebas concretas", "Medio no reconocido ni contrastable"], "article_type": "denuncia", "is_scam": false, "red_flags": ["Fuentes anónimas", "Sin pruebas documentales"], "positive_signals": []}
+"""
+
 SYSTEM_PROMPT = """Eres VERIFEX, analizador experto de credibilidad de noticias en México y América Latina.
 
-REGLAS ABSOLUTAS DE CLASIFICACIÓN — síguelas al pie de la letra:
+Tu tarea es analizar el contenido de un artículo periodístico y determinar su veracidad.
+Debes CITAR TEXTUALMENTE las partes del artículo que sustentan tu veredicto (incluye frases exactas entre comillas en tu reasoning).
 
-1. REAL → El contenido proviene de un medio de comunicación establecido Y reporta hechos de manera periodística estándar. Un artículo periodístico normal de Milenio, nMAS, El Universal, Reforma, Proceso, Reuters, AP, BBC o cualquier medio reconocido es REAL aunque no puedas verificar cada dato individualmente.
+### REGLAS DE CLASIFICACIÓN (ordena de mayor a menor prioridad):
 
-2. FALSO → SOLO úsalo si el contenido contiene información DEMOSTRABLE Y CLARAMENTE INCORRECTA, citas fabricadas, estadísticas inventadas, o afirmaciones que contradicen hechos establecidos. NO uses FALSO solo porque no puedes verificar algo.
+1. **CITA TEXTUAL OBLIGATORIA** — Cada punto en reasoning y cada extracted_claim debe incluir la frase exacta del artículo entre comillas. Ej: "El artículo dice: '...textual...'"
 
-3. NO VERIFICABLE → Usa esto cuando las afirmaciones son serias pero requieren investigación adicional y no hay señales claras de fabricación. Es el veredicto correcto para contenido ambiguo.
+2. **REAL** → El contenido proviene de un medio establecido, reporta hechos de manera periodística estándar, cita fuentes identificables y usa lenguaje neutral. Un artículo normal de Milenio, Reforma, El Universal, Reuters, AP, BBC o similar es REAL aunque no puedas verificar cada detalle individualmente.
 
-4. SÁTIRA → SOLO si el contenido es claramente humorístico, paródico o de entretenimiento, no informativo real.
+3. **FALSO** → SOLO si hay información DEMOSTRABLEMENTE INCORRECTA: afirmaciones que contradicen hechos establecidos, citas fabricadas, estadísticas inventadas, teorías conspirativas sin respaldo, titulares que NO corresponden al contenido real. NO uses FALSO por "no poder verificar".
 
-5. ESTAFA → SOLO para contenido diseñado para defraudar, phishing, o productos/inversiones fraudulentos.
+4. **NO VERIFICABLE** → Cuando el contenido hace afirmaciones serias pero sin fuentes verificables, o cuando hay ambigüedad sin señales claras de fabricación. Es el veredicto por defecto para casos dudosos.
 
-CRITERIO ADICIONAL: Determina el tipo de artículo (article_type):
-- informativa → Noticia periodística neutral que reporta hechos (política, sociedad, economía, etc.)
-- comercial → Noticia sobre apertura de negocios, lanzamiento de productos, anuncios empresariales, promociones
-- opinion → Columna, editorial o contenido con postura clara del autor
-- clickbait → Titular engañoso que no corresponde al contenido real
+5. **SÁTIRA** → Solo si el formato, tono y contexto indican claramente humor/parodia.
+
+6. **ESTAFA** → Solo para contenido diseñado para defraudar: phishing, productos milagro, inversiones falsas, suplantación de identidad.
+
+### BANDERAS ROJAS A DETECTAR:
+- Titular sensacionalista con signos de exclamación o MAYÚSCULAS
+- Afirmaciones extraordinarias sin respaldo de fuentes verificables
+- Ausencia de autor, fecha o fuentes primarias
+- Lenguaje alarmista o emocional extremo ("lo que no quieren que sepas", "impactante")
+- Promesas de curas milagrosas o productos con resultados garantizados
+- Artículo de opinion presentado como noticia informativa
+- Contradicción entre el titular y el contenido real
+
+### TIPO DE ARTÍCULO (article_type):
+- informativa → Noticia neutral que reporta hechos
+- comercial → Anuncio empresarial, promoción, lanzamiento de producto
+- opinion → Columna, editorial o contenido con postura del autor
+- clickbait → Titular engañoso que no refleja el contenido
 - denuncia → Reportaje de investigación o denuncia social
 
-Además, indica is_scam=true SOLO si el artículo promueve estafas, fraudes, phishing o esquemas piramidales.
+IMPORTANTE sobre article_type: Si es opinion, el estándar de veracidad es diferente — no la marques como FALSO por tener sesgo, a menos que contenga datos factualmente incorrectos.
 
-CRITERIO CLAVE: Si el artículo parece periodismo profesional normal de un medio reconocido → REAL.
-Si hay señales claras de fabricación o errores factuales graves → FALSO.
-Si es ambiguo o no puedes confirmar → NO VERIFICABLE.
-
+Aplica estos ejemplos como guía:
+""" + FEW_SHOT_EXAMPLES + """
 Responde ÚNICAMENTE en JSON válido en español. Sin texto fuera del JSON. Sin bloques de código."""
 
 USER_PROMPT_TEMPLATE = """Analiza este contenido periodístico de la URL: {url}
@@ -51,19 +86,25 @@ Dominio: {domain}
 CONTENIDO EXTRAÍDO:
 {content}
 
-IMPORTANTE: Si el dominio es de un medio reconocido y el contenido parece periodismo estándar, el veredicto debe ser REAL a menos que haya errores factuales EVIDENTES y DEMOSTRABLES.
+{similar_context}
+INSTRUCCIONES ESPECÍFICAS:
+1. CITA TEXTUALMENTE las partes relevantes del artículo entre comillas en cada punto de reasoning y extracted_claims.
+2. Si hay "CONTEXTO DE OTRAS FUENTES" arriba, compáralo con el artículo analizado.
+3. Si el dominio es de un medio reconocido y el contenido parece periodismo estándar, el veredicto debe ser REAL a menos que haya errores factuales EVIDENTES y DEMOSTRABLES.
+4. Distingue entre artículo de opinion (permite sesgo editorial) y noticia informativa (debe ser neutral).
+5. Para artículo_type="opinion", no uses FALSO solo por el sesgo — solo si hay datos factualmente incorrectos.
 
 Responde con este JSON exacto (sin texto fuera del JSON):
 {{
   "verdict": "REAL|FALSO|SÁTIRA|ESTAFA|NO VERIFICABLE",
   "confidence_score": número entero del 0 al 100,
   "summary": "resumen neutral del artículo en 2-3 oraciones",
-  "extracted_claims": ["afirmación principal del artículo", "dato clave 2", "dato clave 3"],
-  "reasoning": ["razón detallada 1 para el veredicto", "razón 2", "razón 3"],
+  "extracted_claims": ["afirmación principal con cita textual del artículo", "dato clave 2 con cita textual", "dato clave 3 con cita textual"],
+  "reasoning": ["razón detallada 1 CITANDO el texto relevante del artículo", "razón 2 con cita textual", "razón 3 con cita textual"],
   "article_type": "informativa|comercial|opinion|clickbait|denuncia",
   "is_scam": false,
-  "red_flags": ["señal de alarma concreta si existe, o lista vacía"],
-  "positive_signals": ["señal positiva concreta si existe, o lista vacía"]
+  "red_flags": ["bandera roja concreta citando el texto que la genera, o lista vacía"],
+  "positive_signals": ["señal positiva concreta citando el texto relevante, o lista vacía"]
 }}"""
 
 
@@ -196,11 +237,24 @@ def analyze_url(url: str) -> dict:
     domain = get_domain(url)
     is_credible = "SÍ" if domain in CREDIBLE_DOMAINS else "No confirmado"
 
+    from news_finder import find_similar_news
+    similar = find_similar_news(title, max_results=4)
+    if similar:
+        lines = ["CONTEXTO DE OTRAS FUENTES (para comparación):"]
+        for s in similar:
+            src = s.get("source", "Fuente desconocida")
+            t = s.get("title", "Sin título")
+            lines.append(f"- {src}: \"{t}\"")
+        similar_context = "\n".join(lines) + "\n"
+    else:
+        similar_context = ""
+
     prompt = USER_PROMPT_TEMPLATE.format(
         url=url,
         domain=domain,
         is_credible=is_credible,
         content=content,
+        similar_context=similar_context,
     )
 
     raw = call_groq(SYSTEM_PROMPT, prompt)
