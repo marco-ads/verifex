@@ -173,7 +173,7 @@ def _try_cloudscraper(url: str) -> tuple:
         resp.raise_for_status()
         return resp, None
     except Exception as e:
-        return None, f"[cloudscraper] {type(e).__name__}: {e}"
+        return None, f"{type(e).__name__}: {e}"
 
 def _try_curl_cffi(url: str) -> tuple:
     try:
@@ -181,7 +181,7 @@ def _try_curl_cffi(url: str) -> tuple:
         resp.raise_for_status()
         return resp, None
     except Exception as e:
-        return None, f"[curl_cffi] {type(e).__name__}: {e}"
+        return None, f"{type(e).__name__}: {e}"
 
 def _try_requests(url: str) -> tuple:
     try:
@@ -189,16 +189,17 @@ def _try_requests(url: str) -> tuple:
         resp.raise_for_status()
         return resp, None
     except Exception as e:
-        return None, f"[requests] {type(e).__name__}: {e}"
+        return None, f"{type(e).__name__}: {e}"
 
 def _http_get(url: str) -> tuple:
     """Try cloudscraper, curl_cffi, then standard requests."""
-    last_err = None
-    for attempt in (_try_cloudscraper, _try_curl_cffi, _try_requests):
-        resp, last_err = attempt(url)
+    all_errs = []
+    for name, attempt in [("cloudscraper", _try_cloudscraper), ("curl_cffi", _try_curl_cffi), ("requests", _try_requests)]:
+        resp, err = attempt(url)
         if resp:
             return resp, None
-    return None, last_err or "All HTTP methods failed"
+        all_errs.append(f"{name}:{err}")
+    return None, " | ".join(all_errs)
 
 def scrape_url(url: str) -> dict:
     resp, err = _http_get(url)
