@@ -164,21 +164,39 @@ BROWSER_HEADERS = {
     "Cache-Control": "max-age=0",
 }
 
-def _http_get(url: str) -> tuple:
-    """Try cloudscraper first, fallback to curl_cffi on 403."""
+def _try_cloudscraper(url: str) -> tuple:
     try:
         scraper = cloudscraper.create_scraper()
         resp = scraper.get(url, headers=BROWSER_HEADERS, timeout=15)
         resp.raise_for_status()
         return resp, None
-    except Exception:
-        # Fallback: curl_cffi handles tough Cloudflare
-        try:
-            resp = curl_requests.get(url, impersonate="chrome", timeout=15)
-            resp.raise_for_status()
+    except Exception as e:
+        return None, str(e)
+
+def _try_curl_cffi(url: str) -> tuple:
+    try:
+        resp = curl_requests.get(url, impersonate="chrome", timeout=15)
+        resp.raise_for_status()
+        return resp, None
+    except Exception as e:
+        return None, str(e)
+
+def _try_requests(url: str) -> tuple:
+    try:
+        resp = std_requests.get(url, headers=BROWSER_HEADERS, timeout=15)
+        resp.raise_for_status()
+        return resp, None
+    except Exception as e:
+        return None, str(e)
+
+def _http_get(url: str) -> tuple:
+    """Try cloudscraper, curl_cffi, then standard requests."""
+    last_err = None
+    for attempt in (_try_cloudscraper, _try_curl_cffi, _try_requests):
+        resp, last_err = attempt(url)
+        if resp:
             return resp, None
-        except Exception as e:
-            return None, str(e)
+    return None, last_err or "All HTTP methods failed"
 
 def scrape_url(url: str) -> dict:
     resp, err = _http_get(url)
