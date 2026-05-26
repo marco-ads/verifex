@@ -1,5 +1,6 @@
 import os
 import json
+import cloudscraper
 from curl_cffi import requests as curl_requests
 import requests as std_requests
 from bs4 import BeautifulSoup
@@ -164,13 +165,14 @@ BROWSER_HEADERS = {
 }
 
 def _http_get(url: str) -> tuple:
-    """Try standard requests first, fallback to curl_cffi on 403."""
+    """Try cloudscraper first, fallback to curl_cffi on 403."""
     try:
-        resp = std_requests.get(url, headers=BROWSER_HEADERS, timeout=15)
+        scraper = cloudscraper.create_scraper()
+        resp = scraper.get(url, headers=BROWSER_HEADERS, timeout=15)
         resp.raise_for_status()
         return resp, None
-    except std_requests.exceptions.RequestException:
-        # Fallback: curl_cffi handles Cloudflare et al.
+    except Exception:
+        # Fallback: curl_cffi handles tough Cloudflare
         try:
             resp = curl_requests.get(url, impersonate="chrome", timeout=15)
             resp.raise_for_status()
