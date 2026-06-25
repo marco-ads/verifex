@@ -6,7 +6,7 @@ from curl_cffi import requests as curl_requests
 import requests as std_requests
 import urllib3
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 from groq import Groq
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -258,6 +258,88 @@ def _is_login_blocked_page(title: str, body: str) -> bool:
     return hits >= 2
 
 
+def _extract_facebook_post_id(url: str) -> str | None:
+    parsed = urlparse(url)
+    path = parsed.path.strip("/")
+    segments = path.split("/")
+
+    # /{username}/posts/{post_id}
+    if "posts" in segments:
+        idx = segments.index("posts")
+        if idx + 1 < len(segments):
+            return segments[idx + 1]
+
+    # /{username}/videos/{post_id}
+    if "videos" in segments:
+        idx = segments.index("videos")
+        if idx + 1 < len(segments):
+            return segments[idx + 1]
+
+    # /{username}/photos/{post_id}
+    if "photos" in segments:
+        idx = segments.index("photos")
+        if idx + 1 < len(segments):
+            return segments[idx + 1]
+
+    # story.php?story_fbid={post_id}&id={user_id}
+    qs = parse_qs(parsed.query)
+    if "story_fbid" in qs:
+        return qs["story_fbid"][0]
+
+    # photo.php?fbid={post_id}
+    if "fbid" in qs:
+        return qs["fbid"][0]
+
+    return None
+
+
+def _try_facebook_graph_api(url: str) -> dict | None:
+    app_id = os.environ.get("FACEBOOK_APP_ID")
+    app_secret = os.environ.get("FACEBOOK_APP_SECRET")
+    if not app_id or not app_secret:
+        return None
+
+    post_id = _extract_facebook_post_id(url)
+    if not post_id:
+        return None
+
+    token = f"{app_id}|{app_secret}"
+    try:
+        resp = std_requests.get(
+            f"{FB_GRAPH_API}/{post_id}",
+            params={
+                "fields": "message,story,created_time,from,permalink_url",
+                "access_token": token,
+            },
+            timeout=15,
+        )
+        if resp.status_code != 200:
+            return None
+
+        data = resp.json()
+        if "error" in data:
+            return None
+
+        text_parts = []
+        if data.get("story"):
+            text_parts.append(data["story"])
+        if data.get("message"):
+            text_parts.append(data["message"])
+        if data.get("from", {}).get("name"):
+            text_parts.insert(0, f"Publicado por: {data['from']['name']}")
+
+        body = " - ".join(text_parts)
+        title = data.get("story", data.get("message", ""))[:100]
+
+        return {
+            "content": f"Título: {title}\nTexto del artículo: {body[:5000]}",
+            "title": title,
+            "article_text": body[:2000],
+        }
+    except Exception:
+        return None
+
+
 def _http_get(url: str) -> tuple:
     all_errs = []
     for name, attempt in [
@@ -343,8 +425,27 @@ def scrape_url(url: str) -> dict:
                 if len(pw_result.get("article_text", "")) > len(result.get("article_text", "")):
                     result = pw_result
 
+        is_fb = "facebook.com" in domain or "fb.com" in domain
+
         if _is_login_blocked_page(result.get("title", ""), result.get("article_text", "")):
-            return {"error": "La página solicitada requiere inicio de sesión o bloquea el acceso automatizado. No se pudo extraer el contenido."}
+            if is_fb:
+                fb_result = _try_facebook_graph_api(url)
+                if fb_result:
+                    return fb_result
+                app_id = os.environ.get("FACEBOOK_APP_ID")
+                app_secret = os.environ.get("FACEBOOK_APP_SECRET")
+                if not app_id or not app_secret:
+                    return {"error": (
+                        "Facebook bloquea el acceso automatizado. "
+                        "Para analizar posts de Facebook:\n"
+                        "1. Crea una app en https://developers.facebook.com\n"
+                        "2. Copia el App ID y App Secret a server/.env:\n"
+                        "   FACEBOOK_APP_ID=tu_app_id\n"
+                        "   FACEBOOK_APP_SECRET=tu_app_secret"
+                    )}
+                return {"error": "No se pudo extraer el contenido de esta publicación de Facebook. Verifica que el post sea público y tus credenciales de API sean correctas."}
+
+            return {"error": "La página solicitada requiere inicio de sesión o bloquea el acceso automatizado."}
 
         return result
     except Exception as e:
