@@ -242,6 +242,22 @@ def _try_playwright(url: str) -> tuple:
     except Exception as e:
         return None, f"playwright: {type(e).__name__}: {e}"
 
+LOGIN_PATTERNS = [
+    "iniciar sesión", "contraseña", "olvidaste tu contraseña",
+    "crear cuenta nueva", "correo electrónico o número de celular",
+    "log in", "create new account", "forgot password",
+    "sign up to see", "log in to see",
+]
+
+
+def _is_login_blocked_page(title: str, body: str) -> bool:
+    if len(body) >= 800:
+        return False
+    text = f"{title} {body}".lower()
+    hits = sum(1 for p in LOGIN_PATTERNS if p in text)
+    return hits >= 2
+
+
 def _http_get(url: str) -> tuple:
     all_errs = []
     for name, attempt in [
@@ -326,6 +342,9 @@ def scrape_url(url: str) -> dict:
                 pw_result = _extract_from_html(playwright_resp.text, domain=domain)
                 if len(pw_result.get("article_text", "")) > len(result.get("article_text", "")):
                     result = pw_result
+
+        if _is_login_blocked_page(result.get("title", ""), result.get("article_text", "")):
+            return {"error": "La página solicitada requiere inicio de sesión o bloquea el acceso automatizado. No se pudo extraer el contenido."}
 
         return result
     except Exception as e:
