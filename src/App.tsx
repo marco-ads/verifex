@@ -1,4 +1,4 @@
-import { useState, useCallback, lazy, Suspense } from 'react'
+import { useState, useCallback, useMemo, lazy, Suspense } from 'react'
 import UrlInput from './components/UrlInput'
 import VerdictDisplay from './components/VerdictDisplay'
 import ConfidenceBar from './components/ConfidenceBar'
@@ -186,6 +186,14 @@ export default function App() {
 
   const analysis = result?.analysis ?? null
 
+  const adjustedVerdict = useMemo(() => {
+    if (!analysis) return null
+    const score = analysis.confidence_score
+    if (score < 50) return 'FALSO'
+    if (score <= 69) return 'DUDOSO'
+    return analysis.verdict
+  }, [analysis])
+
   return (
     <div style={{ position: 'relative', minHeight: '100vh', width: '100%' }}>
       <div className="grid-bg" />
@@ -240,7 +248,7 @@ export default function App() {
                   )}
                 </div>
 
-                <VerdictDisplay verdict={analysis.verdict} lang={lang} />
+                <VerdictDisplay verdict={adjustedVerdict ?? analysis.verdict} originalVerdict={analysis.verdict} lang={lang} />
 
                 <ConfidenceBar score={analysis.confidence_score} lang={lang} />
 

@@ -2,6 +2,7 @@ import { memo, useMemo } from 'react'
 
 interface Props {
   verdict: string
+  originalVerdict?: string
   lang: 'es' | 'en'
 }
 
@@ -30,6 +31,12 @@ const VERDICT_CONFIG: Record<string, { color: string; border: string; subtitleEs
     subtitleEs: 'Se detectaron señales de contenido fraudulento o engañoso.',
     subtitleEn: 'Signals of fraudulent or deceptive content were detected.',
   },
+  DUDOSO: {
+    color: '#ffaa00',
+    border: 'rgba(255,170,0,0.3)',
+    subtitleEs: 'El contenido tiene señales mixtas y no se puede determinar su veracidad con certeza.',
+    subtitleEn: 'The content has mixed signals and its veracity cannot be determined with certainty.',
+  },
   'NO VERIFICABLE': {
     color: '#6b7280',
     border: 'rgba(107,114,128,0.3)',
@@ -40,8 +47,9 @@ const VERDICT_CONFIG: Record<string, { color: string; border: string; subtitleEs
 
 const FALLBACK_CFG = VERDICT_CONFIG['NO VERIFICABLE']
 
-const VerdictDisplay = memo(function VerdictDisplay({ verdict, lang }: Props) {
+const VerdictDisplay = memo(function VerdictDisplay({ verdict, originalVerdict, lang }: Props) {
   const cfg = VERDICT_CONFIG[verdict] ?? FALLBACK_CFG
+  const adjusted = originalVerdict !== undefined && originalVerdict !== verdict
 
   const containerStyle = useMemo(() => ({
     background: cfg.border,
@@ -63,6 +71,11 @@ const VerdictDisplay = memo(function VerdictDisplay({ verdict, lang }: Props) {
   return (
     <div style={containerStyle}>
       <div style={wordStyle}>{verdict}</div>
+      {adjusted && (
+        <p style={{ color: '#6b7280', marginTop: '0.2rem', fontFamily: 'Share Tech Mono, monospace', fontSize: '0.75rem', letterSpacing: '0.1em' }}>
+          {lang === 'es' ? `IA clasificó como: ${originalVerdict}` : `AI classified as: ${originalVerdict}`}
+        </p>
+      )}
       <p style={{ color: '#8a9ab0', marginTop: '0.4rem', fontFamily: 'Rajdhani, sans-serif', fontSize: '1rem' }}>
         {lang === 'es' ? cfg.subtitleEs : cfg.subtitleEn}
       </p>
