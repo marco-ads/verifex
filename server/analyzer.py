@@ -256,7 +256,7 @@ def _http_get(url: str) -> tuple:
         all_errs.append(f"{name}:{err}")
     return None, " | ".join(all_errs)
 
-def _extract_from_html(html: str) -> dict:
+def _extract_from_html(html: str, domain: str = "") -> dict:
     soup = BeautifulSoup(html, "lxml")
 
     for tag in soup(["script", "style", "nav", "footer", "aside", "header", "iframe", "noscript"]):
@@ -269,6 +269,26 @@ def _extract_from_html(html: str) -> dict:
     meta_desc = meta.get("content", "") if meta else ""
 
     article = soup.find("article") or soup.find("main") or soup.body
+
+    if "instagram.com" in domain:
+        if meta_desc and len(meta_desc) > 40:
+            clean = meta_desc
+            for prefix in [" on Instagram: ", " en Instagram: "]:
+                idx = clean.find(prefix)
+                if idx > 0:
+                    clean = clean[idx + len(prefix):]
+            content = (
+                f"Título: {title}\n"
+                f"Descripción: {meta_desc}\n"
+                f"Texto del artículo: {clean[:5000]}"
+            )
+            return {"content": content, "title": title, "article_text": clean[:2000]}
+
+        for el in soup.find_all(attrs={"role": "comment"}):
+            el.decompose()
+        for el in soup.find_all(class_=lambda c: c and "comment" in c.lower()):
+            el.decompose()
+
     paragraphs = article.find_all("p") if article else soup.find_all("p")
 
     body_parts = []
@@ -296,13 +316,14 @@ def scrape_url(url: str) -> dict:
     resp, err = _http_get(url)
     if err or resp is None:
         return {"error": err or "No se pudo acceder a la URL"}
+    domain = get_domain(url)
     try:
-        result = _extract_from_html(resp.text)
+        result = _extract_from_html(resp.text, domain=domain)
 
         if len(result.get("article_text", "")) < 500:
             playwright_resp, _ = _try_playwright(url)
             if playwright_resp:
-                pw_result = _extract_from_html(playwright_resp.text)
+                pw_result = _extract_from_html(playwright_resp.text, domain=domain)
                 if len(pw_result.get("article_text", "")) > len(result.get("article_text", "")):
                     result = pw_result
 
