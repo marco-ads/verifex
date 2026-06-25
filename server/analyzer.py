@@ -1,12 +1,15 @@
 import os
+import sys
 import json
 import cloudscraper
 from curl_cffi import requests as curl_requests
 import requests as std_requests
+import urllib3
 from bs4 import BeautifulSoup
-from playwright.sync_api import sync_playwright
 from urllib.parse import urlparse
 from groq import Groq
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 CREDIBLE_DOMAINS = {
     "milenio.com", "eluniversal.com.mx", "reforma.com", "proceso.com.mx",
@@ -165,10 +168,20 @@ BROWSER_HEADERS = {
     "Cache-Control": "max-age=0",
 }
 
+def _get_platform() -> str:
+    p = sys.platform.lower()
+    if p.startswith("linux"):
+        return "linux"
+    if p.startswith("win"):
+        return "windows"
+    if p.startswith("darwin"):
+        return "darwin"
+    return "linux"
+
 def _try_cloudscraper(url: str) -> tuple:
     try:
         scraper = cloudscraper.create_scraper(
-            browser={"browser": "chrome", "platform": "intel", "desktop": True, "mobile": False},
+            browser={"browser": "chrome", "platform": _get_platform(), "desktop": True},
             delay=15,
         )
         scraper.headers.update(BROWSER_HEADERS)
@@ -187,7 +200,7 @@ def _try_cloudscraper(url: str) -> tuple:
 
 def _try_curl_cffi(url: str) -> tuple:
     last_err = None
-    for version in ("chrome124", "chrome123", "chrome120", "safari17_0", "safari16_5", "firefox120"):
+    for version in ("chrome124", "chrome123", "chrome120", "safari17_0", "safari16_5"):
         try:
             resp = curl_requests.get(url, impersonate=version, headers=BROWSER_HEADERS, timeout=30)
             resp.raise_for_status()
@@ -195,33 +208,36 @@ def _try_curl_cffi(url: str) -> tuple:
         except Exception as e:
             last_err = f"{type(e).__name__}: {e}"
             continue
-    return None, f"curl_cffi ({version}): {last_err}"
+    return None, f"curl_cffi: {last_err}"
 
 def _try_requests(url: str) -> tuple:
-    try:
-        resp = std_requests.get(url, headers=BROWSER_HEADERS, timeout=15)
-        resp.raise_for_status()
-        return resp, None
-    except Exception as e:
-        return None, f"{type(e).__name__}: {e}"
-
-_PLAYWRIGHT = None
+    last_err = None
+    for attempt in range(2):
+        try:
+            resp = std_requests.get(url, headers=BROWSER_HEADERS, timeout=15, verify=attempt == 1)
+            resp.raise_for_status()
+            return resp, None
+        except Exception as e:
+            last_err = f"{type(e).__name__}: {e}"
+            continue
+    return None, f"requests: {last_err}"
 
 def _try_playwright(url: str) -> tuple:
-    global _PLAYWRIGHT
     try:
-        if _PLAYWRIGHT is None:
-            _PLAYWRIGHT = sync_playwright().start()
-        browser = _PLAYWRIGHT.firefox.launch(headless=True)
-        page = browser.new_page()
-        page.goto(url, timeout=45000, wait_until="domcontentloaded")
-        page.wait_for_timeout(15000)
-        content = page.content()
-        browser.close()
-        if "just a moment" not in content.lower():
-            mock_resp = type("obj", (), {"text": content, "status_code": 200})()
-            return mock_resp, None
-        return None, "Cloudflare challenge not resolved"
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            browser = p.firefox.launch(headless=True)
+            page = browser.new_page()
+            page.goto(url, timeout=45000, wait_until="domcontentloaded")
+            page.wait_for_timeout(15000)
+            content = page.content()
+            browser.close()
+            if "just a moment" not in content.lower():
+                mock_resp = type("obj", (), {"text": content, "status_code": 200})()
+                return mock_resp, None
+            return None, "Cloudflare challenge not resolved"
+    except ImportError:
+        return None, "playwright: not installed"
     except Exception as e:
         return None, f"playwright: {type(e).__name__}: {e}"
 
