@@ -18,7 +18,8 @@ CREDIBLE_DOMAINS = {
     "nytimes.com", "washingtonpost.com", "theguardian.com", "elpais.com",
     "infobae.com", "animalpolitico.com", "sinembargo.mx", "expansion.mx",
     "forbes.com.mx", "eleconomista.com.mx", "wradio.com.mx", "radioformula.com.mx",
-    "cronica.com.mx", "24horas.mx", "mvsnoticias.com", "noticieros.televisa.com",
+    "cronica.com.mx", "24horas.mx",     "mvsnoticias.com", "noticieros.televisa.com",
+    "aristeguinoticias.com",
 }
 
 FEW_SHOT_EXAMPLES = """
@@ -255,45 +256,57 @@ def _http_get(url: str) -> tuple:
         all_errs.append(f"{name}:{err}")
     return None, " | ".join(all_errs)
 
+def _extract_from_html(html: str) -> dict:
+    soup = BeautifulSoup(html, "lxml")
+
+    for tag in soup(["script", "style", "nav", "footer", "aside", "header", "iframe", "noscript"]):
+        tag.decompose()
+
+    title_el = soup.find("title")
+    title = title_el.get_text(strip=True) if title_el else ""
+
+    meta = soup.find("meta", {"name": "description"}) or soup.find("meta", {"property": "og:description"})
+    meta_desc = meta.get("content", "") if meta else ""
+
+    article = soup.find("article") or soup.find("main") or soup.body
+    paragraphs = article.find_all("p") if article else soup.find_all("p")
+
+    body_parts = []
+    for p in paragraphs[:50]:
+        text = p.get_text(strip=True)
+        if len(text) > 40:
+            body_parts.append(text)
+
+    body = " ".join(body_parts)
+
+    if not body or len(body) < 100:
+        text_content = article.get_text(separator=" ", strip=True) if article else ""
+        lines = [t.strip() for t in text_content.split() if len(t.strip()) > 60]
+        body = " ".join(lines[:80]) if lines else text_content[:5000]
+
+    content = (
+        f"Título: {title}\n"
+        f"Descripción: {meta_desc}\n"
+        f"Texto del artículo: {body[:5000]}"
+    )
+    return {"content": content, "title": title, "article_text": body[:2000]}
+
+
 def scrape_url(url: str) -> dict:
     resp, err = _http_get(url)
     if err or resp is None:
         return {"error": err or "No se pudo acceder a la URL"}
     try:
-        soup = BeautifulSoup(resp.text, "lxml")
+        result = _extract_from_html(resp.text)
 
-        for tag in soup(["script", "style", "nav", "footer", "aside", "header", "iframe", "noscript"]):
-            tag.decompose()
+        if len(result.get("article_text", "")) < 500:
+            playwright_resp, _ = _try_playwright(url)
+            if playwright_resp:
+                pw_result = _extract_from_html(playwright_resp.text)
+                if len(pw_result.get("article_text", "")) > len(result.get("article_text", "")):
+                    result = pw_result
 
-        title_el = soup.find("title")
-        title = title_el.get_text(strip=True) if title_el else ""
-
-        meta = soup.find("meta", {"name": "description"}) or soup.find("meta", {"property": "og:description"})
-        meta_desc = meta.get("content", "") if meta else ""
-
-        article = soup.find("article") or soup.find("main") or soup.body
-        paragraphs = article.find_all("p") if article else soup.find_all("p")
-
-        body_parts = []
-        for p in paragraphs[:50]:
-            text = p.get_text(strip=True)
-            if len(text) > 40:
-                body_parts.append(text)
-
-        body = " ".join(body_parts)
-
-        # If no paragraphs found, grab all text from the article container
-        if not body or len(body) < 100:
-            text_content = article.get_text(separator=" ", strip=True) if article else ""
-            lines = [t.strip() for t in text_content.split() if len(t.strip()) > 60]
-            body = " ".join(lines[:80]) if lines else text_content[:5000]
-
-        content = (
-            f"Título: {title}\n"
-            f"Descripción: {meta_desc}\n"
-            f"Texto del artículo: {body[:5000]}"
-        )
-        return {"content": content, "title": title, "article_text": body[:2000]}
+        return result
     except Exception as e:
         return {"error": f"Error al procesar el contenido: {str(e)}"}
 
