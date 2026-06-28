@@ -19,7 +19,6 @@ CREDIBLE_DOMAINS = {
     "infobae.com", "animalpolitico.com", "sinembargo.mx", "expansion.mx",
     "forbes.com.mx", "eleconomista.com.mx", "wradio.com.mx", "radioformula.com.mx",
     "cronica.com.mx", "24horas.mx",     "mvsnoticias.com", "noticieros.televisa.com",
-    "aristeguinoticias.com",
 }
 
 FEW_SHOT_EXAMPLES = """
@@ -86,7 +85,7 @@ Aplica estos ejemplos como guía:
 """ + FEW_SHOT_EXAMPLES + """
 Responde ÚNICAMENTE en JSON válido en español. Sin texto fuera del JSON. Sin bloques de código."""
 
-USER_PROMPT_TEMPLATE = """Analiza este contenido periodístico de la URL: {url}
+USER_PROMPT_BASE = """Analiza este contenido periodístico de la URL: {url}
 Dominio: {domain}
 ¿Es dominio de medio reconocido? {is_credible}
 
@@ -100,7 +99,6 @@ INSTRUCCIONES ESPECÍFICAS:
 3. Si el dominio es de un medio reconocido y el contenido parece periodismo estándar, el veredicto debe ser REAL a menos que haya errores factuales EVIDENTES y DEMOSTRABLES.
 4. Distingue entre artículo de opinion (permite sesgo editorial) y noticia informativa (debe ser neutral).
 5. Para artículo_type="opinion", no uses FALSO solo por el sesgo — solo si hay datos factualmente incorrectos.
-{ig_instructions}
 
 Responde con este JSON exacto (sin texto fuera del JSON):
 {{
@@ -114,17 +112,6 @@ Responde con este JSON exacto (sin texto fuera del JSON):
   "red_flags": ["bandera roja concreta citando el texto que la genera, o lista vacía"],
   "positive_signals": ["señal positiva concreta citando el texto relevante, o lista vacía"]
 }}"""
-
-INSTAGRAM_USER_INSTRUCTIONS = """
-### INSTRUCCIONES ESPECÍFICAS PARA INSTAGRAM:
-1. PRIMERO identifica la CATEGORÍA del contenido: noticia, humor/entretenimiento, sátira, opinión, comercial, vida personal, o educativo.
-2. Si es NOTICIA (reporta hechos reales): aplica las reglas estándar de verificación.
-3. Si es HUMOR/ENTRETENIMIENTO (memes, videos graciosos, gatos, bailes, etc.): el veredicto debe ser SÁTIRA con confianza >= 80. NO USES FALSO para contenido humorístico o entretenimiento.
-4. Si es SÁTIRA (humor con crítica política/social evidente): veredicto SÁTIRA con confianza >= 85.
-5. Si es claramente FALSO presentado como noticia (afirmaciones disparatadas sin evidencia): veredicto FALSO con confianza >= 85.
-6. Si es contenido personal o educativo sin afirmaciones factuales controversiales: NO USES FALSO. Usa NO VERIFICABLE o REAL si es inofensivo.
-7. Cuando NO hay "CONTEXTO DE OTRAS FUENTES", analiza el contenido por sí mismo — la ausencia de noticias similares es NORMAL en Instagram porque la mayoría del contenido no es periodístico.
-"""
 
 
 def get_groq_client() -> Groq | None:
@@ -519,23 +506,27 @@ def analyze_url(url: str) -> dict:
     else:
         similar_context = ""
 
-    ig_instructions = INSTAGRAM_USER_INSTRUCTIONS if "instagram.com" in domain else ""
-
-    if "instagram.com" in domain and not similar:
-        ig_extra = (
-            "\nNo se encontraron noticias similares en Google News (es esperado para Instagram). "
-            "Analiza el contenido por sí mismo identificando primero la categoría."
-        )
-        ig_instructions += ig_extra
-
-    prompt = USER_PROMPT_TEMPLATE.format(
+    prompt = USER_PROMPT_BASE.format(
         url=url,
         domain=domain,
         is_credible=is_credible,
         content=content,
         similar_context=similar_context,
-        ig_instructions=ig_instructions,
     )
+
+    if "instagram.com" in domain:
+        ig_extra = (
+            "\n### INSTRUCCIONES ESPECÍFICAS PARA INSTAGRAM:\n"
+            "1. PRIMERO identifica la CATEGORÍA del contenido: noticia, humor/entretenimiento, sátira, opinión, comercial, vida personal, o educativo.\n"
+            "2. Si es NOTICIA (reporta hechos reales): aplica las reglas estándar de verificación.\n"
+            "3. Si es HUMOR/ENTRETENIMIENTO (memes, videos graciosos, gatos, bailes, etc.): el veredicto debe ser SÁTIRA con confianza >= 80. NO USES FALSO para contenido humorístico o entretenimiento.\n"
+            "4. Si es SÁTIRA (humor con crítica política/social evidente): veredicto SÁTIRA con confianza >= 85.\n"
+            "5. Si es claramente FALSO presentado como noticia (afirmaciones disparatadas sin evidencia): veredicto FALSO con confianza >= 85.\n"
+            "6. Si es contenido personal o educativo sin afirmaciones factuales controversiales: NO USES FALSO. Usa NO VERIFICABLE o REAL si es inofensivo.\n"
+            "7. Cuando NO hay \"CONTEXTO DE OTRAS FUENTES\", analiza el contenido por sí mismo — la ausencia de noticias similares es NORMAL en Instagram porque la mayoría del contenido no es periodístico.\n"
+            "8. Incluye el campo extra \"content_category\" en el JSON con la categoría identificada."
+        )
+        prompt += ig_extra
 
     raw = call_groq(SYSTEM_PROMPT, prompt)
     if raw:
