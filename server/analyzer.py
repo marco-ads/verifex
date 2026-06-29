@@ -556,14 +556,11 @@ def analyze_url(url: str) -> dict:
     if raw:
         parsed = parse_response(raw)
         if parsed and "verdict" in parsed:
-            if (
-                is_credible == "SÍ"
-                and parsed.get("verdict") == "FALSO"
-                and not parsed.get("red_flags")
-            ):
+            if is_credible == "SÍ" and parsed.get("verdict") == "FALSO":
                 parsed["verdict"] = "NO VERIFICABLE"
                 parsed["reasoning"] = parsed.get("reasoning", []) + [
-                    f"El dominio {domain} es un medio de comunicación reconocido."
+                    f"El dominio {domain} es un medio de comunicación reconocido. "
+                    "Contenido de fuente fiable reclasificado como NO VERIFICABLE."
                 ]
 
             return {
