@@ -18,7 +18,9 @@ CREDIBLE_DOMAINS = {
     "nytimes.com", "washingtonpost.com", "theguardian.com", "elpais.com",
     "infobae.com", "animalpolitico.com", "sinembargo.mx", "expansion.mx",
     "forbes.com.mx", "eleconomista.com.mx", "wradio.com.mx", "radioformula.com.mx",
-    "cronica.com.mx", "24horas.mx",     "mvsnoticias.com", "noticieros.televisa.com",
+    "cronica.com.mx", "24horas.mx", "mvsnoticias.com", "noticieros.televisa.com",
+    "aristeguinoticias.com",
+    "heraldodemexico.com.mx", "elheraldo.hn", "elheraldo.co",
 }
 
 FEW_SHOT_EXAMPLES = """

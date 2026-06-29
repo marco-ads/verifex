@@ -187,11 +187,10 @@ export default function App() {
   const analysis = result?.analysis ?? null
 
   const adjustedVerdict = useMemo(() => {
-    if (!analysis || !result) return null
-    if (result.domain && result.domain.includes('instagram.com')) {
-      return analysis.verdict
-    }
+    if (!analysis) return null
     const score = analysis.confidence_score
+    const isInstagram = result?.domain?.includes('instagram.com')
+    if (isInstagram) return analysis.verdict
     if (score < 50) return 'FALSO'
     if (score <= 69) return 'DUDOSO'
     return analysis.verdict
