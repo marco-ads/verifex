@@ -91,6 +91,13 @@ body::after {
   padding: 1.25rem 1.5rem;
 }
 
+.panel-alt {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  clip-path: polygon(0% 0%, calc(100% - 12px) 0%, 100% 100%, 12px 100%);
+  padding: 1.25rem 1.5rem;
+}
+
 /* Glitch title — plays 3 times then stops */
 .glitch {
   position: relative;
