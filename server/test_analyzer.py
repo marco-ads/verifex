@@ -2,7 +2,6 @@ import os
 import json
 import pytest
 from unittest.mock import patch, MagicMock
-from curl_cffi import requests as curl_requests
 from analyzer import (
     get_domain,
     scrape_url,

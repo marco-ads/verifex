@@ -294,6 +294,9 @@ def _extract_facebook_post_id(url: str) -> str | None:
     return None
 
 
+FB_GRAPH_API = "https://graph.facebook.com/v19.0"
+
+
 def _try_facebook_graph_api(url: str) -> dict | None:
     app_id = os.environ.get("FACEBOOK_APP_ID")
     app_secret = os.environ.get("FACEBOOK_APP_SECRET")
