@@ -181,28 +181,29 @@ def _get_platform() -> str:
     return "linux"
 
 def _try_cloudscraper(url: str) -> tuple:
-    try:
-        scraper = cloudscraper.create_scraper(
-            browser={"browser": "chrome", "platform": _get_platform(), "desktop": True},
-            delay=15,
-        )
-        scraper.headers.update(BROWSER_HEADERS)
-        for attempt in range(3):
+    last_err = None
+    profiles = [
+        {"browser": "chrome", "platform": _get_platform(), "desktop": True},
+        {"browser": "firefox", "platform": _get_platform(), "desktop": True},
+        {"browser": "chrome", "platform": "windows", "desktop": True},
+        {"browser": "firefox", "platform": "windows", "desktop": True},
+    ]
+    for profile in profiles:
+        for attempt in range(2):
             try:
+                scraper = cloudscraper.create_scraper(browser=profile, delay=5)
+                scraper.headers.update(BROWSER_HEADERS)
                 resp = scraper.get(url, timeout=30)
                 resp.raise_for_status()
                 return resp, None
-            except Exception:
-                if attempt == 2:
-                    raise
+            except Exception as e:
+                last_err = f"{type(e).__name__}: {e}"
                 continue
-        return None, "cloudscraper: retries exhausted"
-    except Exception as e:
-        return None, f"{type(e).__name__}: {e}"
+    return None, f"cloudscraper: {last_err}"
 
 def _try_curl_cffi(url: str) -> tuple:
     last_err = None
-    for version in ("chrome124", "chrome123", "chrome120", "safari17_0", "safari16_5"):
+    for version in ("chrome123", "chrome120", "safari17_0", "chrome124"):
         try:
             resp = curl_requests.get(url, impersonate=version, headers=BROWSER_HEADERS, timeout=30)
             resp.raise_for_status()
@@ -397,6 +398,17 @@ def _extract_from_html(html: str, domain: str = "") -> dict:
             body_parts.append(text)
 
     body = " ".join(body_parts)
+
+    if not body or len(body) < 500:
+        all_p = soup.body.find_all("p") if soup.body else soup.find_all("p")
+        all_body_parts = []
+        for p in all_p[:75]:
+            text = p.get_text(strip=True)
+            if len(text) > 40 and text not in body_parts:
+                all_body_parts.append(text)
+        wider_body = " ".join(all_body_parts)
+        if len(wider_body) > len(body):
+            body = wider_body
 
     if not body or len(body) < 100:
         text_content = article.get_text(separator=" ", strip=True) if article else ""
