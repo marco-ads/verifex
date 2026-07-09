@@ -189,8 +189,16 @@ export default function App() {
   const adjustedVerdict = useMemo(() => {
     if (!analysis) return null
     const score = analysis.confidence_score
-    const isInstagram = result?.domain?.includes('instagram.com')
-    if (isInstagram) return analysis.verdict
+    const isSocialMedia = result?.domain && (
+      result.domain.includes('instagram.com') ||
+      result.domain.includes('threads.net') ||
+      result.domain.includes('threads.com') ||
+      result.domain.includes('x.com') ||
+      result.domain.includes('twitter.com') ||
+      result.domain.includes('tiktok.com') ||
+      result.domain.includes('facebook.com')
+    )
+    if (isSocialMedia) return analysis.verdict
     if (score < 50) return 'FALSO'
     if (score <= 69) return 'DUDOSO'
     return analysis.verdict

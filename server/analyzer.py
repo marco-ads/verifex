@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import re
 import cloudscraper
 from curl_cffi import requests as curl_requests
 import requests as std_requests
@@ -22,6 +23,46 @@ CREDIBLE_DOMAINS = {
     "aristeguinoticias.com",
     "heraldodemexico.com.mx", "elheraldo.hn", "elheraldo.co",
 }
+
+SOCIAL_MEDIA_DOMAINS = {
+    "instagram.com", "threads.net", "threads.com", "x.com", "twitter.com",
+    "tiktok.com", "facebook.com", "fb.com",
+}
+
+SOCIAL_MEDIA_PROMPT = """
+### INSTRUCCIONES ESPECÍFICAS PARA {platform} (ANULAN LAS REGLAS GENERALES):
+Este contenido es de {platform}, una red social. Primero identifica la categoría y asígnale el veredicto:
+
+**Reglas (en este orden):**
+- Categoría "noticia" (reporta hechos actuales reales) → **REAL**. Sin excusas de "falta de fuentes".
+- Categoría "humor" o "sátira" → **SÁTIRA**. Confianza >= 80. NUNCA FALSO.
+- Categoría "noticia_falsa" (afirmaciones falsas/fantásticas) → **FALSO**.
+- Categoría "opinión" o "vida_personal" → **NO VERIFICABLE**. NUNCA FALSO.
+
+Añade "content_category" al JSON con la categoría.
+
+### EJEMPLOS:
+---
+EJEMPLO RS 1 — NOTICIA REAL:
+Contenido: "ÚLTIMA HORA: Irán lanzó misiles a Israel. El mundo en alerta."
+Categoría: noticia
+→ {{"verdict": "REAL", "confidence_score": 85, "content_category": "noticia"}}
+---
+EJEMPLO RS 2 — HUMOR:
+Contenido: "Mi cerebro a las 3 AM: ¿y si los aliens esperan que termine su serie? 😂"
+Categoría: humor
+→ {{"verdict": "SÁTIRA", "confidence_score": 90, "content_category": "humor"}}
+---
+EJEMPLO RS 3 — NOTICIA FALSA:
+Contenido: "¡URGENTE! Gobierno declara ley marcial. No salgan de casa."
+Categoría: noticia_falsa
+→ {{"verdict": "FALSO", "confidence_score": 95, "content_category": "noticia_falsa"}}
+---
+EJEMPLO RS 4 — VIDA PERSONAL:
+Contenido: "Hoy fue un día increíble, el atardecer en la playa era perfecto."
+Categoría: vida_personal
+→ {{"verdict": "NO VERIFICABLE", "confidence_score": 80, "content_category": "vida_personal"}}
+"""
 
 FEW_SHOT_EXAMPLES = """
 ## EJEMPLO 1 — REAL (noticia periodística estándar)
@@ -359,14 +400,31 @@ def _http_get(url: str) -> tuple:
 def _extract_from_html(html: str, domain: str = "") -> dict:
     soup = BeautifulSoup(html, "lxml")
 
-    for tag in soup(["script", "style", "nav", "footer", "aside", "header", "iframe", "noscript"]):
-        tag.decompose()
-
     title_el = soup.find("title")
     title = title_el.get_text(strip=True) if title_el else ""
 
     meta = soup.find("meta", {"name": "description"}) or soup.find("meta", {"property": "og:description"})
     meta_desc = meta.get("content", "") if meta else ""
+
+    # Threads: extraer posts del JSON embebido
+    threads_text = ""
+    if "threads.com" in domain or "threads.net" in domain:
+        for script in soup.find_all("script", type="application/json"):
+            s = script.string or ""
+            if "text_post_app_thread" in s:
+                texts = re.findall(r'"text"\s*:\s*"((?:\\.|[^"\\])*)"', s)
+                cleaned = []
+                for t in texts:
+                    decoded = t.replace("\\n", " ")
+                    decoded = re.sub(r"\\u[0-9a-fA-F]{4}", "", decoded)
+                    if len(decoded) > 15:
+                        cleaned.append(decoded)
+                if cleaned:
+                    threads_text = "\n".join(cleaned[:20])
+                break
+
+    for tag in soup(["script", "style", "nav", "footer", "aside", "header", "iframe", "noscript"]):
+        tag.decompose()
 
     article = soup.find("article") or soup.find("main") or soup.body
 
@@ -414,6 +472,9 @@ def _extract_from_html(html: str, domain: str = "") -> dict:
         text_content = article.get_text(separator=" ", strip=True) if article else ""
         lines = [t.strip() for t in text_content.split() if len(t.strip()) > 60]
         body = " ".join(lines[:80]) if lines else text_content[:5000]
+
+    if threads_text:
+        body = f"{threads_text}\n\n{body}"
 
     content = (
         f"Título: {title}\n"
@@ -528,41 +589,25 @@ def analyze_url(url: str) -> dict:
         similar_context=similar_context,
     )
 
-    if "instagram.com" in domain:
-        ig_extra = (
-            "\n### INSTRUCCIONES ESPECÍFICAS PARA INSTAGRAM:\n"
-            "1. PRIMERO identifica la CATEGORÍA del contenido: noticia, humor/entretenimiento, sátira, opinión, comercial, vida personal, o educativo.\n"
-            "2. Si es NOTICIA (reporta hechos reales): aplica las reglas estándar de verificación.\n"
-            "3. Si es HUMOR/ENTRETENIMIENTO (memes, videos graciosos, gatos, bailes, etc.): el veredicto debe ser SÁTIRA con confianza >= 80. NO USES FALSO para contenido humorístico o entretenimiento.\n"
-            "4. Si es SÁTIRA (humor con crítica política/social evidente): veredicto SÁTIRA con confianza >= 85.\n"
-            "5. Si es claramente FALSO presentado como noticia (afirmaciones disparatadas sin evidencia): veredicto FALSO con confianza >= 85.\n"
-            "6. Si es contenido personal o educativo sin afirmaciones factuales controversiales: NO USES FALSO. Usa NO VERIFICABLE o REAL si es inofensivo.\n"
-            "7. Cuando NO hay \"CONTEXTO DE OTRAS FUENTES\", analiza el contenido por sí mismo — la ausencia de noticias similares es NORMAL en Instagram porque la mayoría del contenido no es periodístico.\n"
-            "8. Incluye el campo extra \"content_category\" en el JSON con la categoría identificada.\n"
-            "\n"
-            "### EJEMPLOS PARA INSTAGRAM:\n"
-            "---\n"
-            "EJEMPLO IG 1 — FALSO (noticia falsa presentada como real):\n"
-            "Caption: \"¡URGENTE! Trump fue visto hablando con dos alienígenas en el jardín de la Casa Blanca. Fuentes de la NASA confirman el encuentro.\"\n"
-            "Categoría: noticia_falsa\n"
-            "Veredicto: {\"verdict\": \"FALSO\", \"confidence_score\": 95, \"content_category\": \"noticia_falsa\"}\n"
-            "---\n"
-            "EJEMPLO IG 2 — REAL (proyecto real anunciado):\n"
-            "Caption: \"Se presenta el proyecto Ecosida, una ciudad sustentable en México que utilizará 100% energía renovable y será hogar de 50,000 personas.\"\n"
-            "Categoría: noticia\n"
-            "Veredicto: {\"verdict\": \"REAL\", \"confidence_score\": 85, \"content_category\": \"noticia\"}\n"
-            "---\n"
-            "EJEMPLO IG 3 — SÁTIRA (humor/entretenimiento):\n"
-            "Caption: \"Este lindo gatito se quedó dormido en mi laptop mientras trabajaba. El jefe más exigente 😸\"\n"
-            "Categoría: humor/entretenimiento\n"
-            "Veredicto: {\"verdict\": \"SÁTIRA\", \"confidence_score\": 90, \"content_category\": \"humor/entretenimiento\"}\n"
-            "---\n"
-            "EJEMPLO IG 4 — NO VERIFICABLE (contenido personal sin afirmaciones factuales):\n"
-            "Caption: \"Hoy fue un día increíble, conocí a personas maravillosas y aprendí mucho. #gratitud\"\n"
-            "Categoría: vida personal\n"
-            "Veredicto: {\"verdict\": \"NO VERIFICABLE\", \"confidence_score\": 80, \"content_category\": \"vida personal\"}\n"
-        )
-        prompt += ig_extra
+    # Extract social media context from URL
+    social_context = ""
+    if "threads.com" in domain or "threads.net" in domain:
+        m = re.search(r"@(\w+)", url)
+        if m:
+            social_context = f"\nUsuario/publicación objetivo: @{m.group(1)}\n"
+
+    for sm_domain, sm_name in [
+        ("instagram.com", "Instagram"),
+        ("threads.net", "Threads"),
+        ("threads.com", "Threads"),
+        ("x.com", "X/Twitter"),
+        ("twitter.com", "X/Twitter"),
+        ("tiktok.com", "TikTok"),
+    ]:
+        if sm_domain in domain:
+            prompt += SOCIAL_MEDIA_PROMPT.format(platform=sm_name)
+            prompt += social_context
+            break
 
     raw = call_groq(SYSTEM_PROMPT, prompt)
     if raw:
