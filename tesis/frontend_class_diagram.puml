@@ -1,0 +1,187 @@
+@startuml
+!theme plain
+skinparam backgroundColor #0d0d14
+skinparam componentStyle rectangle
+skinparam defaultFontName Helvetica
+skinparam defaultFontSize 9
+skinparam handwritten false
+
+skinparam class {
+  BackgroundColor #0d0d14
+  BorderColor #2a2a3e
+  FontColor #c8c8d0
+  HeaderBackgroundColor #1a3a2e
+  FontName Helvetica
+  AttributeFontSize 8
+  AttributeFontColor #c8c8d0
+}
+
+skinparam interface {
+  BackgroundColor #0d0d14
+  BorderColor #2a2a3e
+  FontColor #c8c0e0
+  HeaderBackgroundColor #1e1a2e
+  FontName Helvetica
+  AttributeFontSize 8
+  AttributeFontColor #c8c8d0
+}
+
+skinparam arrow {
+  Color #555566
+  FontColor #888899
+  FontSize 7
+}
+
+skinparam note {
+  BackgroundColor #111122
+  BorderColor #2a2a3e
+  FontColor #aaaaaa
+}
+
+hide empty description
+
+' =============================================
+' TYPES & INTERFACES
+' =============================================
+
+interface "Lang\n<<type>>" as Lang {
++ 'es' | 'en'
+}
+
+interface "Analysis\n<<interface>>" as Analysis {
++ verdict: string
++ confidence_score: number
++ summary: string
++ extracted_claims: string[]
++ reasoning: string[]
++ red_flags: string[]
++ positive_signals: string[]
++ article_type: string
++ is_scam: boolean
+}
+
+interface "NewsItem\n<<interface>>" as NewsItem {
++ title: string
++ url: string
++ published: string
++ source: string
+}
+
+interface "ApiResponse\n<<interface>>" as ApiResponse {
++ analysis: Analysis | null
++ similar_news: NewsItem[]
++ url_analyzed: string
++ article_text: string
++ domain: string
++ is_credible_source: boolean
++ error: string | null
+}
+
+' =============================================
+' REACT COMPONENTS
+' =============================================
+
+class "App\n<<React.Component>>" as AppComponent <<React.Component>> {
+  {field} - lang: 'es' | 'en'
+  {field} - loading: boolean
+  {field} - result: ApiResponse | null
+  {field} - error: string | null
+  {method} + handleToggleLang(): void
+  {method} + handleClear(): void
+  {method} + handleAnalyze(url: string): Promise<void>
+  {method} {abstract} adjustedVerdict: string | null
+}
+
+class "UrlInput\n<<React.Component>>" as UrlInput <<React.Component>> {
+  {field} + lang: 'es' | 'en'
+  {field} + loading: boolean
+  {field} + onAnalyze: (url: string) => void
+  {field} + onClear?: () => void
+  {field} - url: string
+  {method} + handleChange(e: React.ChangeEvent): void
+  {method} + handleClear(): void
+  {method} + handleSubmit(e: React.FormEvent): void
+}
+
+class "LoadingSegments\n<<React.Component>>" as LoadingSegments <<React.Component>> {
+}
+
+class "VerdictDisplay\n<<React.Component>>" as VerdictDisplay <<React.Component>> {
+  {field} + verdict: string
+  {field} + originalVerdict?: string
+  {field} + lang: 'es' | 'en'
+  {method} {abstract} containerStyle: CSSProperties
+  {method} {abstract} wordStyle: CSSProperties
+}
+
+class "ConfidenceBar\n<<React.Component>>" as ConfidenceBar <<React.Component>> {
+  {field} + score: number
+  {field} + lang: 'es' | 'en'
+  {method} {abstract} scoreStyle: CSSProperties
+}
+
+class "RedFlags\n<<React.Component>>" as RedFlags <<React.Component>> {
+  {field} + redFlags: string[]
+  {field} + positiveSignals: string[]
+  {field} + lang: 'es' | 'en'
+}
+
+class "SimilarNews\n<<React.Component>>" as SimilarNews <<React.Component>> {
+  {field} + news: NewsItem[]
+  {field} + lang: 'es' | 'en'
+}
+
+class "LanguageToggle\n<<React.Component>>" as LanguageToggle <<React.Component>> {
+  {field} + lang: 'es' | 'en'
+  {field} + onToggle: () => void
+}
+
+' =============================================
+' UTILITY MODULE
+' =============================================
+
+class "Utilities\n<<module>>" as Utils <<module>> {
+  {method} + getColorKey(score: number): string
+  {method} + formatDate(raw: string): string
+}
+
+' =============================================
+' RELATIONSHIPS
+' =============================================
+
+' Composition: App -> children
+AppComponent *--> UrlInput : "compone"
+AppComponent *--> LanguageToggle : "compone"
+AppComponent *--> VerdictDisplay : "compone"
+AppComponent *--> ConfidenceBar : "compone"
+AppComponent *--> RedFlags : "compone"
+AppComponent o--> SimilarNews : "compone (lazy)"
+UrlInput *--> LoadingSegments : "compone (cond.)"
+
+' Dependency: App consumes API response
+AppComponent ..> ApiResponse : "usa (fetch)"
+
+' Composition in API response
+ApiResponse *--> Analysis : "1"
+ApiResponse *--> "0..*" NewsItem
+
+' Dependency on types
+SimilarNews ..> NewsItem : "usa"
+ConfidenceBar ..> Utils : "getColorKey()"
+SimilarNews ..> Utils : "formatDate()"
+
+' Notes
+note right of AppComponent
+  Punto de entrada principal.
+  Estado global: lang, loading,
+  result, error.
+  Llama a fetch('/analyze').
+end note
+
+note right of UrlInput
+  Estado local: url.
+  Callbacks: onAnalyze(onSubmit),
+  onClear.
+end note
+
+@enduml

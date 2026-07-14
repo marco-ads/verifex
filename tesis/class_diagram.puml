@@ -1,0 +1,119 @@
+@startuml
+!theme amiga
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor #0d0d24
+  BorderColor #444466
+  FontColor white
+  HeaderBackgroundColor #1a1a3e
+  AttributeFontColor #cccccc
+  MethodFontColor #00f0ff
+}
+skinparam stereotype {
+  CBackgroundColor #0d0d24
+  CBorderColor #444466
+}
+
+title Diagrama de Clases UML — Backend VERIFEX
+
+' ─────────────────────────────────────────────────
+' NOTA: El backend es 100% procedural (funciones
+' sueltas a nivel de módulo, sin clases). Se modela
+' cada .py como <<module>> para representación UML.
+' ─────────────────────────────────────────────────
+
+' ── MÓDULO: app (app.py) ──
+class "app\n(app.py)" as app_mod <<module>> #b400ff {
+  + app: Flask
+  ..
+  + analyze() : flask.Response
+  + health() : flask.Response
+  + serve_frontend(path: str) : flask.Response
+}
+
+' ── MÓDULO: analyzer (analyzer.py) ──
+class "analyzer\n(analyzer.py)" as analyzer_mod <<module>> #00aaff {
+  + CREDIBLE_DOMAINS: Set[str]
+  + SOCIAL_MEDIA_DOMAINS: Set[str]
+  + SYSTEM_PROMPT: str
+  + USER_PROMPT_BASE: str
+  + SOCIAL_MEDIA_PROMPT: str
+  + FEW_SHOT_EXAMPLES: str
+  + BROWSER_HEADERS: Dict[str, str]
+  + LOGIN_PATTERNS: List[str]
+  ..
+  + analyze_url(url: str) : dict
+  + scrape_url(url: str) : dict
+  + get_groq_client() : Groq | None
+  + call_groq(system_prompt: str, user_prompt: str) : str | None
+  + get_domain(url: str) : str
+  + parse_response(text: str) : dict | None
+  + _extract_from_html(html: str, domain: str = "") : dict
+  + _http_get(url: str) : tuple
+  - _get_platform() : str
+  - _try_cloudscraper(url: str) : tuple
+  - _try_curl_cffi(url: str) : tuple
+  - _try_requests(url: str) : tuple
+  - _try_playwright(url: str) : tuple
+  - _is_login_blocked_page(title: str, body: str) : bool
+  - _extract_facebook_post_id(url: str) : str | None
+  - _try_facebook_graph_api(url: str) : dict | None
+}
+
+' ── MÓDULO: news_finder (news_finder.py) ──
+class "news_finder\n(news_finder.py)" as nf_mod <<module>> #00f0ff {
+  + find_similar_news(query: str, max_results: int = 5) : List[dict]
+}
+
+' ── DATATYPES (dicts de retorno implícitos) ──
+class ScrapeResult <<datatype>> #b400ff {
+  + content: str
+  + title: str
+  + article_text: str
+}
+
+class AnalysisResult <<datatype>> #b400ff {
+  + verdict: str
+  + confidence_score: int
+  + summary: str
+  + extracted_claims: List[str]
+  + reasoning: List[str]
+  + article_type: str
+  + is_scam: bool
+  + red_flags: List[str]
+  + positive_signals: List[str]
+}
+
+class NewsItem <<datatype>> #b400ff {
+  + title: str
+  + url: str
+  + published: str
+  + source: str
+}
+
+class ApiResponse <<datatype>> #b400ff {
+  + analysis: AnalysisResult | None
+  + similar_news: List[NewsItem]
+  + title: str
+  + article_text: str
+  + domain: str
+  + is_credible_source: bool
+  + error: str | None
+}
+
+' ── DEPENDENCIAS ENTRE MÓDULOS ──
+app_mod .d.> analyzer_mod : <<use>> analyze_url()
+app_mod .d.> nf_mod : <<use>> find_similar_news()
+analyzer_mod .d.> nf_mod : <<use>> find_similar_news()
+
+' ── DEPENDENCIAS MÓDULO → DATATYPE ──
+analyzer_mod .d.> ScrapeResult : <<create>>
+analyzer_mod .d.> AnalysisResult : <<create>>
+nf_mod .d.> NewsItem : <<create>>
+app_mod .d.> ApiResponse : <<create>>
+
+' ── COMPOSICIÓN ──
+ApiResponse *--> AnalysisResult : contiene
+ApiResponse *--> "0..*" NewsItem : contiene
+
+@enduml

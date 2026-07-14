@@ -197,8 +197,21 @@ def get_domain(url: str) -> str:
         return ""
 
 
+USER_AGENTS = [
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0",
+]
+import random
+
+# Optional: proxy URL for scraping behind Cloudflare/WAF
+# Set HTTP_PROXY env var to use a proxy (e.g. http://user:pass@proxy:port)
+SCRAPING_PROXY = os.environ.get("HTTP_PROXY") or os.environ.get("HTTPS_PROXY")
+
 BROWSER_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "User-Agent": USER_AGENTS[0],
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
     "Accept-Language": "es-MX,es;q=0.9,en;q=0.8",
     "Accept-Encoding": "gzip, deflate",
@@ -232,9 +245,12 @@ def _try_cloudscraper(url: str) -> tuple:
     for profile in profiles:
         for attempt in range(2):
             try:
+                headers = BROWSER_HEADERS.copy()
+                headers["User-Agent"] = random.choice(USER_AGENTS)
                 scraper = cloudscraper.create_scraper(browser=profile, delay=5)
-                scraper.headers.update(BROWSER_HEADERS)
-                resp = scraper.get(url, timeout=30)
+                scraper.headers.update(headers)
+                proxies = {"http": SCRAPING_PROXY, "https": SCRAPING_PROXY} if SCRAPING_PROXY else None
+                resp = scraper.get(url, timeout=30, proxies=proxies)
                 resp.raise_for_status()
                 return resp, None
             except Exception as e:
@@ -244,9 +260,13 @@ def _try_cloudscraper(url: str) -> tuple:
 
 def _try_curl_cffi(url: str) -> tuple:
     last_err = None
-    for version in ("chrome123", "chrome120", "safari17_0", "chrome124"):
+    versions = ["chrome123", "chrome120", "safari17_0", "chrome124"]
+    for version in versions:
         try:
-            resp = curl_requests.get(url, impersonate=version, headers=BROWSER_HEADERS, timeout=30)
+            headers = BROWSER_HEADERS.copy()
+            headers["User-Agent"] = random.choice(USER_AGENTS)
+            proxies = {"http": SCRAPING_PROXY, "https": SCRAPING_PROXY} if SCRAPING_PROXY else None
+            resp = curl_requests.get(url, impersonate=version, headers=headers, timeout=30, proxies=proxies)
             resp.raise_for_status()
             return resp, None
         except Exception as e:
@@ -258,7 +278,10 @@ def _try_requests(url: str) -> tuple:
     last_err = None
     for attempt in range(2):
         try:
-            resp = std_requests.get(url, headers=BROWSER_HEADERS, timeout=15, verify=attempt == 1)
+            headers = BROWSER_HEADERS.copy()
+            headers["User-Agent"] = random.choice(USER_AGENTS)
+            proxies = {"http": SCRAPING_PROXY, "https": SCRAPING_PROXY} if SCRAPING_PROXY else None
+            resp = std_requests.get(url, headers=headers, timeout=15, verify=attempt == 1, proxies=proxies)
             resp.raise_for_status()
             return resp, None
         except Exception as e:
@@ -269,21 +292,73 @@ def _try_requests(url: str) -> tuple:
 def _try_playwright(url: str) -> tuple:
     try:
         from playwright.sync_api import sync_playwright
-        with sync_playwright() as p:
-            browser = p.firefox.launch(headless=True)
-            page = browser.new_page()
-            page.goto(url, timeout=45000, wait_until="domcontentloaded")
-            page.wait_for_timeout(15000)
-            content = page.content()
-            browser.close()
-            if "just a moment" not in content.lower():
-                mock_resp = type("obj", (), {"text": content, "status_code": 200})()
-                return mock_resp, None
-            return None, "Cloudflare challenge not resolved"
     except ImportError:
         return None, "playwright: not installed"
-    except Exception as e:
-        return None, f"playwright: {type(e).__name__}: {e}"
+
+    PW_USER_AGENTS = [
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0",
+    ]
+
+    engines = [
+        ("firefox", lambda p: p.firefox),
+        ("chromium", lambda p: p.chromium),
+    ]
+
+    last_err = None
+    for engine_name, engine_getter in engines:
+        for attempt in range(2):
+            try:
+                with sync_playwright() as pw:
+                    launch_args = ["--no-sandbox"]
+                    browser = engine_getter(pw).launch(
+                        headless=True,
+                        args=launch_args,
+                    )
+                    ua = random.choice(PW_USER_AGENTS)
+                    ctx_kwargs = {
+                        "user_agent": ua,
+                        "viewport": {"width": 1920, "height": 1080},
+                        "locale": "es-MX",
+                        "timezone_id": "America/Mexico_City",
+                        "device_scale_factor": 1,
+                    }
+                    if SCRAPING_PROXY:
+                        ctx_kwargs["proxy"] = {"server": SCRAPING_PROXY}
+                    context = browser.new_context(**ctx_kwargs)
+                    page = context.new_page()
+
+                    # Try networkidle first (waits for no network activity for 500ms),
+                    # fall back to domcontentloaded if it times out
+                    wait_strategies = ["networkidle", "domcontentloaded"]
+                    for ws in wait_strategies:
+                        try:
+                            page.goto(url, timeout=45000, wait_until=ws)
+                            break
+                        except Exception:
+                            continue
+
+                    page.wait_for_timeout(8000)
+                    content = page.content()
+                    browser.close()
+
+                    # Check for Cloudflare challenge
+                    cf_indicators = [
+                        "just a moment", "checking your browser",
+                        "please wait", "attention required",
+                        "cloudflare", "__cf_chl_opt",
+                    ]
+                    if not any(ind in content.lower() for ind in cf_indicators):
+                        mock_resp = type("obj", (), {"text": content, "status_code": 200})()
+                        return mock_resp, None
+
+                    last_err = f"{engine_name}: Cloudflare challenge not resolved"
+            except Exception as e:
+                last_err = f"{engine_name}: {type(e).__name__}: {e}"
+                continue
+
+    return None, f"playwright: {last_err}"
 
 LOGIN_PATTERNS = [
     "iniciar sesión", "contraseña", "olvidaste tu contraseña",
