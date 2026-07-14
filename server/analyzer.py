@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import re
+import random
 import cloudscraper
 from curl_cffi import requests as curl_requests
 import requests as std_requests
@@ -204,7 +205,6 @@ USER_AGENTS = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0",
 ]
-import random
 
 # Optional: proxy URL for scraping behind Cloudflare/WAF
 # Set HTTP_PROXY env var to use a proxy (e.g. http://user:pass@proxy:port)
@@ -329,31 +329,39 @@ def _try_playwright(url: str) -> tuple:
                     context = browser.new_context(**ctx_kwargs)
                     page = context.new_page()
 
-                    # Try networkidle first (waits for no network activity for 500ms),
-                    # fall back to domcontentloaded if it times out
-                    wait_strategies = ["networkidle", "domcontentloaded"]
-                    for ws in wait_strategies:
-                        try:
-                            page.goto(url, timeout=45000, wait_until=ws)
-                            break
-                        except Exception:
-                            continue
-
-                    page.wait_for_timeout(8000)
-                    content = page.content()
-                    browser.close()
-
-                    # Check for Cloudflare challenge
                     cf_indicators = [
                         "just a moment", "checking your browser",
                         "please wait", "attention required",
                         "cloudflare", "__cf_chl_opt",
                     ]
-                    if not any(ind in content.lower() for ind in cf_indicators):
+
+                    # Load page — use domcontentloaded (fast), then poll for Cloudflare
+                    page.goto(url, timeout=60000, wait_until="domcontentloaded")
+
+                    # Poll every second up to 35s for Cloudflare to resolve
+                    challenge_resolved = False
+                    for _ in range(35):
+                        page.wait_for_timeout(1000)
+                        content = page.content()
+
+                        # Check if Cloudflare challenge is gone
+                        if not any(ind in content.lower() for ind in cf_indicators):
+                            challenge_resolved = True
+                            break
+
+                        # If page title contains real content, we're through
+                        title = page.title()
+                        if title and len(title) > 10 and not any(ind in title.lower() for ind in cf_indicators):
+                            challenge_resolved = True
+                            break
+
+                    browser.close()
+
+                    if challenge_resolved:
                         mock_resp = type("obj", (), {"text": content, "status_code": 200})()
                         return mock_resp, None
 
-                    last_err = f"{engine_name}: Cloudflare challenge not resolved"
+                    last_err = f"{engine_name}: Cloudflare not resolved after 35s"
             except Exception as e:
                 last_err = f"{engine_name}: {type(e).__name__}: {e}"
                 continue
@@ -458,6 +466,20 @@ def _try_facebook_graph_api(url: str) -> dict | None:
         return None
 
 
+def _try_google_cache(url: str) -> tuple:
+    """Fallback: fetch from Google's web cache (bypasses Cloudflare entirely)."""
+    cache_url = f"https://webcache.googleusercontent.com/search?q=cache:{url}"
+    for attempt in range(2):
+        try:
+            headers = BROWSER_HEADERS.copy()
+            headers["User-Agent"] = random.choice(USER_AGENTS)
+            resp = std_requests.get(cache_url, headers=headers, timeout=20)
+            resp.raise_for_status()
+            return resp, None
+        except Exception as e:
+            continue
+    return None, "google_cache: blocked or not cached"
+
 def _http_get(url: str) -> tuple:
     all_errs = []
     for name, attempt in [
@@ -465,6 +487,7 @@ def _http_get(url: str) -> tuple:
         ("curl_cffi", _try_curl_cffi),
         ("requests", _try_requests),
         ("playwright", _try_playwright),
+        ("google_cache", _try_google_cache),
     ]:
         resp, err = attempt(url)
         if resp:
@@ -474,6 +497,18 @@ def _http_get(url: str) -> tuple:
 
 def _extract_from_html(html: str, domain: str = "") -> dict:
     soup = BeautifulSoup(html, "lxml")
+
+    # Google cache: strip the outer wrapper and use the cached content div
+    cache_div = soup.find("div", id="google-cache") or soup.find("div", class_="cached-page")
+    if cache_div:
+        inner = cache_div.decode_contents()
+        soup = BeautifulSoup(inner, "lxml")
+    else:
+        # Some Google cache formats wrap in <pre> with the raw HTML
+        pre = soup.find("pre")
+        if pre and "google" in html.lower()[:500] and len(pre.get_text(strip=True)) > 1000:
+            inner = pre.decode_contents()
+            soup = BeautifulSoup(inner, "lxml")
 
     title_el = soup.find("title")
     title = title_el.get_text(strip=True) if title_el else ""
