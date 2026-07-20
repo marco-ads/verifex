@@ -659,6 +659,41 @@ def scrape_url(url: str) -> dict:
         return {"error": f"Error al procesar el contenido: {str(e)}"}
 
 
+def _has_en_fields(analysis: dict) -> bool:
+    en_fields = ["summary_en", "extracted_claims_en", "reasoning_en", "red_flags_en", "positive_signals_en"]
+    return all(
+        field in analysis and analysis[field]
+        for field in en_fields
+    )
+
+
+def translate_analysis(analysis: dict) -> dict:
+    if _has_en_fields(analysis):
+        return analysis
+    sys_prompt = (
+        "Eres un traductor especializado en análisis de credibilidad. "
+        "Traduce los campos de texto del siguiente JSON de español a inglés. "
+        "Responde ÚNICAMENTE con JSON válido, manteniendo la estructura exacta."
+    )
+    user_prompt = (
+        f"Dado este análisis de credibilidad en español, genera un nuevo JSON "
+        f"con los mismos campos pero con los textos traducidos al inglés. "
+        f"Traduce: summary, extracted_claims (cada elemento), reasoning (cada elemento), "
+        f"red_flags (cada elemento), positive_signals (cada elemento). "
+        f"Incluye SOLO los campos traducidos con sufijo '_en'. "
+        f"Conserva el resto de los campos sin cambios.\n\n"
+        f"{json.dumps(analysis, ensure_ascii=False)}"
+    )
+    raw = call_groq(sys_prompt, user_prompt)
+    if raw:
+        translated = parse_response(raw)
+        if translated:
+            for key in ["summary_en", "extracted_claims_en", "reasoning_en", "red_flags_en", "positive_signals_en"]:
+                if key in translated and translated[key]:
+                    analysis[key] = translated[key]
+    return analysis
+
+
 def parse_response(text: str) -> dict | None:
     if not text:
         return None
@@ -752,6 +787,8 @@ def analyze_url(url: str) -> dict:
                     f"El dominio {domain} es un medio de comunicación reconocido. "
                     "Contenido de fuente fiable reclasificado como NO VERIFICABLE."
                 ]
+
+            parsed = translate_analysis(parsed)
 
             return {
                 "analysis": parsed,
