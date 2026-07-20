@@ -636,6 +636,26 @@ def scrape_url(url: str) -> dict:
         return {"error": f"Error al procesar el contenido: {str(e)}"}
 
 
+def translate_analysis(analysis: dict, target_lang: str) -> dict | None:
+    if not analysis or target_lang != "en":
+        return None
+    sys_prompt = (
+        "Eres un traductor. Traduce el siguiente análisis de credibilidad de español a inglés. "
+        "Responde ÚNICAMENTE con JSON válido, sin texto adicional."
+    )
+    user_prompt = (
+        f"Traduce este análisis de español a inglés. Conserva la estructura exacta del JSON. "
+        f"Traduce: summary, extracted_claims (cada elemento), reasoning (cada elemento), "
+        f"red_flags (cada elemento), positive_signals (cada elemento). "
+        f"No traduzcas verdict, confidence_score, article_type ni is_scam.\n\n"
+        f"{json.dumps(analysis, ensure_ascii=False)}"
+    )
+    raw = call_groq(sys_prompt, user_prompt)
+    if raw:
+        return parse_response(raw)
+    return None
+
+
 def parse_response(text: str) -> dict | None:
     if not text:
         return None

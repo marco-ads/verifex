@@ -135,17 +135,39 @@ const BADGE_STYLE: React.CSSProperties = {
 export default function App() {
   const [lang, setLang] = useState<Lang>('es')
   const [loading, setLoading] = useState(false)
+  const [translating, setTranslating] = useState(false)
   const [result, setResult] = useState<ApiResponse | null>(null)
+  const [translatedResult, setTranslatedResult] = useState<ApiResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const tx = TRANSLATIONS[lang]
 
   const handleToggleLang = useCallback(() => {
-    setLang(l => l === 'es' ? 'en' : 'es')
-  }, [])
+    setLang(l => {
+      const next = l === 'es' ? 'en' : 'es'
+      if (next === 'en' && result?.analysis && !translatedResult) {
+        setTranslating(true)
+        fetch('/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ analysis: result.analysis, lang: 'en' }),
+        })
+          .then(r => r.json())
+          .then(data => {
+            if (data.translated) {
+              setTranslatedResult({ ...result, analysis: data.translated })
+            }
+          })
+          .catch(() => {})
+          .finally(() => setTranslating(false))
+      }
+      return next
+    })
+  }, [result, translatedResult])
 
   const handleClear = useCallback(() => {
     setResult(null)
+    setTranslatedResult(null)
     setError(null)
   }, [])
 
@@ -153,6 +175,7 @@ export default function App() {
     setLoading(true)
     setError(null)
     setResult(null)
+    setTranslatedResult(null)
 
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 60000)
@@ -184,7 +207,7 @@ export default function App() {
     }
   }, [lang, tx])
 
-  const analysis = result?.analysis ?? null
+  const analysis = (lang === 'en' && translatedResult?.analysis) || result?.analysis ?? null
 
   const adjustedVerdict = useMemo(() => {
     if (!analysis) return null
