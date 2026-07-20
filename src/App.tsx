@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect, lazy, Suspense } from 'react'
+import { useState, useCallback, useMemo, lazy, Suspense } from 'react'
 import UrlInput from './components/UrlInput'
 import VerdictDisplay from './components/VerdictDisplay'
 import ConfidenceBar from './components/ConfidenceBar'
@@ -13,10 +13,15 @@ interface Analysis {
   verdict: string
   confidence_score: number
   summary: string
+  summary_en?: string
   extracted_claims?: string[]
+  extracted_claims_en?: string[]
   reasoning: string[]
+  reasoning_en?: string[]
   red_flags: string[]
+  red_flags_en?: string[]
   positive_signals: string[]
+  positive_signals_en?: string[]
   article_type?: string
   is_scam?: boolean
 }
@@ -135,40 +140,19 @@ const BADGE_STYLE: React.CSSProperties = {
 export default function App() {
   const [lang, setLang] = useState<Lang>('es')
   const [loading, setLoading] = useState(false)
-  const [translating, setTranslating] = useState(false)
   const [result, setResult] = useState<ApiResponse | null>(null)
-  const [translatedResult, setTranslatedResult] = useState<ApiResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const tx = TRANSLATIONS[lang]
 
-  const handleToggleLang = useCallback(() => {
-    const nextLang = lang === 'es' ? 'en' : 'es'
-    setLang(nextLang)
-  }, [lang])
+  const t = useCallback((es: string, en?: string) => lang === 'en' && en ? en : es, [lang])
 
-  useEffect(() => {
-    if (lang === 'en' && result?.analysis && !translatedResult) {
-      setTranslating(true)
-      fetch('/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ analysis: result.analysis, lang: 'en' }),
-      })
-        .then(r => r.json())
-        .then(data => {
-          if (data.translated) {
-            setTranslatedResult({ ...result, analysis: data.translated })
-          }
-        })
-        .catch(() => {})
-        .finally(() => setTranslating(false))
-    }
-  }, [lang, result, translatedResult])
+  const handleToggleLang = useCallback(() => {
+    setLang(l => l === 'es' ? 'en' : 'es')
+  }, [])
 
   const handleClear = useCallback(() => {
     setResult(null)
-    setTranslatedResult(null)
     setError(null)
   }, [])
 
@@ -176,7 +160,6 @@ export default function App() {
     setLoading(true)
     setError(null)
     setResult(null)
-    setTranslatedResult(null)
 
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 60000)
@@ -208,7 +191,7 @@ export default function App() {
     }
   }, [lang, tx])
 
-  const analysis = (lang === 'en' && translatedResult?.analysis) || result?.analysis ?? null
+  const analysis = result?.analysis ?? null
 
   const adjustedVerdict = useMemo(() => {
     if (!analysis) return null
@@ -313,7 +296,7 @@ export default function App() {
 
                 <div className="panel">
                   <p className="label" style={{ marginBottom: '0.6rem' }}>{tx.summary}</p>
-                  <p style={{ color: '#c8d6e5', lineHeight: 1.75, fontSize: '1rem' }}>{analysis.summary}</p>
+                  <p style={{ color: '#c8d6e5', lineHeight: 1.75, fontSize: '1rem' }}>{t(analysis.summary, analysis.summary_en)}</p>
                 </div>
 
                 {/* Extracted claims */}
@@ -321,7 +304,7 @@ export default function App() {
                   <div className="panel">
                     <p className="label" style={{ marginBottom: '0.75rem' }}>{tx.claims}</p>
                     <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      {analysis.extracted_claims.map((c, i) => (
+                      {(lang === 'en' && analysis.extracted_claims_en ? analysis.extracted_claims_en : analysis.extracted_claims).map((c, i) => (
                         <li key={i} style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start', fontSize: '1rem', color: '#a8b8c8', lineHeight: 1.5 }}>
                           <span style={{ color: '#ffaa00', fontFamily: 'Share Tech Mono', flexShrink: 0 }}>◆</span>
                           {c}
@@ -335,7 +318,7 @@ export default function App() {
                   <div className="panel">
                     <p className="label" style={{ marginBottom: '0.75rem' }}>{tx.reasoning}</p>
                     <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                      {analysis.reasoning.map((r, i) => (
+                      {(lang === 'en' && analysis.reasoning_en ? analysis.reasoning_en : analysis.reasoning).map((r, i) => (
                         <li key={i} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', fontSize: '1rem', color: '#a8b8c8', lineHeight: 1.6 }}>
                           <span style={{ color: '#00f0ff', fontFamily: 'Share Tech Mono', flexShrink: 0 }}>
                             {String(i + 1).padStart(2, '0')}
@@ -348,8 +331,8 @@ export default function App() {
                 )}
 
                 <RedFlags
-                  redFlags={analysis.red_flags ?? []}
-                  positiveSignals={analysis.positive_signals ?? []}
+                  redFlags={lang === 'en' && analysis.red_flags_en ? analysis.red_flags_en : analysis.red_flags ?? []}
+                  positiveSignals={lang === 'en' && analysis.positive_signals_en ? analysis.positive_signals_en : analysis.positive_signals ?? []}
                   lang={lang}
                 />
 

@@ -127,7 +127,25 @@ IMPORTANTE sobre article_type: Si es opinion, el estándar de veracidad es difer
 
 Aplica estos ejemplos como guía:
 """ + FEW_SHOT_EXAMPLES + """
-Responde ÚNICAMENTE en JSON válido en español. Sin texto fuera del JSON. Sin bloques de código."""
+Responde ÚNICAMENTE en JSON válido. Sin texto fuera del JSON. Sin bloques de código.
+
+IMPORTANTE: Todos los campos de texto (summary, extracted_claims, reasoning, red_flags, positive_signals) deben incluir su versión en ambos idiomas usando el sufijo '_en' para inglés. Ejemplo:
+{{
+  "verdict": "REAL",
+  "confidence_score": 85,
+  "summary": "texto en español",
+  "summary_en": "English text",
+  "extracted_claims": ["afirmación en español"],
+  "extracted_claims_en": ["claim in English"],
+  "reasoning": ["razón en español"],
+  "reasoning_en": ["reason in English"],
+  "article_type": "informativa",
+  "is_scam": false,
+  "red_flags": ["bandera roja en español"],
+  "red_flags_en": ["red flag in English"],
+  "positive_signals": ["señal positiva en español"],
+  "positive_signals_en": ["positive signal in English"]
+}}"""
 
 USER_PROMPT_BASE = """Analiza este contenido periodístico de la URL: {url}
 Dominio: {domain}
@@ -148,13 +166,18 @@ Responde con este JSON exacto (sin texto fuera del JSON):
 {{
   "verdict": "REAL|FALSO|SÁTIRA|ESTAFA|NO VERIFICABLE",
   "confidence_score": número entero del 0 al 100,
-  "summary": "resumen neutral del artículo en 2-3 oraciones",
-  "extracted_claims": ["afirmación principal con cita textual del artículo", "dato clave 2 con cita textual", "dato clave 3 con cita textual"],
-  "reasoning": ["razón detallada 1 CITANDO el texto relevante del artículo", "razón 2 con cita textual", "razón 3 con cita textual"],
+  "summary": "resumen neutral del artículo en 2-3 oraciones (ESPAÑOL)",
+  "summary_en": "neutral article summary in 2-3 sentences (ENGLISH)",
+  "extracted_claims": ["afirmación principal con cita textual en ESPAÑOL"],
+  "extracted_claims_en": ["main claim with textual citation in ENGLISH"],
+  "reasoning": ["razón detallada CITANDO el texto en ESPAÑOL"],
+  "reasoning_en": ["detailed reasoning citing text in ENGLISH"],
   "article_type": "informativa|comercial|opinion|clickbait|denuncia",
   "is_scam": false,
-  "red_flags": ["bandera roja concreta citando el texto que la genera, o lista vacía"],
-  "positive_signals": ["señal positiva concreta citando el texto relevante, o lista vacía"]
+  "red_flags": ["bandera roja concreta en ESPAÑOL"],
+  "red_flags_en": ["concrete red flag in ENGLISH"],
+  "positive_signals": ["señal positiva concreta en ESPAÑOL"],
+  "positive_signals_en": ["concrete positive signal in ENGLISH"]
 }}"""
 
 
@@ -634,26 +657,6 @@ def scrape_url(url: str) -> dict:
         return result
     except Exception as e:
         return {"error": f"Error al procesar el contenido: {str(e)}"}
-
-
-def translate_analysis(analysis: dict, target_lang: str) -> dict | None:
-    if not analysis or target_lang != "en":
-        return None
-    sys_prompt = (
-        "Eres un traductor. Traduce el siguiente análisis de credibilidad de español a inglés. "
-        "Responde ÚNICAMENTE con JSON válido, sin texto adicional."
-    )
-    user_prompt = (
-        f"Traduce este análisis de español a inglés. Conserva la estructura exacta del JSON. "
-        f"Traduce: summary, extracted_claims (cada elemento), reasoning (cada elemento), "
-        f"red_flags (cada elemento), positive_signals (cada elemento). "
-        f"No traduzcas verdict, confidence_score, article_type ni is_scam.\n\n"
-        f"{json.dumps(analysis, ensure_ascii=False)}"
-    )
-    raw = call_groq(sys_prompt, user_prompt)
-    if raw:
-        return parse_response(raw)
-    return None
 
 
 def parse_response(text: str) -> dict | None:

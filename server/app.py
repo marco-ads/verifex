@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from analyzer import analyze_url, translate_analysis
+from analyzer import analyze_url
 from news_finder import find_similar_news
 from dotenv import load_dotenv
 import os
@@ -44,18 +44,6 @@ def analyze():
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok"})
-
-
-@app.route("/translate", methods=["POST"])
-def translate():
-    data = request.get_json(silent=True)
-    if not data or "analysis" not in data:
-        return jsonify({"error": "Se requiere 'analysis' en el body JSON.", "translated": None}), 400
-    target = data.get("lang", "en")
-    translated = translate_analysis(data["analysis"], target)
-    if not translated:
-        return jsonify({"error": "No se pudo traducir el análisis.", "translated": None}), 500
-    return jsonify({"translated": translated, "error": None})
 
 
 # Serve frontend SPA — catch-all for non-API routes
