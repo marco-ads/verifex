@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, lazy, Suspense } from 'react'
+import { useState, useCallback, useMemo, useEffect, lazy, Suspense } from 'react'
 import UrlInput from './components/UrlInput'
 import VerdictDisplay from './components/VerdictDisplay'
 import ConfidenceBar from './components/ConfidenceBar'
@@ -143,27 +143,28 @@ export default function App() {
   const tx = TRANSLATIONS[lang]
 
   const handleToggleLang = useCallback(() => {
-    setLang(l => {
-      const next = l === 'es' ? 'en' : 'es'
-      if (next === 'en' && result?.analysis && !translatedResult) {
-        setTranslating(true)
-        fetch('/translate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ analysis: result.analysis, lang: 'en' }),
+    const nextLang = lang === 'es' ? 'en' : 'es'
+    setLang(nextLang)
+  }, [lang])
+
+  useEffect(() => {
+    if (lang === 'en' && result?.analysis && !translatedResult) {
+      setTranslating(true)
+      fetch('/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ analysis: result.analysis, lang: 'en' }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.translated) {
+            setTranslatedResult({ ...result, analysis: data.translated })
+          }
         })
-          .then(r => r.json())
-          .then(data => {
-            if (data.translated) {
-              setTranslatedResult({ ...result, analysis: data.translated })
-            }
-          })
-          .catch(() => {})
-          .finally(() => setTranslating(false))
-      }
-      return next
-    })
-  }, [result, translatedResult])
+        .catch(() => {})
+        .finally(() => setTranslating(false))
+    }
+  }, [lang, result, translatedResult])
 
   const handleClear = useCallback(() => {
     setResult(null)
