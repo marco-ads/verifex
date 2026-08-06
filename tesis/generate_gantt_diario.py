@@ -121,6 +121,7 @@ task_defs = [
 (None, 35, "Componentes: RedFlags, SimilarNews, LanguageToggle con estilos", "Luis", 11, 31, "Sprint"),
 (None, 36, "Documentacion de avances del Capitulo 4: Desarrollo e Implementacion", "Ulises", 13, 32, "Sprint"),
 (None, 37, "Pruebas del scraper y validacion de extraccion de contenido HTML", "Tony", 12, 33, "Sprint"),
+    ("V", None, "v0.3.0 - Scraper multi-estrategia funcional: cloudscraper, curl_cffi, requests y Playwright integrados y validados", None, 1, 37, "Iteracion"),
 (None, 38, "Llamadas a Groq API: call_groq, prompt engineering, parse_response", "Marco", 12, 34, "Sprint"),
 (None, 39, "Manejo de estados (loading, error, results) y soporte bilingue ES/EN", "Luis", 11, 35, "Sprint"),
 (None, 40, "Actualizacion Capitulos 1-3 segun cambios de implementacion", "Ulises", 13, 36, "Sprint"),
@@ -129,6 +130,7 @@ task_defs = [
 (None, 43, "Diseno visual cyberpunk: cuadricula, glitch, vignette CRT, scanlines", "Luis", 11, 39, "Sprint"),
 (None, 44, "Tabla de resultados, analisis preliminar de datos e indice de tesis", "Ulises", 13, 40, "Sprint"),
 (None, 45, "Pruebas de integracion frontend-backend con datos simulados y reales", "Tony", 12, 41, "Sprint"),
+    ("V", None, "v0.4.0 - Clasificador de credibilidad, integracion frontend-backend y diseno cyberpunk completos", None, 1, 45, "Iteracion"),
 (None, 46, "Busqueda de noticias similares: news_finder.py, Google News RSS", "Marco", 12, 42, "Sprint"),
 (None, 47, "Conexion frontend-backend via API REST (fetch /analyze + AbortController)", "Luis", 11, 43, "Sprint"),
 (None, 48, "Referencias bibliograficas, anexos y plantilla oficial de tesis", "Ulises", 13, 44, "Sprint"),
@@ -147,18 +149,22 @@ task_defs = [
 (None, 55, "Suite pruebas frontend: 52 tests con vitest + testing-library", "Luis", 11, 88, "Sprint"),
 (None, 56, "Resultados detallados y analisis de datos recopilados", "Ulises", 13, 88, "Sprint"),
 (None, 57, "Documentacion de pruebas: defectos, cobertura y metricas", "Tony", 12, 88, "Sprint"),
+    ("V", None, "v0.6.0 - Suites completas de pruebas backend y frontend, resultados documentados y metricas de cobertura", None, 1, 57, "Iteracion"),
 (None, 58, "Configuracion despliegue: Procfile, build.sh, CORS, gunicorn, Railway", "Marco", 12, 54, "Sprint"),
 (None, 59, "Capturas del sistema: interfaz, resultados, errores, responsive", "Luis", 11, 55, "Sprint"),
 (None, 60, "Actualizacion bibliografia, graficas y tablas de visualizacion", "Ulises", 13, 56, "Sprint"),
 (None, 61, "Validacion de seguridad: manejo errores, proteccion API key, estres", "Tony", 12, 57, "Sprint"),
+    ("V", None, "v0.7.0 - Configuracion de despliegue, capturas del sistema, validacion de seguridad y bibliografia actualizada", None, 1, 61, "Iteracion"),
 (None, 62, "Despliegue Railway → Render, dominio publico y SSL", "Marco", 12, 58, "Sprint"),
 (None, 63, "Optimizacion frontend: lazy loading SimilarNews, code splitting", "Luis", 11, 59, "Sprint"),
 (None, 64, "Conclusiones preliminares y recomendaciones del proyecto", "Ulises", 13, 60, "Sprint"),
 (None, 65, "Pruebas de rendimiento y carga en produccion (Render)", "Tony", 12, 61, "Sprint"),
-    ("V", None, "v1.0.0 - Version estable desplegada en Render con suite completa de pruebas y dominio publico", None, 1, 65, "Iteracion"),
+    ("V", None, "v0.8.0 - Version desplegada en Render con dominio publico, SSL, optimizaciones frontend y pruebas de rendimiento", None, 1, 65, "Iteracion"),
 
     # Revision post-Ciclo 4
     (None, 89, "Revision Ciclo 4: validacion del despliegue, pruebas y rendimiento", "Todos", 5, 65, "Sprint"),
+
+    ("V", None, "v0.9.0 - Validacion post-despliegue completada, rendimiento verificado y ajustes finales de integracion", None, 1, 89, "Iteracion"),
 
     # ══════════ CICLO 5: DOCUMENTACION FINAL Y CIERRE ══════════
     (None, None, None, None, None, None, None),
@@ -169,17 +175,20 @@ task_defs = [
 (None, 68, "Capitulo 5: Resultados, pruebas, analisis de datos y conclusiones", "Ulises", 13, 89, "Sprint"),
 (None, 69, "Pruebas de regresion post-despliegue y verificacion funcional", "Tony", 12, 89, "Sprint"),
 
+    ("V", None, "v0.10.0 - Analisis con URLs reales, diseno responsive, resultados preliminares y pruebas de regresion post-despliegue", None, 1, 69, "Iteracion"),
+
     # Ronda 2: Correcciones y documentacion paralelo
 (None, 70, "Correccion errores: timeouts, override de dominios, edge cases URLs", "Marco", 12, 66, "Sprint"),
 (None, 71, "Manual de usuario completo y guia de uso del sistema", "Luis", 11, 67, "Sprint"),
 (None, 72, "Introduccion, resumen y abstract en espanol e ingles", "Ulises", 13, 68, "Sprint"),
 (None, 73, "Documentacion tecnica: manual API, arquitectura, despliegue", "Tony", 12, 69, "Sprint"),
-
+    ("V", None, "v1.0.0 - Documentacion completa, manuales, resultados consolidados y version estable del sistema", None, 1, 73, "Iteracion"),
     # Ronda 3: Revision final paralelo
 (None, 74, "Verificacion funcionalidad, pruebas de humo y validacion URLs reales", "Marco", 12, 70, "Sprint"),
 (None, 75, "Maquetacion tesis Word: estilos, indices, tablas de contenido", "Luis", 11, 71, "Sprint"),
 (None, 76, "Revision ortografia, gramatica y consistencia de la tesis", "Ulises", 13, 72, "Sprint"),
 (None, 77, "Correcciones estilo, citas y normas institucionales", "Tony", 12, 73, "Sprint"),
+    ("V", None, "v1.1.0 - Revisiones finales, verificacion funcional, maquetacion de tesis y correcciones de estilo", None, 1, 77, "Iteracion"),
 
     # Ronda 4: Revision cruzada paralelo
 (None, 78, "Revision tecnica tesis: datos, consistencia Capitulos 4-5 y codigo", "Marco", 18, 74, "Sprint"),

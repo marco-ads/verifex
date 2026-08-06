@@ -738,7 +738,8 @@ def analyze_url(url: str) -> dict:
     is_credible = "SÍ" if domain in CREDIBLE_DOMAINS else "No confirmado"
 
     from news_finder import find_similar_news
-    similar = find_similar_news(title, max_results=4)
+    similar = find_similar_news(title, max_results=4, exclude_title=title,
+                                exclude_url=url, exclude_domain=domain)
     if similar:
         lines = ["CONTEXTO DE OTRAS FUENTES (para comparación):"]
         for s in similar:

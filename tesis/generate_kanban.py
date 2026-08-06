@@ -52,18 +52,52 @@ assignee_styles = {
     "Tony":   (TONY_FILL, TONY_FONT),
 }
 
-VERSION_FILL = PatternFill(start_color="FFF8E1", end_color="FFF8E1", fill_type="solid")
-VERSION_FONT = Font(name="Calibri", size=9, bold=True, color="E65100")
-
 CHAPTER_FILL = PatternFill(start_color="E3F2FD", end_color="E3F2FD", fill_type="solid")
 CHAPTER_FONT = Font(name="Calibri", size=9, bold=True, color="1565C0")
 
+VERSION_FILL = PatternFill(start_color="FFF8E1", end_color="FFF8E1", fill_type="solid")
+VERSION_FONT = Font(name="Calibri", size=9, bold=True, color="E65100")
+
+# ── Versiones del sistema (del Gantt) ──
+VERSIONS = [
+    ("★ v0.1.0", "v0.1.0 — Requisitos, HU, marco teórico y plan de pruebas (04/12/2025)"),
+    ("★ v0.2.0", "v0.2.0 — Diseño completo: arquitectura, prototipo, diagramas UML (12/01/2026)"),
+    ("★ v0.3.0", "v0.3.0 — Scraper multi-estrategia funcional (09/02/2026)"),
+    ("★ v0.4.0", "v0.4.0 — Clasificador de credibilidad e integración frontend-backend (07/03/2026)"),
+    ("★ v0.5.0", "v0.5.0 — Desarrollo completo del sistema (31/03/2026)"),
+    ("★ v0.6.0", "v0.6.0 — Suites completas de pruebas backend y frontend (19/04/2026)"),
+    ("★ v0.7.0", "v0.7.0 — Configuración de despliegue y capturas del sistema (02/05/2026)"),
+    ("★ v0.8.0", "v0.8.0 — Versión desplegada en Render con dominio público (15/05/2026)"),
+    ("★ v0.9.0", "v0.9.0 — Validación post-despliegue y rendimiento verificado (21/05/2026)"),
+    ("★ v0.10.0","v0.10.0 — Análisis con URLs reales y diseño responsive (03/06/2026)"),
+    ("★ v1.0.0", "v1.0.0 — Documentación completa, manuales y versión estable (16/06/2026)"),
+    ("★ v1.1.0", "v1.1.0 — Revisiones finales, verificación y maquetación (29/06/2026)"),
+    ("★ v1.2.0", "v1.2.0 — Tesis completa, sistema final y defensa [PENDIENTE — 21/08/2026]"),
+]
+
+# A qué capítulo pertenece cada versión (para ordenarla en el Kanban)
+version_chapter = {
+    "v0.1.0": 1,  # Despues de Cap 2 (Fundamento Teorico — cierre de investigacion)
+    "v0.2.0": 2,
+    "v0.3.0": 2,
+    "v0.4.0": 2,
+    "v0.5.0": 2,
+    "v0.6.0": 3,
+    "v0.7.0": 3,
+    "v0.8.0": 3,
+    "v0.9.0": 3,
+    "v0.10.0": 3,
+    "v1.0.0": 3,
+    "v1.1.0": 3,
+    "v1.2.0": 4,
+}
+
 # ── Indice de la tesis: orden de capitulos ──
 THESIS_CHAPTERS = [
-    ("01", "Capitulo 1: Generalidades del Proyecto"),
-    ("02", "Capitulo 2: Fundamento Teorico"),
-    ("03", "Capitulo 3: Metodologia de Desarrollo"),
-    ("04", "Capitulo 4: Implementacion y Resultados"),
+    ("01", "Capítulo 1: Generalidades del Proyecto"),
+    ("02", "Capítulo 2: Fundamento Teórico"),
+    ("03", "Capítulo 3: Metodología y Desarrollo del Sistema"),
+    ("04", "Capítulo 4: Implementación y Resultados"),
     ("05", "Conclusiones"),
 ]
 
@@ -74,6 +108,7 @@ task_chapter = {
     "DOC-01": 0, "DOC-05": 0, "RF-01": 0, "TES-01": 0,
     # Cap 2: Fundamento Teorico
     "DOC-02": 1, "INV-01": 1, "TES-02": 1,
+    "B-10": 1, "B-11": 1, "B-12": 1, "B-13": 1, "B-14": 1,
     # Cap 3: Metodologia de Desarrollo
     "DIS-01": 2, "DIS-02": 2, "DIS-03": 2, "DIS-04": 2,
     "DEV-01": 2, "DEV-02": 2, "DEV-03": 2, "DEV-04": 2,
@@ -81,9 +116,20 @@ task_chapter = {
     "DEV-09": 2, "DEV-10": 2, "DEV-11": 2, "DEV-12": 2,
     "DEV-13": 2, "DEV-14": 2, "DEV-15": 2,
     "TES-03": 2,
-    "HU-01": 2, "HU-02": 2, "HU-03": 2, "HU-04": 2,
-    "HU-05": 2, "HU-06": 2, "HU-07": 2, "HU-08": 2,
-    "HU-09": 2, "HU-10": 2,
+    # Cap 1: HU de requisitos (HU-01..02)
+    "HU-01": 0, "HU-02": 0,
+    # Cap 2: HU de investigacion (HU-03..07)
+    "HU-03": 1, "HU-04": 1, "HU-05": 1, "HU-06": 1, "HU-07": 1,
+    # Cap 3: HU de desarrollo (HU-08..29)
+    "HU-08": 2, "HU-09": 2, "HU-10": 2,
+    "HU-11": 2, "HU-12": 2, "HU-13": 2, "HU-14": 2,
+    "HU-15": 2, "HU-16": 2, "HU-17": 2, "HU-18": 2,
+    "HU-19": 2, "HU-20": 2, "HU-21": 2, "HU-22": 2,
+    "HU-23": 2, "HU-24": 2, "HU-25": 2, "HU-26": 2,
+    "HU-27": 2, "HU-28": 2, "HU-29": 2,
+    # Cap 4: HU de pruebas, documentacion y despliegue (HU-30..39)
+    "HU-30": 3, "HU-31": 3, "HU-32": 3, "HU-33": 3, "HU-34": 3,
+    "HU-35": 3, "HU-36": 3, "HU-37": 3, "HU-38": 3, "HU-39": 3,
     # Cap 4: Implementacion y Resultados
     "TEST-01": 3, "TEST-02": 3, "TEST-03": 3,
     "DEP-01": 3, "DEP-02": 3, "DEP-03": 3, "DEP-04": 3,
@@ -98,34 +144,114 @@ task_chapter = {
     "GAN-00": 3, "GAN-01": 3, "KAN-01": 3,
     "SCR-01": 3, "SCR-02": 3,
     "COR-01": 3, "COR-02": 3, "COR-03": 3, "COR-04": 3,
+    # Backlog: ideas futuras (bajo Capitulo 3: Desarrollo)
+    "B-01": 2, "B-02": 2, "B-03": 2, "B-04": 2,
+    "B-05": 2, "B-06": 2, "B-07": 2, "B-08": 2, "B-09": 2,
 }
 
-def sort_by_chapter(task_list):
-    """Ordena una lista de tareas por capitulo de tesis."""
-    def keyfn(t):
-        tid = t[0]
-        if tid and isinstance(tid, str) and tid.startswith("★"):
-            return (-1, 0)  # headers go first
-        return (task_chapter.get(tid, 99), 0)
-    return sorted(task_list, key=keyfn)
+# Posicion de ordenamiento dentro de cada capitulo
+# Permite intercalar versiones entre grupos logicos de tareas
+item_position = {
+    # Versiones (0 = al inicio del capitulo)
+    "v0.1.0": 0,
+    "v0.2.0": 0,
+    "v0.3.0": 100,
+    "v0.4.0": 200,
+    "v0.5.0": 300,
+    "v0.6.0": 0,
+    "v0.7.0": 100,
+    "v0.8.0": 200,
+    "v0.9.0": 300,
+    "v0.10.0": 400,
+    "v1.0.0": 500,
+    "v1.1.0": 600,
+    "v1.2.0": 0,
+    # Cap 1: Generalidades
+    "HU-01": 5, "HU-02": 10,
+    "DOC-01": 15, "RF-01": 20, "TES-01": 25,
+    # Cap 2: Fundamento Teorico
+    "HU-03": 5, "HU-04": 10, "HU-05": 12, "HU-06": 14, "HU-07": 16,
+    "DOC-02": 30, "INV-01": 40, "TES-02": 50,
+    "B-10": 100, "B-11": 110, "B-12": 120, "B-13": 130, "B-14": 140,
+    # Cap 3 — HU secuenciales 01-39
+    "HU-01": 1, "HU-02": 3,
+    # Cap 3 — HU de desarrollo 08-29
+    "HU-08": 5, "HU-09": 8, "HU-10": 11,
+    "HU-11": 14, "HU-12": 17, "HU-13": 20, "HU-14": 23,
+    "HU-15": 26, "HU-16": 29, "HU-17": 32, "HU-18": 35,
+    "HU-19": 38, "HU-20": 41, "HU-21": 44, "HU-22": 47,
+    "HU-23": 50, "HU-24": 53, "HU-25": 56, "HU-26": 59,
+    "HU-27": 62, "HU-28": 65, "HU-29": 68,
+
+    # Cap 3 — Diseno (entre v0.2.0 y v0.3.0)
+    "DIS-01": 85, "DIS-02": 87, "DIS-03": 89, "DIS-04": 91, "DIS-05": 93,
+    # Cap 3 — Scraper/Backend (entre v0.3.0 y v0.4.0)
+    "DEV-01": 110, "DEV-02": 115, "DEV-03": 120, "DEV-04": 125,
+    "DEV-05": 130, "DEV-06": 135, "DEV-07": 140, "DEV-08": 145,
+    # Cap 3 — Frontend/IA (entre v0.4.0 y v0.5.0)
+    "DEV-09": 210, "DEV-10": 215, "DEV-11": 220, "DEV-12": 225,
+    "DEV-13": 230, "DEV-14": 235, "DEV-15": 240,
+    # Cap 3 — Documentacion desarrollo (despues de v0.5.0)
+    "DOC-04": 310, "DOC-08": 320, "DOC-09": 330, "TES-03": 340,
+    # Cap 4 — HU de pruebas, docs y despliegue
+    "HU-30": 1, "HU-31": 2, "HU-32": 3, "HU-33": 4, "HU-34": 5,
+    "HU-35": 6, "HU-36": 7, "HU-37": 8, "HU-38": 9, "HU-39": 10,
+    # Cap 4 — Pruebas (entre v0.6.0 y v0.7.0)
+    "TEST-01": 20, "TEST-02": 25, "TEST-03": 30, "RES-01": 35, "DEP-04": 40,
+    # Cap 4 — Configuracion despliegue (entre v0.7.0 y v0.8.0)
+    "DEP-01": 110,
+    # Cap 4 — Despliegue prod (entre v0.8.0 y v0.9.0)
+    "DEP-02": 210, "DEP-03": 215,
+    # Cap 4 — URLs reales / resultados (entre v0.9.0 y v1.0.0)
+    "TES-04": 410,
+    # Cap 4 — Gestion y scripts (entre v1.0.0 y v1.1.0)
+    "GAN-00": 510, "GAN-01": 520, "KAN-01": 530,
+    "SCR-01": 540, "SCR-02": 550,
+    "COR-01": 560, "COR-02": 565, "COR-03": 570, "COR-04": 575,
+    # Cap 5: Conclusiones
+    "DOC-03": 10, "DOC-07": 20,
+}
+
+def sort_key(t):
+    """Clave de ordenamiento: (capitulo, posicion)."""
+    tid = t[0]
+    if tid and isinstance(tid, str) and tid.startswith("★ v"):
+        vname = tid.replace("★ ", "")
+        return (version_chapter.get(vname, 99), item_position.get(vname, 999))
+    if tid and isinstance(tid, str) and tid.startswith("★"):
+        return (-1, 0)
+    return (task_chapter.get(tid, 99), item_position.get(tid, 999))
 
 def insert_chapter_headers(task_list):
-    """Inserta headers de capitulo entre grupos de tareas del mismo capitulo."""
+    """Inserta headers de TODOS los capitulos de la tesis, mas las versiones
+    y tareas correspondientes dentro de cada capitulo.
+    Muestra la estructura completa aunque un capitulo no tenga tareas."""
     if not task_list:
-        return task_list
-    # Filter out any existing headers first
-    items = [t for t in task_list if not (t[0] and isinstance(t[0], str) and t[0].startswith("★"))]
-    items = sort_by_chapter(items)
-    result = []
-    last_ch = None
+        # Sin tareas, solo mostrar headers de capitulo
+        items = []
+    else:
+        items = []
+        for t in task_list:
+            tid = t[0]
+            if tid and isinstance(tid, str) and tid.startswith("★") and not tid.startswith("★ v"):
+                continue  # descartar chapter headers (se regeneran)
+            items.append(t)
+        items.sort(key=sort_key)
+    # Agrupar por capitulo
+    by_ch = {}
     for t in items:
         tid = t[0]
-        ch = task_chapter.get(tid, 99)
-        if ch != last_ch:
-            if ch < len(THESIS_CHAPTERS):
-                result.append((f"★ {THESIS_CHAPTERS[ch][0]}", THESIS_CHAPTERS[ch][1], None))
-            last_ch = ch
-        result.append(t)
+        if tid and isinstance(tid, str) and tid.startswith("★ v"):
+            vname = tid.replace("★ ", "")
+            ch = version_chapter.get(vname, 99)
+        else:
+            ch = task_chapter.get(tid, 99)
+        by_ch.setdefault(ch, []).append(t)
+    result = []
+    for ch_idx in range(len(THESIS_CHAPTERS)):
+        result.append((f"★ {THESIS_CHAPTERS[ch_idx][0]}", THESIS_CHAPTERS[ch_idx][1], None))
+        if ch_idx in by_ch:
+            result.extend(by_ch[ch_idx])
     return result
 
 col_labels = {
@@ -163,37 +289,89 @@ tasks = {
         ("B-07", "Exportacion de resultados (PDF, CSV)", None, "Baja"),
         ("B-08", "Integracion con redes sociales (bot de Twitter/Telegram)", None, "Baja"),
         ("B-09", "Notificaciones de noticias falsas en tiempo real", None, "Baja"),
+        ("B-10", "Investigacion de nuevas fuentes de verificacion (fact-checkers adicionales)", None, "Baja"),
+        ("B-11", "Estudio comparativo de APIs de fact-checking (Google Fact Check Tools, ClaimBuster)", None, "Baja"),
+        ("B-12", "Ampliacion del marco teorico sobre desinformacion en Mexico y America Latina", None, "Baja"),
+        ("B-13", "Investigacion de patrones linguisticos de desinformacion para mejorar clasificacion", None, "Baja"),
+        ("B-14", "Estudio de tecnicas de NLP para deteccion de sesgos y clasificacion multimodal", None, "Baja"),
     ]),
     "Stories": insert_chapter_headers([
+        # ── Analisis de Noticias ──
         ("HU-01", "[HU-01] Pegar URL de noticia para analizar su credibilidad", None, "Alta"),
         ("HU-02", "[HU-02] Ver veredicto claro (REAL/FALSO/ESTAFA/SATIRA/NO VERIFICABLE)", None, "Alta"),
-        ("HU-03", "[HU-03] Ver nivel de confianza del analisis", None, "Alta"),
-        ("HU-04", "[HU-04] Ver banderas rojas y senales positivas detectadas", None, "Media"),
-        ("HU-05", "[HU-05] Ver noticias similares para contexto adicional", None, "Media"),
-        ("HU-06", "[HU-06] Cambiar idioma entre espanol e ingles", None, "Media"),
-        ("HU-07", "[HU-07] El analisis no almacena datos del usuario", None, "Alta"),
-        ("HU-08", "[HU-08] Ver tipo de articulo (noticia, opinion, satira, etc.)", None, "Media"),
-        ("HU-09", "[HU-09] Interfaz facil de usar e intuitiva", None, "Media"),
-        ("HU-10", "[HU-10] Deteccion automatica de estafas", None, "Alta"),
+        # ── Investigacion Teorica ──
+        ("HU-35", "[HU-35] Investigar antecedentes de verificacion de noticias y fact-checkers existentes", None, "Media"),
+        ("HU-36", "[HU-36] Revisar marco teorico sobre fake news, desinformacion y credibilidad digital", None, "Media"),
+        ("HU-37", "[HU-37] Analizar viabilidad tecnica, economica y operativa del proyecto VERIFEX", None, "Media"),
+        ("HU-38", "[HU-38] Estudiar herramientas del mercado: Google Fact Check, Snopes, Politifact, Verificado MX", None, "Media"),
+        ("HU-39", "[HU-39] Definir metricas y criterios de clasificacion de credibilidad", None, "Media"),
+        ("HU-03", "[HU-03] Ver nivel de confianza del analisis segmentado en 20 niveles", None, "Alta"),
+        ("HU-04", "[HU-04] Ver banderas rojas y senales positivas detectadas en la noticia", None, "Media"),
+        ("HU-05", "[HU-05] Ver resumen del articulo generado por IA con citas textuales", None, "Media"),
+        ("HU-06", "[HU-06] Ver afirmaciones principales extraidas del contenido", None, "Media"),
+        ("HU-07", "[HU-07] Ver analisis detallado por categoria con evidencias", None, "Media"),
+        ("HU-08", "[HU-08] Ver noticias similares para contexto adicional y verificacion cruzada", None, "Media"),
+        ("HU-09", "[HU-09] Ver tipo de articulo detectado (noticia, opinion, satira, editorial, presna amarillista)", None, "Media"),
+        ("HU-10", "[HU-10] Recibir alerta automatica si la noticia es una estafa o fraude", None, "Alta"),
+
+        # ── Idioma y Experiencia de Usuario ──
+        ("HU-11", "[HU-11] Cambiar idioma entre espanol e ingles en toda la interfaz", None, "Media"),
+        ("HU-12", "[HU-12] Interfaz facil de usar e intuitiva con diseno cyberpunk", None, "Media"),
+        ("HU-13", "[HU-13] Ver indicador de carga animado mientras se analiza la URL", None, "Media"),
+        ("HU-14", "[HU-14] Ver mensajes de error descriptivos segun el tipo de fallo (timeout, URL invalida, servidor caido)", None, "Media"),
+        ("HU-15", "[HU-15] Diseno responsive adaptable a movil, tablet y escritorio", None, "Media"),
+
+        # ── Privacidad y Seguridad ──
+        ("HU-16", "[HU-16] El analisis no almacena ningun dato personal ni historial del usuario", None, "Alta"),
+        ("HU-17", "[HU-17] Conexion segura via HTTPS/SSL con certificado valido", None, "Alta"),
+
+        # ── Infraestructura Tecnica ──
+        ("HU-18", "[HU-18] Extraccion robusta de contenido con scraper multi-estrategia (4 capas de fallback)", None, "Alta"),
+        ("HU-19", "[HU-19] Clasificacion de credibilidad mediante IA (Groq API con fallback a llama-3.1-8b-instant)", None, "Alta"),
+        ("HU-20", "[HU-20] Prompt engineering con 3 few-shots, citas textuales obligatorias y 5 categorias de veredicto", None, "Alta"),
+        ("HU-21", "[HU-21] Lista de 29 dominios confiables con override automatico de clasificacion", None, "Media"),
+        ("HU-22", "[HU-22] Busqueda de noticias similares via Google News RSS para contexto", None, "Media"),
+        ("HU-23", "[HU-23] Sistema desplegado en Render con dominio publico y zero downtime", None, "Alta"),
+        ("HU-24", "[HU-24] Backend en Flask con rutas /analyze y /health, CORS habilitado", None, "Alta"),
+        ("HU-25", "[HU-25] Frontend en React 18 + TypeScript + Vite con conexion a backend via fetch + AbortController (60s timeout)", None, "Alta"),
+
+        # ── Diseno Visual ──
+        ("HU-26", "[HU-26] Diseno visual cyberpunk: cuadricula de fondo, glitch, vignette CRT, scanlines y clip-paths", None, "Media"),
+        ("HU-27", "[HU-27] Componente ConfidenceBar con 20 niveles segmentados y codigo de colores", None, "Media"),
+        ("HU-28", "[HU-28] Veredicto mostrado con indicador visual por color (verde=real, rojo=falso, ambar=sospechoso, azul=no verif)", None, "Media"),
+        ("HU-29", "[HU-29] Componentes UI: UrlInput, VerdictDisplay, ConfidenceBar, RedFlags, SimilarNews, LanguageToggle", None, "Media"),
+
+        # ── Documentacion ──
+        ("HU-30", "[HU-30] Documentacion tecnica completa de la API, arquitectura y modulos del sistema", None, "Baja"),
+        ("HU-31", "[HU-31] Manual de usuario con instrucciones de uso y ejemplos", None, "Baja"),
+        ("HU-32", "[HU-32] Tesis documentada: introduccion, marco teorico, metodologia, implementacion y resultados", None, "Alta"),
+        ("HU-33", "[HU-33] Diagramas UML completos: casos de uso, actividades, secuencia, clases", None, "Media"),
+        ("HU-34", "[HU-34] Suites de pruebas automatizadas: pytest backend (27 tests) + vitest frontend (52 tests)", None, "Alta"),
     ]),
     "Por Hacer": insert_chapter_headers([
-        ("DOC-03", "Verificar que no queden referencias a 'Ollama', 'IA local' o 'sin conexion' en el Word", "Ulises", "Alta"),
-        ("DOC-07", "Revision de contenido, ortografia y consistencia de la tesis", "Tony", "Alta"),
-        ("DOC-08", "Redaccion del Capitulo 5: Resultados, pruebas y conclusiones", "Ulises", "Alta"),
-        ("DOC-09", "Analisis de casos de prueba y documentacion de resultados en la tesis", "Tony", "Media"),
-        ("DIS-05", "Capturas de pantalla del sistema (interfaz, analisis, resultados, errores, mockups) [BLOQUEADO: espera a que el sistema este estable]", "Luis", "Media"),
         ("TESIS-01", "Unificar criterios: documento Word y PDF deben coincidir en contenido", "Ulises", "Alta"),
     ]),
-    "En Proceso": insert_chapter_headers([
-        ("RES-01", "Pruebas de analisis con URLs reales (positivas, negativas, estafas, satira, opinion)", "Marco", "Alta"),
-        ("DEP-04", "Correccion de errores: timeouts (AbortController 60s), override de dominios confiables, edge cases", "Marco", "Alta"),
-        ("DOC-04", "Correccion del documento Word (acentos, enie, formato, tabla de contenido)", "Ulises", "Alta"),
-    ]),
+    "En Proceso": insert_chapter_headers([]),  # Tareas completadas segun Gantt
     "Por Verificar": insert_chapter_headers([
         ("DOC-10", "Correcciones finales y ajustes segun retroalimentacion", "Ulises", "Alta"),
         ("PDF-01", "Generacion de PDF final de tesis (TESIS_VERIFEX.pdf) con todas las correcciones", "Ulises", "Alta"),
     ]),
     "Acabado/Terminado": insert_chapter_headers([
+        # Versiones del sistema (insertados como headers antes de cada capitulo)
+        ("★ v0.1.0", "v0.1.0 — Requisitos, HU, marco teorico y plan de pruebas (04/12/2025)", None),
+        ("★ v0.2.0", "v0.2.0 — Diseno completo: arquitectura, prototipo, diagramas UML (12/01/2026)", None),
+        ("★ v0.3.0", "v0.3.0 — Scraper multi-estrategia funcional (09/02/2026)", None),
+        ("★ v0.4.0", "v0.4.0 — Clasificador de credibilidad e integracion frontend-backend (07/03/2026)", None),
+        ("★ v0.5.0", "v0.5.0 — Desarrollo completo del sistema (31/03/2026)", None),
+        ("★ v0.6.0", "v0.6.0 — Suites completas de pruebas backend y frontend (19/04/2026)", None),
+        ("★ v0.7.0", "v0.7.0 — Configuracion de despliegue y capturas del sistema (02/05/2026)", None),
+        ("★ v0.8.0", "v0.8.0 — Version desplegada en Render con dominio publico (15/05/2026)", None),
+        ("★ v0.9.0", "v0.9.0 — Validacion post-despliegue y rendimiento verificado (21/05/2026)", None),
+        ("★ v0.10.0","v0.10.0 — Analisis con URLs reales y diseno responsive (03/06/2026)", None),
+        ("★ v1.0.0", "v1.0.0 — Documentacion completa, manuales y version estable (16/06/2026)", None),
+        ("★ v1.1.0", "v1.1.0 — Revisiones finales, verificacion y maquetacion (29/06/2026)", None),
+        ("★ v1.2.0", "v1.2.0 — Tesis completa, sistema final y defensa [PENDIENTE — 21/08/2026]", None),
+
         # Cap 1: Generalidades del Proyecto
         ("DOC-01", "Eleccion del tema de tesis: deteccion de noticias falsas con IA", "Todos"),
         ("RF-01", "Definicion de requisitos funcionales (10 HU) y no funcionales (rendimiento, seguridad, usabilidad)", "Marco"),
@@ -203,12 +381,52 @@ tasks = {
         ("DOC-02", "Investigacion preliminar y revision bibliografica (fake news, verificacion, IA)", "Todos"),
         ("INV-01", "Investigacion sobre IA, Groq API y procesamiento de lenguaje natural", "Marco"),
         ("TES-02", "Capitulo 2: Marco Teorico (fake news, IA, Groq API, verificacion)", "Ulises"),
+        ("HU-35", "[HU-35] Investigar antecedentes de verificacion de noticias y fact-checkers existentes", "Todos"),
+        ("HU-36", "[HU-36] Revisar marco teorico sobre fake news, desinformacion y credibilidad digital", "Todos"),
+        ("HU-37", "[HU-37] Analizar viabilidad tecnica, economica y operativa del proyecto VERIFEX", "Marco"),
+        ("HU-38", "[HU-38] Estudiar herramientas del mercado: Google Fact Check, Snopes, Politifact, Verificado MX", "Todos"),
+        ("HU-39", "[HU-39] Definir metricas y criterios de clasificacion de credibilidad", "Marco"),
 
         # Cap 3: Metodologia de Desarrollo
+        ("HU-01", "[HU-01] Pegar URL de noticia para analizar su credibilidad", "Marco"),
+        ("HU-02", "[HU-02] Ver veredicto claro (REAL/FALSO/ESTAFA/SATIRA/NO VERIFICABLE)", "Marco"),
+        ("HU-03", "[HU-03] Ver nivel de confianza del analisis segmentado en 20 niveles", "Marco"),
+        ("HU-04", "[HU-04] Ver banderas rojas y senales positivas detectadas en la noticia", "Marco"),
+        ("HU-05", "[HU-05] Ver resumen del articulo generado por IA con citas textuales", "Marco"),
+        ("HU-06", "[HU-06] Ver afirmaciones principales extraidas del contenido", "Marco"),
+        ("HU-07", "[HU-07] Ver analisis detallado por categoria con evidencias", "Marco"),
+        ("HU-08", "[HU-08] Ver noticias similares para contexto adicional y verificacion cruzada", "Marco"),
+        ("HU-09", "[HU-09] Ver tipo de articulo detectado (noticia, opinion, satira, editorial, prensa amarillista)", "Marco"),
+        ("HU-10", "[HU-10] Recibir alerta automatica si la noticia es una estafa o fraude", "Marco"),
+        ("HU-11", "[HU-11] Cambiar idioma entre espanol e ingles en toda la interfaz", "Luis"),
+        ("HU-12", "[HU-12] Interfaz facil de usar e intuitiva con diseno cyberpunk", "Luis"),
+        ("HU-13", "[HU-13] Ver indicador de carga animado mientras se analiza la URL", "Luis"),
+        ("HU-14", "[HU-14] Ver mensajes de error descriptivos segun el tipo de fallo (timeout, URL invalida, servidor caido)", "Luis"),
+        ("HU-15", "[HU-15] Diseno responsive adaptable a movil, tablet y escritorio", "Luis"),
+        ("HU-16", "[HU-16] El analisis no almacena ningun dato personal ni historial del usuario", "Marco"),
+        ("HU-17", "[HU-17] Conexion segura via HTTPS/SSL con certificado valido", "Marco"),
+        ("HU-18", "[HU-18] Extraccion robusta de contenido con scraper multi-estrategia (4 capas de fallback)", "Marco"),
+        ("HU-19", "[HU-19] Clasificacion de credibilidad mediante IA (Groq API con fallback a llama-3.1-8b-instant)", "Marco"),
+        ("HU-20", "[HU-20] Prompt engineering con 3 few-shots, citas textuales obligatorias y 5 categorias de veredicto", "Marco"),
+        ("HU-21", "[HU-21] Lista de 29 dominios confiables con override automatico de clasificacion", "Marco"),
+        ("HU-22", "[HU-22] Busqueda de noticias similares via Google News RSS para contexto", "Marco"),
+        ("HU-23", "[HU-23] Sistema desplegado en Render con dominio publico y zero downtime", "Marco"),
+        ("HU-24", "[HU-24] Backend en Flask con rutas /analyze y /health, CORS habilitado", "Marco"),
+        ("HU-25", "[HU-25] Frontend en React 18 + TypeScript + Vite con conexion a backend via fetch + AbortController (60s timeout)", "Marco"),
+        ("HU-26", "[HU-26] Diseno visual cyberpunk: cuadricula de fondo, glitch, vignette CRT, scanlines y clip-paths", "Luis"),
+        ("HU-27", "[HU-27] Componente ConfidenceBar con 20 niveles segmentados y codigo de colores", "Luis"),
+        ("HU-28", "[HU-28] Veredicto mostrado con indicador visual por color (verde=real, rojo=falso, ambar=sospechoso, azul=no verif)", "Luis"),
+        ("HU-29", "[HU-29] Componentes UI: UrlInput, VerdictDisplay, ConfidenceBar, RedFlags, SimilarNews, LanguageToggle", "Luis"),
+        ("HU-30", "[HU-30] Documentacion tecnica completa de la API, arquitectura y modulos del sistema", "Tony"),
+        ("HU-31", "[HU-31] Manual de usuario con instrucciones de uso y ejemplos", "Luis"),
+        ("HU-32", "[HU-32] Tesis documentada: introduccion, marco teorico, metodologia, implementacion y resultados", "Ulises"),
+        ("HU-33", "[HU-33] Diagramas UML completos: casos de uso, actividades, secuencia, clases", "Tony"),
+        ("HU-34", "[HU-34] Suites de pruebas automatizadas: pytest backend (27 tests) + vitest frontend (52 tests)", "Marco"),
         ("DIS-01", "Wireframes y mockups de interfaz de usuario", "Luis"),
         ("DIS-02", "Paleta de colores y fuentes cyberpunk (Orbitron, Rajdhani, Share Tech Mono)", "Luis"),
         ("DIS-03", "Arquitectura cliente-servidor (React + Flask + Groq API)", "Marco"),
         ("DIS-04", "Diagramas UML (casos de uso, actividades, secuencia, clases, entidad-relacion)", "Tony"),
+        ("DIS-05", "Capturas de pantalla del sistema (interfaz, analisis, resultados, errores, mockups)", "Luis"),
         ("DEV-01", "Setup del proyecto: Vite + React 18 + TypeScript + Tailwind CSS + PostCSS", "Marco"),
         ("DEV-02", "Setup del backend: Flask + CORS + rutas /analyze y /health", "Marco"),
         ("DEV-03", "Scraper URLs con fallback 4-capas: cloudscraper -> curl_cffi -> requests -> Playwright (Firefox)", "Marco"),
@@ -224,9 +442,14 @@ tasks = {
         ("DEV-13", "Article_type (5 tipos) y deteccion de estafas (is_scam)", "Marco"),
         ("DEV-14", "Diseno visual cyberpunk: cuadricula, glitch, vignette CRT, scanlines, clip-paths", "Luis"),
         ("DEV-15", "Creacion de build.sh para instalar Firefox durante el build de Render", "Marco"),
+        ("DOC-04", "Correccion del documento Word (acentos, enie, formato, tabla de contenido)", "Ulises"),
+        ("DOC-08", "Redaccion del Capitulo 5: Resultados, pruebas y conclusiones", "Ulises"),
+        ("DOC-09", "Analisis de casos de prueba y documentacion de resultados en la tesis", "Tony"),
         ("TES-03", "Capitulo 3: Metodologia y Diseno del Sistema", "Ulises"),
 
         # Cap 4: Implementacion y Resultados
+        ("RES-01", "Pruebas de analisis con URLs reales (positivas, negativas, estafas, satira, opinion)", "Marco"),
+        ("DEP-04", "Correccion de errores: timeouts (AbortController 60s), override de dominios confiables, edge cases", "Marco"),
         ("TEST-01", "Suite de pruebas backend (pytest, 27 tests en server/test_analyzer.py)", "Marco"),
         ("TEST-02", "Suite de pruebas frontend (vitest + testing-library, 7 archivos, 52 tests)", "Marco"),
         ("TEST-03", "Pruebas de integracion: frontend + backend + Groq API en conjunto", "Marco"),
@@ -245,6 +468,10 @@ tasks = {
         ("COR-02", "Correccion de acentos (stripped) y conservacion de enie en toda la tesis", "Ulises"),
         ("COR-03", "Correccion de referencias a 'phi3:mini', 'mistral', '4GB modelo local' en la tesis", "Ulises"),
         ("COR-04", "Correccion de prompts con cita textual, few-shot y distincion opinion/informativa", "Ulises"),
+
+        # Conclusiones
+        ("DOC-03", "Verificar que no queden referencias a 'Ollama', 'IA local' o 'sin conexion' en el Word", "Ulises"),
+        ("DOC-07", "Revision de contenido, ortografia y consistencia de la tesis", "Tony"),
     ]),
 }
 

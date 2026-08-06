@@ -28,7 +28,8 @@ def analyze():
         return jsonify({"error": result["error"], "analysis": None}), status_code
 
     title = result.get("title", url)
-    similar = find_similar_news(title)
+    similar = find_similar_news(title, exclude_title=title, exclude_url=url,
+                                exclude_domain=result.get("domain", ""))
 
     return jsonify({
         "analysis": result["analysis"],

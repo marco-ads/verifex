@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Generador de Gantt VERIFEX
-- Tareas paralelas para Marco, Luis, Ulises, Tony en cada fase
+- Tareas paralelas para Marco, Luis y Ulises en cada fase
 - Todos los integrantes tienen actividad continua sin huecos
 - Secuencial desde 01/09/2025, entrega 23/08/2026
 - Dependencias lógicas: no se avanza de fase hasta que todos completan
@@ -19,8 +19,6 @@ ws.title = "Gantt VERIFEX"
 
 MARCO_FILL = PatternFill(start_color="F3E5F5", end_color="F3E5F5", fill_type="solid")
 MARCO_FONT = Font(name="Calibri", size=10, bold=True, color="4A148C")
-TONY_FILL = PatternFill(start_color="FFEBEE", end_color="FFEBEE", fill_type="solid")
-TONY_FONT = Font(name="Calibri", size=10, bold=True, color="B71C1C")
 LUIS_FILL = PatternFill(start_color="E3F2FD", end_color="E3F2FD", fill_type="solid")
 LUIS_FONT = Font(name="Calibri", size=10, bold=True, color="0D47A1")
 ULISES_FILL = PatternFill(start_color="E8F5E9", end_color="E8F5E9", fill_type="solid")
@@ -57,10 +55,10 @@ for col_idx, (h, w) in enumerate(zip(headers, col_widths), 1):
 # marker = None (regular task), "V" (version milestone)
 # tipo = "Ciclo" (phase header), "Sprint" (regular task), "Iteracion" (milestone)
 #
-# Structure: each phase has 4 parallel streams (one per person).
+# Structure: each phase has parallel streams (one per person).
 # Within each phase, everyone works simultaneously on their tasks.
 # Dependencies: each person's task depends on their previous task.
-# Phase transitions: all 4 must finish before next phase starts.
+# Phase transitions: all must finish before next phase starts.
 
 task_defs = [
     # ══════════ CICLO 0: GESTION DE TESIS ══════════
@@ -78,19 +76,19 @@ task_defs = [
     (None, 5, "Backend e IA: Groq API, Flask, scraping, curl_cffi, Playwright", "Marco", 18, 4, "Sprint"),
     (None, 6, "UI/UX cyberpunk: React, Tailwind, tipografia, paletas", "Luis", 17, 4, "Sprint"),
     (None, 7, "Marco teorico: fake news, verificacion digital, desinformacion MX", "Ulises", 19, 4, "Sprint"),
-    (None, 8, "Herramientas de prueba: Vitest, Pytest, Playwright, Selenium", "Tony", 18, 4, "Sprint"),
+    (None, 8, "Herramientas de prueba: Vitest, Pytest, Playwright, Selenium", "Marco", 18, 4, "Sprint"),
 
     # Ronda 2: Planificacion paralela
     (None, 9, "Seleccion de tecnologias y definicion de requisitos funcionales", "Marco", 12, 5, "Sprint"),
     (None, 10, "Historias de usuario (HU-01 a HU-10) y diseno conceptual de interfaz", "Luis", 11, 6, "Sprint"),
     (None, 11, "Planteamiento del problema, justificacion y preguntas de investigacion", "Ulises", 13, 7, "Sprint"),
-    (None, 12, "Metricas de calidad, criterios de aceptacion y matriz de trazabilidad", "Tony", 12, 8, "Sprint"),
+    (None, 12, "Metricas de calidad, criterios de aceptacion y matriz de trazabilidad", "Ulises", 12, 8, "Sprint"),
 
     # Ronda 3: Sintesis paralela
     (None, 13, "Setup de entorno: Node, Python, Git, VSCode, dependencias", "Marco", 10, 9, "Sprint"),
     (None, 14, "Moodboard, exploracion de componentes UI y paleta de colores", "Luis", 9, 10, "Sprint"),
     (None, 15, "Capitulo 1: Introduccion (contexto, problema, objetivos, alcance)", "Ulises", 11, 11, "Sprint"),
-    (None, 16, "Plan maestro de pruebas y diseno de casos de prueba iniciales", "Tony", 10, 12, "Sprint"),
+    (None, 16, "Plan maestro de pruebas y diseno de casos de prueba iniciales", "Ulises", 10, 12, "Sprint"),
 
     # Revision conjunta
     (None, 17, "Revision consolidacion: requisitos, HU y plan de pruebas", "Todos", 7, 16, "Sprint"),
@@ -106,19 +104,19 @@ task_defs = [
     (None, 18, "Arquitectura cliente-servidor: React + Flask + Groq API + Playwright + CORS", "Marco", 12, 86, "Sprint"),
     (None, 19, "Wireframes baja fidelidad y prototipo navegable alta fidelidad", "Luis", 11, 86, "Sprint"),
     (None, 20, "Capitulo 2: Marco Teorico (fake news, IA, Groq API, verificacion)", "Ulises", 13, 86, "Sprint"),
-    (None, 21, "Diagramas UML: casos de uso, actividades, secuencia, clases, ER", "Tony", 12, 86, "Sprint"),
+    (None, 21, "Diagramas UML: casos de uso, actividades, secuencia, clases, ER", "Luis", 12, 86, "Sprint"),
 
     # Ronda 2: Setup y guias paralelo
     (None, 22, "Setup proyecto: Vite + React + TypeScript + Tailwind + PostCSS", "Marco", 8, 18, "Sprint"),
     (None, 23, "Paleta colores definitiva, tipografia (Orbitron, Rajdhani) y guia de estilos", "Luis", 7, 19, "Sprint"),
     (None, 24, "Diagrama Gantt y tablero Kanban (Gantt_VERIFEX.xlsx, Kanban_VERIFEX.xlsx)", "Ulises", 9, 20, "Sprint"),
-    (None, 25, "Datos de prueba y configuracion del entorno de validacion", "Tony", 8, 21, "Sprint"),
+    (None, 25, "Datos de prueba y configuracion del entorno de validacion", "Marco", 8, 21, "Sprint"),
 
     # Ronda 3: Diseno detallado paralelo
     (None, 26, "Diseno detallado del scraper multi-estrategia y plan de extraccion", "Marco", 10, 22, "Sprint"),
     (None, 27, "Maquetacion: UrlInput, layout inicial y estructura de paneles", "Luis", 9, 23, "Sprint"),
     (None, 28, "Capitulo 3: Metodologia y Diseno del Sistema (arquitectura, metodos)", "Ulises", 11, 24, "Sprint"),
-    (None, 29, "Casos de prueba detallados para scraper y extraccion de contenido", "Tony", 10, 25, "Sprint"),
+    (None, 29, "Casos de prueba detallados para scraper y extraccion de contenido", "Marco", 10, 25, "Sprint"),
 
     ("V", None, "v0.2.0 - Diseno completo: arquitectura, prototipo navegable, diagramas UML y plan de pruebas detallado", None, 1, 29, "Iteracion"),
 
@@ -132,37 +130,41 @@ task_defs = [
     (None, 30, "Setup Flask: rutas /analyze y /health, CORS, parse_response, errores", "Marco", 8, 87, "Sprint"),
     (None, 31, "Componentes base: VerdictDisplay, ConfidenceBar, veredicto por color", "Luis", 7, 87, "Sprint"),
     (None, 32, "Resultados esperados, metricas de evaluacion y criterios de exito", "Ulises", 9, 87, "Sprint"),
-    (None, 33, "Configuracion de pruebas: pytest, vitest, jsdom, testing-library", "Tony", 8, 87, "Sprint"),
+    (None, 33, "Configuracion de pruebas: pytest, vitest, jsdom, testing-library", "Marco", 8, 87, "Sprint"),
 
     # Ronda 2: Scraping + UI paralelo
     (None, 34, "Scraper multi-estrategia: cloudscraper, curl_cffi, requests, Playwright", "Marco", 12, 30, "Sprint"),
     (None, 35, "Componentes: RedFlags, SimilarNews, LanguageToggle con estilos", "Luis", 11, 31, "Sprint"),
     (None, 36, "Documentacion de avances del Capitulo 4: Desarrollo e Implementacion", "Ulises", 13, 32, "Sprint"),
-    (None, 37, "Pruebas del scraper y validacion de extraccion de contenido HTML", "Tony", 12, 33, "Sprint"),
+    (None, 37, "Pruebas del scraper y validacion de extraccion de contenido HTML", "Marco", 12, 33, "Sprint"),
+
+    ("V", None, "v0.3.0 - Scraper multi-estrategia funcional: cloudscraper, curl_cffi, requests y Playwright integrados y validados", None, 1, 37, "Iteracion"),
 
     # Ronda 3: IA + integracion paralelo
     (None, 38, "Llamadas a Groq API: call_groq, prompt engineering, parse_response", "Marco", 12, 34, "Sprint"),
     (None, 39, "Manejo de estados (loading, error, results) y soporte bilingue ES/EN", "Luis", 11, 35, "Sprint"),
     (None, 40, "Actualizacion Capitulos 1-3 segun cambios de implementacion", "Ulises", 13, 36, "Sprint"),
-    (None, 41, "Pruebas de integracion scraper + Groq API con distintos tipos de URL", "Tony", 12, 37, "Sprint"),
+    (None, 41, "Pruebas de integracion scraper + Groq API con distintos tipos de URL", "Luis", 12, 37, "Sprint"),
 
     # Ronda 4: Clasificador + diseno final paralelo
     (None, 42, "Clasificador de credibilidad: 5 categorias, CREDIBLE_DOMAINS y override", "Marco", 12, 38, "Sprint"),
     (None, 43, "Diseno visual cyberpunk: cuadricula, glitch, vignette CRT, scanlines", "Luis", 11, 39, "Sprint"),
     (None, 44, "Tabla de resultados, analisis preliminar de datos e indice de tesis", "Ulises", 13, 40, "Sprint"),
-    (None, 45, "Pruebas de integracion frontend-backend con datos simulados y reales", "Tony", 12, 41, "Sprint"),
+    (None, 45, "Pruebas de integracion frontend-backend con datos simulados y reales", "Luis", 12, 41, "Sprint"),
+
+    ("V", None, "v0.4.0 - Clasificador de credibilidad, integracion frontend-backend y diseno cyberpunk completos", None, 1, 45, "Iteracion"),
 
     # Ronda 5: Features avanzados paralelo
     (None, 46, "Busqueda de noticias similares: news_finder.py, Google News RSS", "Marco", 12, 42, "Sprint"),
     (None, 47, "Conexion frontend-backend via API REST (fetch /analyze + AbortController)", "Luis", 11, 43, "Sprint"),
     (None, 48, "Referencias bibliograficas, anexos y plantilla oficial de tesis", "Ulises", 13, 44, "Sprint"),
-    (None, 49, "Pruebas de regresion y deteccion de defectos en integracion continua", "Tony", 12, 45, "Sprint"),
+    (None, 49, "Pruebas de regresion y deteccion de defectos en integracion continua", "Luis", 12, 45, "Sprint"),
 
     # Ronda 6: Pulido final paralelo
     (None, 50, "Article_type: 5 tipos y ajustes finales de clasificacion", "Marco", 10, 46, "Sprint"),
     (None, 51, "Manejo de errores de red, timeouts y UX de carga animada", "Luis", 9, 47, "Sprint"),
     (None, 52, "Resultados parciales, graficas y tablas de visualizacion", "Ulises", 11, 48, "Sprint"),
-    (None, 53, "Pruebas de aceptacion de usuario (UAT) con escenarios reales", "Tony", 10, 49, "Sprint"),
+    (None, 53, "Pruebas de aceptacion de usuario (UAT) con escenarios reales", "Ulises", 10, 49, "Sprint"),
 
     ("V", None, "v0.5.0 - Desarrollo completo: scraper, IA, clasificador, news_finder, UI cyberpunk y pruebas de integracion", None, 1, 53, "Iteracion"),
 
@@ -176,24 +178,30 @@ task_defs = [
     (None, 54, "Suite pruebas backend: 27 tests en server/test_analyzer.py (pytest)", "Marco", 12, 88, "Sprint"),
     (None, 55, "Suite pruebas frontend: 52 tests con vitest + testing-library", "Luis", 11, 88, "Sprint"),
     (None, 56, "Resultados detallados y analisis de datos recopilados", "Ulises", 13, 88, "Sprint"),
-    (None, 57, "Documentacion de pruebas: defectos, cobertura y metricas", "Tony", 12, 88, "Sprint"),
+    (None, 57, "Documentacion de pruebas: defectos, cobertura y metricas", "Ulises", 12, 88, "Sprint"),
+
+    ("V", None, "v0.6.0 - Suites completas de pruebas backend y frontend, resultados documentados y metricas de cobertura", None, 1, 57, "Iteracion"),
 
     # Ronda 2: Despliegue paralelo
     (None, 58, "Configuracion despliegue: Procfile, build.sh, CORS, gunicorn, Railway", "Marco", 12, 54, "Sprint"),
     (None, 59, "Capturas del sistema: interfaz, resultados, errores, responsive", "Luis", 11, 55, "Sprint"),
     (None, 60, "Actualizacion bibliografia, graficas y tablas de visualizacion", "Ulises", 13, 56, "Sprint"),
-    (None, 61, "Validacion de seguridad: manejo errores, proteccion API key, estres", "Tony", 12, 57, "Sprint"),
+    (None, 61, "Validacion de seguridad: manejo errores, proteccion API key, estres", "Marco", 12, 57, "Sprint"),
+
+    ("V", None, "v0.7.0 - Configuracion de despliegue, capturas del sistema, validacion de seguridad y bibliografia actualizada", None, 1, 61, "Iteracion"),
 
     # Ronda 3: Despliegue final paralelo
     (None, 62, "Despliegue Railway → Render, dominio publico y SSL", "Marco", 12, 58, "Sprint"),
     (None, 63, "Optimizacion frontend: lazy loading SimilarNews, code splitting", "Luis", 11, 59, "Sprint"),
     (None, 64, "Conclusiones preliminares y recomendaciones del proyecto", "Ulises", 13, 60, "Sprint"),
-    (None, 65, "Pruebas de rendimiento y carga en produccion (Render)", "Tony", 12, 61, "Sprint"),
+    (None, 65, "Pruebas de rendimiento y carga en produccion (Render)", "Marco", 12, 61, "Sprint"),
 
-    ("V", None, "v1.0.0 - Version estable desplegada en Render con suite completa de pruebas y dominio publico", None, 1, 65, "Iteracion"),
+    ("V", None, "v0.8.0 - Version desplegada en Render con dominio publico, SSL, optimizaciones frontend y pruebas de rendimiento", None, 1, 65, "Iteracion"),
 
     # Revision post-Ciclo 4
     (None, 89, "Revision Ciclo 4: validacion del despliegue, pruebas y rendimiento", "Todos", 5, 65, "Sprint"),
+
+    ("V", None, "v0.9.0 - Validacion post-despliegue completada, rendimiento verificado y ajustes finales de integracion", None, 1, 89, "Iteracion"),
 
     # ══════════ CICLO 5: DOCUMENTACION FINAL Y CIERRE ══════════
     (None, None, None, None, None, None, None),
@@ -202,25 +210,31 @@ task_defs = [
     (None, 66, "Analisis con URLs reales: Milenio, Reforma, Aristegui, estafas", "Marco", 12, 89, "Sprint"),
     (None, 67, "Diseno responsive: ajustes layout para movil, tablet y escritorio", "Luis", 11, 89, "Sprint"),
     (None, 68, "Capitulo 5: Resultados, pruebas, analisis de datos y conclusiones", "Ulises", 13, 89, "Sprint"),
-    (None, 69, "Pruebas de regresion post-despliegue y verificacion funcional", "Tony", 12, 89, "Sprint"),
+    (None, 69, "Pruebas de regresion post-despliegue y verificacion funcional", "Luis", 12, 89, "Sprint"),
+
+    ("V", None, "v0.10.0 - Analisis con URLs reales, diseno responsive, resultados preliminares y pruebas de regresion post-despliegue", None, 1, 69, "Iteracion"),
 
     # Ronda 2: Correcciones y documentacion paralelo
     (None, 70, "Correccion errores: timeouts, override de dominios, edge cases URLs", "Marco", 12, 66, "Sprint"),
     (None, 71, "Manual de usuario completo y guia de uso del sistema", "Luis", 11, 67, "Sprint"),
     (None, 72, "Introduccion, resumen y abstract en espanol e ingles", "Ulises", 13, 68, "Sprint"),
-    (None, 73, "Documentacion tecnica: manual API, arquitectura, despliegue", "Tony", 12, 69, "Sprint"),
+    (None, 73, "Documentacion tecnica: manual API, arquitectura, despliegue", "Ulises", 12, 69, "Sprint"),
+
+    ("V", None, "v1.0.0 - Documentacion completa, manuales, resultados consolidados y version estable del sistema", None, 1, 73, "Iteracion"),
 
     # Ronda 3: Revision final paralelo
     (None, 74, "Verificacion funcionalidad, pruebas de humo y validacion URLs reales", "Marco", 12, 70, "Sprint"),
     (None, 75, "Maquetacion tesis Word: estilos, indices, tablas de contenido", "Luis", 11, 71, "Sprint"),
     (None, 76, "Revision ortografia, gramatica y consistencia de la tesis", "Ulises", 13, 72, "Sprint"),
-    (None, 77, "Correcciones estilo, citas y normas institucionales", "Tony", 12, 73, "Sprint"),
+    (None, 77, "Correcciones estilo, citas y normas institucionales", "Ulises", 12, 73, "Sprint"),
+
+    ("V", None, "v1.1.0 - Revisiones finales, verificacion funcional, maquetacion de tesis y correcciones de estilo", None, 1, 77, "Iteracion"),
 
     # Ronda 4: Revision cruzada paralelo
     (None, 78, "Revision tecnica tesis: datos, consistencia Capitulos 4-5 y codigo", "Marco", 18, 74, "Sprint"),
     (None, 79, "Material presentacion defensa: diapositivas, demo y resultados", "Luis", 17, 75, "Sprint"),
     (None, 80, "Correcciones finales segun retroalimentacion del asesor", "Ulises", 19, 76, "Sprint"),
-    (None, 81, "Preparacion defensa tesis: diapositivas, demo en vivo y Q&A", "Tony", 18, 77, "Sprint"),
+    (None, 81, "Preparacion defensa tesis: diapositivas, demo en vivo y Q&A", "Luis", 18, 77, "Sprint"),
 
     # Ronda 5: Revision final y aprobacion paralelo
     (None, 90, "Revision y aprobacion del asesor: validacion final tesis y sistema", "Todos", 12, 78, "Sprint"),
@@ -229,7 +243,7 @@ task_defs = [
     (None, 82, "Cierre proyecto: limpieza codigo, README, tag v1.2.0 en git", "Marco", 20, 90, "Sprint"),
     (None, 83, "PDF final de tesis (TESIS_VERIFEX.pdf) con formato definitivo", "Luis", 19, 90, "Sprint"),
     (None, 84, "Revision final y validacion de entrega segun requisitos", "Ulises", 21, 90, "Sprint"),
-    (None, 85, "Pruebas finales de humo y validacion de cierre del proyecto", "Tony", 20, 90, "Sprint"),
+    (None, 85, "Pruebas finales de humo y validacion de cierre del proyecto", "Luis", 20, 90, "Sprint"),
 
     ("V", None, "v1.2.0 - Tesis completa, sistema VERIFEX version final y presentacion de defensa preparada", None, 1, 85, "Iteracion"),
 ]
@@ -256,7 +270,6 @@ assignee_styles = {
     "Marco": (MARCO_FILL, MARCO_FONT),
     "Luis": (LUIS_FILL, LUIS_FONT),
     "Ulises": (ULISES_FILL, ULISES_FONT),
-    "Tony": (TONY_FILL, TONY_FONT),
     "Todos": (PatternFill(start_color="F5F5F5", end_color="F5F5F5", fill_type="solid"),
               Font(name="Calibri", size=10, bold=True, color="616161")),
 }
@@ -347,10 +360,7 @@ for td in task_defs:
         end = start + timedelta(days=duration)
         task_dates[key] = (start, end)
 
-        if task_num <= 53:
-            status = "H"
-        else:
-            status = "N"
+        status = "H"
 
         status_text = status_map[status]
         a_fill, a_font = assignee_styles.get(assignee, (None, Font(name="Calibri", size=10)))
@@ -383,7 +393,6 @@ legend_items = [
     ("Marco - Backend, frontend, IA, deploy y pruebas", MARCO_FILL, MARCO_FONT),
     ("Luis - Frontend, diseno UI/UX y estilos visuales", LUIS_FILL, LUIS_FONT),
     ("Ulises - Documentacion y redaccion de tesis", ULISES_FILL, ULISES_FONT),
-    ("Tony - Diagramas UML, documentacion y revision de logica", TONY_FILL, TONY_FONT),
     ("★ Iteracion - Hito de lanzamiento de version", VERSION_FILL, VERSION_FONT),
     ("Sprint - Tarea individual con duracion definida", VERSION_FILL, VERSION_FONT),
     ("Ciclo - Gran fase del proyecto (agrupacion de fases)", VERSION_FILL, VERSION_FONT),
